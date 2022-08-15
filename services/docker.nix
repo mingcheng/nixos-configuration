@@ -1,4 +1,14 @@
-{ config, pkgs, ... }: {
+/*
+  * File: docker.nix
+  * Author: Ming Cheng<mingcheng@outlook.com>
+  * 
+  * Created Date: Monday, August 15th 2022, 10:59:12 am
+  * Last Modified: Monday, August 15th 2022, 10:36:38 pm
+  * 
+  * http://www.opensource.org/licenses/MIT
+*/
+
+{ pkgs, ... }: {
   virtualisation.docker = {
     enable = true;
     daemon.settings = {

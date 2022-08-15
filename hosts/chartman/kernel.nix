@@ -26,7 +26,8 @@
     "intel_iommu=igfx_off"
     "iommu=pt"
     "vfio_iommu_type1.allow_unsafe_interrupts=1"
-    "vfio-pci.ids=8086:1533" # lspci -nn | grep -i Ether
+    # lspci -nn | grep -i Ether
+    # ${if config.networking.hostName == "chartman" then "vfio-pci.ids=8086:1533"}
   ];
 
   boot.kernelModules = [

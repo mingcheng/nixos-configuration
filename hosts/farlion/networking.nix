@@ -8,7 +8,7 @@
   * http://www.opensource.org/licenses/MIT
 */
 
-{ config, lib, ... }:
+{ pkgs, lib, ... }:
 {
   networking = {
     hostName = "farlion";

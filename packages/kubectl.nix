@@ -8,8 +8,8 @@
   * http://www.opensource.org/licenses/MIT
 */
 
-
-{ config, lib, pkgs, ... }: {
+{ pkgs, ... }:
+{
   environment.systemPackages = with pkgs; [
     kubectl
     k9s

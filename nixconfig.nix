@@ -11,11 +11,11 @@
 { config, pkgs, lib, ... }: {
   nix = {
     settings = {
+      # https://nixos.wiki/wiki/Storage_optimization
       auto-optimise-store = true;
       substituters = [
         "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
         "https://mirror.sjtu.edu.cn/nix-channels/store"
-
       ];
     };
 
@@ -26,6 +26,11 @@
     };
 
     settings.trusted-users = [ "root" "@wheel" ];
+    extraOptions = ''
+      experimental-features = nix-command flakes
+      keep-outputs = true
+      keep-derivations = true
+    '';
   };
 
   nixpkgs.config = {

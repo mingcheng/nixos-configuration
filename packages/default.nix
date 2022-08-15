@@ -8,10 +8,8 @@
   * http://www.opensource.org/licenses/MIT
 */
 
-
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 let
-
   nixpkgs-tools = with pkgs; [
     nixpkgs-fmt
     nixpkgs-lint
