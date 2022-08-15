@@ -1,3 +1,14 @@
+/*
+  * File: default.nix
+  * Author: Ming Cheng<mingcheng@outlook.com>
+  * 
+  * Created Date: Sunday, August 14th 2022, 9:45:39 pm
+  * Last Modified: Monday, August 15th 2022, 11:47:51 am
+  * 
+  * http://www.opensource.org/licenses/MIT
+*/
+
+
 { config, lib, pkgs, ... }:
 let
 
@@ -19,7 +30,6 @@ let
     stow
     yq
     unzip
-    stow
     nodejs-16_x
     # git
     binutils
@@ -36,32 +46,40 @@ let
     nfs-utils
     btrfs-progs
     f2fs-tools
+    killall
+    lsof
+    lz4
+    # tldr
+    unzip
+    file
   ];
 
   modern-unix = with pkgs; [
     tree
     wget
     aria2
-    fish
-    pstree
+    # fish
+    # pstree
     file
     rsync
     tmux
-    psmisc
+    # psmisc
     # vim
     bat
     htop
+    # ncdu
+    shfmt
   ];
-in {
+in
+{
   environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
     ++ (with pkgs; [
-      home-manager
-      neofetch
-      lm_sensors
-      qemu
-      qemu_kvm
-      virt-manager
-      iproute
-      libosinfo
-    ]);
+    # home-manager
+    neofetch
+    qemu
+    qemu_kvm
+    virt-manager
+    iproute
+    libosinfo
+  ]);
 }

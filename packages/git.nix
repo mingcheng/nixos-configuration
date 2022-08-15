@@ -1,22 +1,45 @@
-{ config, lib, pkgs, ... }:
+/*
+  * File: git.nix
+  * Author: Ming Cheng<mingcheng@outlook.com>
+  * 
+  * Created Date: Sunday, August 14th 2022, 9:45:39 pm
+  * Last Modified: Monday, August 15th 2022, 11:45:02 am
+  * 
+  * http://www.opensource.org/licenses/MIT
+*/
 
+{ pkgs, ... }:
 {
   programs.git = {
     enable = true;
+
     config = {
-      init.defaultBranch = "main";
-      protocol."https".allow = "always";
-      url."https://github.com/".insteadOf = [ "gh:" "github:" ];
       aliases = {
-        co = "checkout";
-        ci = "commit";
-        cia = "commit --amend";
-        s = "status";
+        c = "commit";
+        p = "push";
         st = "status";
-        b = "branch";
-        p = "pull --rebase";
-        pu = "push";
+      };
+
+      pull = {
+        ff = "only";
+        rebase = true;
+      };
+      init = {
+        defaultBranch = "main";
+      };
+      rebase = {
+        autoStash = true;
+        autoSquash = true;
+      };
+
+      # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/javascript.section.md#git-protocol-error
+      url = {
+        "https://github.com" = {
+          insteadOf = "git://github.com";
+        };
       };
     };
   };
+
+  environment.systemPackages = with pkgs; [ gitflow ];
 }
