@@ -8,6 +8,7 @@
   * http://www.opensource.org/licenses/MIT
 */
 
+{ pkgs, lib, ... }:
 {
   imports = [
     ../qemu
@@ -16,12 +17,8 @@
     ../../packages/git.nix
     ../../packages/nvim.nix
     ../../packages/netutils.nix
+    ../../system/grub.nix
   ];
-
-  boot.loader.efi = {
-    canTouchEfiVariables = true;
-    efiSysMountPoint = "/efi";
-  };
 
   boot.kernel = {
     sysctl = {
@@ -36,25 +33,38 @@
   boot.kernelModules = [
     "btrfs"
     "f2fs"
+    "ext4"
+    "vfat"
+    "nvme"
+    "ahci"
+    "usb_storage"
+    "usbhid"
+    "sd_mod"
   ];
 
-  # fileSystems."/nix" = {
-  #   device = "/dev/disk/by-label/nix";
-  #   fsType = "btrfs";
-  #   neededForBoot = true;
-  #   options = [ "defaults" "subvol=@nix" ];
-  # };
+  boot.tmpOnTmpfs = true;
+  boot.supportedFilesystems = [ "btrfs" "ext4" "vfat" "f2fs" "xfs" "ntfs" ];
+  boot.initrd.availableKernelModules = [
+    "nvme"
+    "ahci"
+    "usb_storage"
+    "usbhid"
+    "sd_mod"
+    "xhci_pci"
+    "ahci"
+    "usb_storage"
+    "sd_mod"
+  ];
 
-  # fileSystems."/home" = {
-  #   device = "/dev/disk/by-label/nix";
-  #   fsType = "btrfs";
-  #   neededForBoot = true;
-  #   options = [ "defaults" "subvol=@home" ];
-  # };
+  fileSystems."/" =
+    {
+      device = "/dev/disk/by-uuid/24e24f36-6056-42a2-90a2-d0d60027b2ab";
+      fsType = "f2fs";
+    };
 
-  # boot.growPartition = true;
-  # boot.loader.grub.device = "/dev/vda";
-  # boot.loader.timeout = 0;
-
-  users.extraUsers.root.password = lib.mkForce "root";
+  fileSystems."/efi" =
+    {
+      device = "/dev/disk/by-uuid/7E68-0551";
+      fsType = "vfat";
+    };
 }

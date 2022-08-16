@@ -31,3 +31,6 @@ coverage.html
 # Emacs backup files
 *~
 .*~
+
+/hardware-configuration.nix
+/configuration.nix

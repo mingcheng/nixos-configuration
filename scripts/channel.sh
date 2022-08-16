@@ -1,0 +1,11 @@
+###
+# File: channel.sh
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Tuesday, August 16th 2022, 12:38:55 am
+# Last Modified: Tuesday, August 16th 2022, 12:39:32 am
+#
+# http://www.opensource.org/licenses/MIT
+###
+
+nix-channel --add https://mirror.nju.edu.cn/nix-channels/nixos-22.05 nixos
