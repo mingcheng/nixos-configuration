@@ -14,6 +14,8 @@
   boot.loader.grub.copyKernels = true;
   boot.loader.grub.efiInstallAsRemovable = true;
   boot.loader.grub.efiSupport = true;
+  boot.loader.grub.useOSProber = true;
+  boot.loader.grub.version = 2;
   boot.loader.grub.devices = [ "nodev" ];
   boot.loader.grub.extraEntries = ''
     menuentry "Reboot" {

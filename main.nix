@@ -8,13 +8,18 @@
   * http://www.opensource.org/licenses/MIT
 */
 
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
 {
-  system.stateVersion = "22.05"; # Did you read the comment?
-
   # WARNING! CHANGE IT BEFORE DEPLOYING IN PRODECT
   users.extraUsers.root.password = "root";
 
-  imports = [ ./hosts/farlion ];
-  #imports = [ ./hosts/chartman ];
-  #imports = [ ./hosts/qemu ];
+  # write build variable to envirment
+  environment.variables = {
+    NIX_BUILD_HOST = "${host}";
+  };
+
+  # imports the main nix file from each directory
+  imports = [ ./hosts/${host} ];
 }

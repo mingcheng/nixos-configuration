@@ -8,4 +8,7 @@
   * http://www.opensource.org/licenses/MIT
 */
 
-{ services.fstrim.enable = true; }
+{ lib, ... }:
+{
+  services.fstrim.enable = lib.mkDefault true;
+}

@@ -1,7 +1,12 @@
 { config, lib, ... }: {
   imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+
     ../../nixconfig.nix
-    ../../hardware-configuration.nix
+    ../../hardware/cpu_intel.nix
+    # ./hardware/fs.nix
+    # ./hardware/kernel.nix
+    ../../hardware/power.nix
 
     ../../system/fs.nix
     ../../system/autoupdate.nix
@@ -17,6 +22,7 @@
     ../../services/libvirtd.nix
     ../../services/timesyncd.nix
     ../../services/fstrim.nix
+    ../../services/prometheus.nix
 
     ../../packages/default.nix
     ../../packages/fish.nix

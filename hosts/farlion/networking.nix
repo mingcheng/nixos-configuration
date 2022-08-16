@@ -9,9 +9,12 @@
 */
 
 { pkgs, lib, ... }:
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
 {
   networking = {
-    hostName = "farlion";
+    hostName = "${host}";
 
     enableIPv6 = lib.mkForce false;
     useDHCP = lib.mkForce false;
