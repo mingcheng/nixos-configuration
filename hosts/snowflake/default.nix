@@ -1,20 +1,16 @@
-/*
-  * File: farlion.nix
-  * Author: Ming Cheng<mingcheng@outlook.com>
-  * 
-  * Created Date: Monday, August 15th 2022, 9:48:13 am
-  * Last Modified: Monday, August 15th 2022, 4:03:28 pm
-  * 
-  * http://www.opensource.org/licenses/MIT
-*/
+# File: farlion.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Monday, August 15th 2022, 9:48:13 am
+# Last Modified: Monday, August 15th 2022, 4:03:28 pm
+#
+# http://www.opensource.org/licenses/MIT
 
 { config, lib, modulesPath, ... }: {
   imports = [
-    (modulesPath + "/profiles/qemu-guest.nix")
     ../qemu
     ../../nixconfig.nix
 
-    ../../system/autoupdate.nix
     ../../system/env.nix
     ../../system/misc.nix
     ../../system/shell.nix
@@ -22,15 +18,13 @@
     ../../services/timesyncd.nix
     ../../services/docker.nix
 
-    ../../packages/default.nix
     ../../packages/kubectl.nix
     ../../packages/netutils.nix
-    # ../../packages/fish.nix
     ../../packages/golang.nix
-    # ../../packages/vim.nix
     ../../packages/nvim.nix
     ../../packages/git.nix
 
+    ../farlion/packages.nix
     ./networking.nix
     ./openssh.nix
   ];

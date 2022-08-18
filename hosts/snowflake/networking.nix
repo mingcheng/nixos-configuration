@@ -1,17 +1,15 @@
-/*
-  * File: networking.nix
-  * Author: Ming Cheng<mingcheng@outlook.com>
-  *
-  * Created Date: Monday, August 15th 2022, 12:01:52 am
-  * Last Modified: Monday, August 15th 2022, 12:02:21 am
-  *
-  * http://www.opensource.org/licenses/MIT
-*/
+# File: networking.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Monday, August 15th 2022, 12:01:52 am
+# Last Modified: Monday, August 15th 2022, 12:02:21 am
+#
+# http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, ... }:
-{
-  imports = [ ../qemu/udev.nix ];
+{ pkgs, lib, ... }: {
+  imports = [ ../qemu/udev.nix ./firewall.nix ];
 
+  networking.useDHCP = lib.mkForce false;
   networking = {
     hostName = "snowflake";
     interfaces = {

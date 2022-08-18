@@ -1,0 +1,91 @@
+# File: samba.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Wednesday, August 17th 2022, 4:38:35 pm
+# Last Modified: Wednesday, August 17th 2022, 4:39:02 pm
+#
+# http://www.opensource.org/licenses/MIT
+
+{ pkgs, ... }: {
+  #  services.samba-wsdd.enable = true;
+  services.samba = {
+    enable = true;
+    # package = pkgs.sambaFull;
+
+    enableNmbd = false;
+    enableWinbindd = false;
+
+    securityType = "user";
+    extraConfig = ''
+      netbios name = wooramel
+      server string = Samba Server Version %v
+      dns proxy = no
+      load printers = no
+      log file = /var/log/samba/%U.log
+      map to guest = bad user
+      passdb backend = tdbsam
+      printcap name = /dev/null
+
+      server role = standalone server
+      max log size = 1024
+      socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=524288 SO_SNDBUF=524288
+      wins support = yes
+
+      bind interfaces only = yes
+      interfaces = eth0
+      unix extensions = no
+
+      min protocol = SMB2
+
+      allocation roundup size = 0
+      directory name cache size = 0
+
+      ea support = yes
+      spotlight = no
+
+      inherit permissions = no
+      create mask = 0640
+      directory mask = 0750
+    '';
+
+    shares = {
+      Public = {
+        path = "/data/";
+        browseable = "yes";
+        "read only" = "no";
+        "guest ok" = "yes";
+        "force user" = "nobody";
+        "force group" = "+nobody";
+        "public" = "yes";
+        "writable" = "yes";
+        "only guest" = "yes";
+        "printable" = "no";
+        "spotlight" = "no";
+        # "fruit:time machine" = "no";
+
+        #         "fruit:aapl" = "yes";
+        # "fruit:time machine" = "yes";
+        # "vfs objects" = "catia fruit streams_xattr";
+
+        # [ Time Capsule ]
+        #   path = /timemachine/%U
+        # valid users = @wheel
+        # force group = +wheel
+        # writable = yes
+        # browsable = yes
+        # read only = no
+        # guest ok = no
+        # public = no
+        # kernel oplocks = no
+        # kernel share modes = no
+        # posix locking = no
+        # fruit:time machine = yes
+
+        # create mask = 0600
+        # directory mask = 0700
+        # ;  fruit:time machine max size = 1T
+
+      };
+    };
+  };
+}

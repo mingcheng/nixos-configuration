@@ -1,12 +1,10 @@
-/*
-  * File: user.nix
-  * Author: Ming Cheng<mingcheng@outlook.com>
-  * 
-  * Created Date: Sunday, August 14th 2022, 11:17:23 pm
-  * Last Modified: Monday, August 15th 2022, 10:43:44 pm
-  * 
-  * http://www.opensource.org/licenses/MIT
-*/
+# File: user.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Sunday, August 14th 2022, 11:17:23 pm
+# Last Modified: Monday, August 15th 2022, 10:43:44 pm
+#
+# http://www.opensource.org/licenses/MIT
 
 { pkgs, ... }: {
   users = {

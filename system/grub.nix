@@ -1,12 +1,10 @@
-/*
-  * File: grub.nix
-  * Author: Ming Cheng<mingcheng@outlook.com>
-  * 
-  * Created Date: Tuesday, August 16th 2022, 12:36:27 am
-  * Last Modified: Tuesday, August 16th 2022, 12:36:30 am
-  * 
-  * http://www.opensource.org/licenses/MIT
-*/
+# File: grub.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Tuesday, August 16th 2022, 12:36:27 am
+# Last Modified: Tuesday, August 16th 2022, 12:36:30 am
+#
+# http://www.opensource.org/licenses/MIT
 
 {
   boot.loader.grub.forceInstall = false; # RISKY!
@@ -26,7 +24,5 @@
     }
   '';
 
-  boot.loader.efi = {
-    efiSysMountPoint = "/efi";
-  };
+  #boot.loader.efi = { efiSysMountPoint = "/efi"; };
 }

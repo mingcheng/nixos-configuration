@@ -1,0 +1,6 @@
+{
+  "[nix]": {
+    "diffEditor.wordWrap": "on",
+    "editor.defaultFormatter": "jnoortheen.nix-ide"
+  }
+}

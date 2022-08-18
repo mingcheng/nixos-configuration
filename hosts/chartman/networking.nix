@@ -1,15 +1,12 @@
-/*
-  * File: networking.nix
-  * Author: Ming Cheng<mingcheng@outlook.com>
-  *
-  * Created Date: Sunday, August 14th 2022, 11:52:28 pm
-  * Last Modified: Sunday, August 14th 2022, 11:54:48 pm
-  *
-  * http://www.opensource.org/licenses/MIT
-*/
+# File: networking.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Sunday, August 14th 2022, 11:52:28 pm
+# Last Modified: Sunday, August 14th 2022, 11:54:48 pm
+#
+# http://www.opensource.org/licenses/MIT
 
-{ config, lib, ... }:
-{
+{ config, lib, ... }: {
   networking = {
     hostName = "chartman";
 

@@ -1,12 +1,10 @@
-/*
-  * File: nanopc-t4.nix
-  * Author: Ming Cheng<mingcheng@outlook.com>
-  * 
-  * Created Date: Monday, August 15th 2022, 2:24:42 pm
-  * Last Modified: Monday, August 15th 2022, 2:24:43 pm
-  * 
-  * http://www.opensource.org/licenses/MIT
-*/
+# File: nanopc-t4.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Monday, August 15th 2022, 2:24:42 pm
+# Last Modified: Monday, August 15th 2022, 2:24:43 pm
+#
+# http://www.opensource.org/licenses/MIT
 
 { config, pkgs, lib, ... }: {
   imports = [
@@ -14,8 +12,12 @@
     ../system/networking.nix
     ../system/sudo.nix
     ../system/user.nix
+
     ../services/openssh.nix
+    ../services/docker.nix
+
     ../packages/nvim.nix
+    ../farlion/packages.nix
   ];
 
   boot.kernel = {
@@ -38,11 +40,7 @@
     "console=ttyS0"
   ];
 
-  boot.kernelModules = [
-    "btrfs"
-    "vfat"
-    "ext4"
-  ];
+  boot.kernelModules = [ "btrfs" "vfat" "ext4" ];
 
   fileSystems."/nix" = {
     device = "/dev/disk/by-label/nix";
