@@ -6,18 +6,25 @@
 #
 # http://www.opensource.org/licenses/MIT
 
+# https://github.com/NixOS/nixos-hardware/tree/master/friendlyarm/nanopc-t4
+# ref https://github.com/NixOS/nixos-hardware/blob/master/friendlyarm/nanopc-t4/default.nix
+
+# imports = [ (modulesPath + "/nixos-hardware/friendlyarm/nanopc-t4/default.nix") ];
+
 { config, pkgs, lib, ... }: {
   imports = [
-    ../system/i18n.nix
-    ../system/networking.nix
-    ../system/sudo.nix
-    ../system/user.nix
+    <nixos-hardware/friendlyarm/nanopc-t4>
 
-    ../services/openssh.nix
-    ../services/docker.nix
+    ../../system/i18n.nix
+    ../../system/networking.nix
+    ../../system/sudo.nix
+    ../../system/user.nix
 
-    ../packages/nvim.nix
+    ../../services/openssh.nix
+    ../../services/docker.nix
+
     ../farlion/packages.nix
+    ../../packages/kubectl.nix
   ];
 
   boot.kernel = {
@@ -31,13 +38,13 @@
     };
   };
 
-  boot.kernelParams = [
+  boot.kernelParams = lib.mkDefault [
     "verbose"
+    "console=ttyS2,1500000"
     "fsck.mode=force"
     "fsck.fix=yes"
     "fsck.repair=yes"
     "selinux=0"
-    "console=ttyS0"
   ];
 
   boot.kernelModules = [ "btrfs" "vfat" "ext4" ];

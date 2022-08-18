@@ -11,12 +11,9 @@
     ../qemu
     ../../nixconfig.nix
 
-    ../../system/env.nix
-    ../../system/misc.nix
-    ../../system/shell.nix
-
     ../../services/timesyncd.nix
     ../../services/docker.nix
+    # ../../services/nfs.nix
 
     ../../packages/kubectl.nix
     ../../packages/netutils.nix
@@ -27,6 +24,8 @@
     ../farlion/packages.nix
     ./networking.nix
     ./openssh.nix
+    ./fs.nix
+    ./samba.nix
   ];
 
   fileSystems."/" = {

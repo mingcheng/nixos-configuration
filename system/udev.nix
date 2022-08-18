@@ -6,10 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   # Required for Ledger Live to detect Ledger Nano S via USB
   # services.udev.extraRules = ''
   #   SUBSYSTEMS=="usb", ATTRS{idVendor}=="2581", ATTRS{idProduct}=="1b7c", MODE="0660", TAG+="uaccess", TAG+="udev-acl"
+  # '';
+
+  # services.udev.extraRules = lib.mkDefault ''
+  #   SUBSYSTEM=="pci", KERNEL=="0000:00:14.0", ATTR{power/wakeup}="disabled"
   # '';
 }
