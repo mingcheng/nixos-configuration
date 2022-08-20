@@ -6,11 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{
+{ pkgs, ... }: {
   environment.variables = { EDITOR = "vim"; };
-
-  programs.vim = {
-    enable = true;
-    defaultEditor = true;
-  };
+  environment.systemPackages = with pkgs; [ vim ];
 }

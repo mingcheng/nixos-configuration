@@ -53,7 +53,7 @@ let
     rsync
     tmux
     # psmisc
-    vim
+    #vim
     bat
     htop
     shfmt

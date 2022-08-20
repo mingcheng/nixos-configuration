@@ -17,7 +17,7 @@
       "br0" = {
         useDHCP = false;
         ipv4.addresses = [{
-          address = "192.168.0.8";
+          address = "192.168.0.3";
           prefixLength = 23;
         }];
       };
@@ -29,5 +29,27 @@
 
     defaultGateway = "192.168.1.254";
     nameservers = [ "192.168.1.254" ];
+  };
+
+  networking.firewall.enable = false;
+  networking.nftables = {
+    enable = true;
+    ruleset = ''
+      #flush ruleset                                                                    
+      table inet filter {
+        chain input {
+          type filter hook input priority 0; policy accept;
+          ip saddr != 192.168.0.0/16 tcp dport { ssh, 3551 } drop
+        }
+
+        chain output {
+          type filter hook output priority 0; policy accept;
+        }
+
+        chain forward {
+          type filter hook forward priority 0; policy drop;
+        }
+      }
+    '';
   };
 }

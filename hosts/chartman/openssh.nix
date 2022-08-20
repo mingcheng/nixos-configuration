@@ -9,7 +9,7 @@
   services.openssh = lib.mkForce {
     enable = true;
     listenAddresses = [{
-      addr = "192.168.0.8";
+      addr = "192.168.0.3";
       port = 22;
     }];
   };

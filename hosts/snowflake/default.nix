@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, modulesPath, ... }: {
+{ config, lib, modulesPath, pkgs, ... }: {
   imports = [
     ../qemu
     ../../nixconfig.nix
@@ -35,6 +35,7 @@
     options = [ "defaults" "discard" "noatime" ];
   };
 
+  boot.kernelPackages = pkgs.linuxPackages_5_18;
   boot.growPartition = true;
   boot.kernelParams = [ "console=ttyS0" ];
   boot.loader.grub.device = "/dev/vda";

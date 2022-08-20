@@ -10,9 +10,23 @@
   services.apcupsd = {
     enable = true;
     configText = ''
-      UPSCABLE ether
-      UPSTYPE net
-      DEVICE 192.168.0.6:3551
+        UPSCABLE usb
+        UPSTYPE usb
+        DEVICE 
+
+      	ONBATTERYDELAY 6
+      	BATTERYLEVEL 5
+      	MINUTES 3
+      	NOLOGON always
+
+        NETSERVER on
+        NISIP 0.0.0.0
+        NISPORT 3551
+
+        UPSCLASS standalone
+        UPSMODE share
+
+        SELFTEST 168
     '';
   };
 }

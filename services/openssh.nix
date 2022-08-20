@@ -5,10 +5,10 @@
 # Last Modified: Monday, August 15th 2022, 10:37:22 pm
 #
 # http://www.opensource.org/licenses/MIT
-{
+{ lib, ... }: {
   services.openssh = {
     enable = true;
-    passwordAuthentication = false;
-    permitRootLogin = "no";
+    passwordAuthentication = lib.mkDefault false;
+    permitRootLogin = lib.mkDefault "no";
   };
 }

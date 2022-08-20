@@ -8,6 +8,7 @@
 
 { pkgs, lib, ... }: {
   boot = {
+    kernelPackages = pkgs.linuxPackages_5_15;
     plymouth.enable = false;
 
     loader = {

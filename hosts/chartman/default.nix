@@ -3,15 +3,9 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../nixconfig.nix
 
-    ../../hardware/cpu_intel.nix
-    ../../hardware/power.nix
-
     ../../system/boot.nix
-    ../../system/env.nix
     ../../system/fs.nix
     ../../system/i18n.nix
-    ../../system/misc.nix
-    ../../system/shell.nix
     ../../system/sudo.nix
     ../../system/user.nix
 
@@ -25,6 +19,7 @@
     ./kernel.nix
     ./networking.nix
     ./packages.nix
+    ../../packages/vim.nix
   ];
 
   powerManagement = {
