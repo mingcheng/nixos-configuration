@@ -30,18 +30,20 @@
     "verbose"
     "rtw88_pci.disable_aspm=true"
     "rtw88_core.lps_deep_mode=0"
-    "module_blacklist=snd,nvidia"
+    "module_blacklist=bluetooth,snd,nvidia"
   ];
 
-  boot.blacklistedKernelModules = [ "snd_pcsp" ];
+  boot.blacklistedKernelModules = [ "snd_pcsp" "bluetooth" ];
 
   # https://github.com/NixOS/nixos-hardware/blob/master/common/cpu/amd/default.nix
   boot.initrd.kernelModules = [ "amdgpu" "amd-pstate" "asus_wmi" "kvm_amd" ];
 
   boot.extraModprobeConfig = ''
+    blacklist bluetooth
     blacklist snd
-    options iwlmvm power_scheme=1
-    options iwlwifi power_save=0 swcrypto=0
+    options rtw88_core disable_lps_deep=y
+    options rtw_core disable_lps_deep=y
+    options rtw_pci disable_aspm=y
   '';
 
   hardware.enableRedistributableFirmware = true;

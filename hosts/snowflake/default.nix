@@ -24,7 +24,6 @@
     ./networking.nix
     ./fs.nix
     ./samba.nix
-    ../farlion/ld.nix
   ];
 
   fileSystems."/" = {
