@@ -55,6 +55,8 @@ in {
         "only guest" = "yes";
         "printable" = "no";
         "spotlight" = "no";
+        "create mask" = "0660";
+        "directory mask" = "0770";
       };
 
       "Time Capsule" = {

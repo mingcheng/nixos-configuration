@@ -21,17 +21,26 @@ let
     nixpkgs-review
   ];
 
-  build-tools = with pkgs; [ binutils jq nodejs-16_x stow git unzip yq ];
+  build-tools = with pkgs; [
+    inetutils
+    mtr
+    sysstat
+    binutils
+    gnumake
+    nodejs-16_x
+    stow
+    git
+    unzip
+    yq
+    jq
+  ];
 
   system-tools = with pkgs; [
-    btrfs-progs
     coreutils
     f2fs-tools
-    file
     ipmitool
     iproute
     killall
-    libosinfo
     lm_sensors
     lsof
     lz4
@@ -40,25 +49,13 @@ let
     pciutils
     smartmontools
     stress
+    ethtool
     unzip
   ];
 
-  modern-unix = with pkgs; [
-    tree
-    wget
-    aria2
-    # fish
-    # pstree
-    file
-    rsync
-    tmux
-    # psmisc
-    #vim
-    bat
-    htop
-    shfmt
-  ];
+  modern-unix = with pkgs; [ tree wget aria2 file rsync tmux bat htop shfmt ];
 in {
   environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
-    ++ system-tools ++ (with pkgs; [ neofetch qemu qemu_kvm virt-manager ]);
+    ++ system-tools
+    ++ (with pkgs; [ neofetch qemu qemu_kvm virt-manager libosinfo ]);
 }

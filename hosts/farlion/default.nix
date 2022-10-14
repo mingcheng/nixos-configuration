@@ -11,26 +11,20 @@
     ../qemu
     ../../nixconfig.nix
 
-    ../../system/env.nix
-    ../../system/misc.nix
-    ../../system/shell.nix
-
     ../../services/timesyncd.nix
     ../../services/docker.nix
 
     ../../packages/kubectl.nix
     ../../packages/netutils.nix
-    # ../../packages/fish.nix
     ../../packages/golang.nix
-    # ../../packages/vim.nix
+    ../../packages/vim.nix
     ../../packages/nvim.nix
     ../../packages/git.nix
 
     ./networking.nix
     ./openssh.nix
     ./packages.nix
-
-    ../../services/postgresql.nix
+    ./ld.nix
   ];
 
   fileSystems."/" = {

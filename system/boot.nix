@@ -8,23 +8,19 @@
 
 { pkgs, lib, ... }: {
   boot = {
-    kernelPackages = pkgs.linuxPackages_5_15;
     plymouth.enable = false;
 
     loader = {
       timeout = 3;
       systemd-boot = {
         enable = true;
-        configurationLimit = 3;
-        #memtest86.enable = true;
+        configurationLimit = 5;
       };
     };
-    supportedFilesystems = lib.mkForce [ "btrfs" "ext4" "vfat" "f2fs" ];
+    supportedFilesystems = lib.mkForce [ "ext4" "vfat" "f2fs" ];
 
     initrd = {
-      availableKernelModules = [ "f2fs" "ext4" "btrfs" "nvme" "vfat" ];
+      availableKernelModules = [ "f2fs" "ext4" "nvme" "ahci" "vfat" ];
     };
-
-    extraModulePackages = [ ];
   };
 }

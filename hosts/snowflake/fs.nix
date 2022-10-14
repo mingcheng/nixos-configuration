@@ -8,7 +8,7 @@
 
 {
   fileSystems."/opt" = {
-    device = "/dev/disk/by-uuid/325dc92c-993d-49c6-afc6-b8ca8fcefa61";
+    device = "/dev/disk/by-label/tank";
     fsType = "ext4";
     options = [ "defaults" "discard" "errors=remount-ro" ];
   };

@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, ... }: {
+{ pkgs, lib, modulesPath, ... }: {
   imports = [
     #https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/profiles
     (modulesPath + "/profiles/all-hardware.nix")
@@ -22,9 +22,8 @@
   ];
 
   boot.kernel = { sysctl = { "net.ipv6.conf.all.disable_ipv6" = 1; }; };
-
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
   boot.kernelParams = [ "verbose" ];
-
   boot.kernelModules = [
     "btrfs"
     "f2fs"
@@ -49,4 +48,10 @@
     device = "/dev/disk/by-uuid/7E68-0551";
     fsType = "vfat";
   };
+
+  boot.loader.efi = {
+    canTouchEfiVariables = false;
+    efiSysMountPoint = "/efi";
+  };
 }
+

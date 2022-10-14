@@ -8,8 +8,6 @@
 
 let host = builtins.getEnv "NIX_BUILD_HOST";
 in {
-  # WARNING! CHANGE IT BEFORE DEPLOYING IN PRODECT
-  users.extraUsers.root.password = "root";
 
   # write build variable to envirment
   environment.variables = {

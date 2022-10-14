@@ -13,7 +13,6 @@
 
     ../../services/timesyncd.nix
     ../../services/docker.nix
-    # ../../services/nfs.nix
 
     ../../packages/kubectl.nix
     ../../packages/netutils.nix
@@ -23,9 +22,9 @@
 
     ../farlion/packages.nix
     ./networking.nix
-    ./openssh.nix
     ./fs.nix
     ./samba.nix
+    ../farlion/ld.nix
   ];
 
   fileSystems."/" = {
@@ -35,7 +34,8 @@
     options = [ "defaults" "discard" "noatime" ];
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_5_18;
+  # boot.kernelPackages = pkgs.linuxPackages_5_18;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
   boot.growPartition = true;
   boot.kernelParams = [ "console=ttyS0" ];
   boot.loader.grub.device = "/dev/vda";

@@ -8,14 +8,15 @@
     ../../system/i18n.nix
     ../../system/sudo.nix
     ../../system/user.nix
+    ../../system/supermicro.nix
 
     ../../services/apcupsd.nix
     ../../services/fstrim.nix
     ../../services/libvirtd.nix
     ../../services/prometheus.nix
     ../../services/timesyncd.nix
+    ../../services/sshd.nix
 
-    ./openssh.nix
     ./kernel.nix
     ./networking.nix
     ./packages.nix

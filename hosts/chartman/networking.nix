@@ -27,15 +27,15 @@
       "br0" = { interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ]; };
     };
 
-    defaultGateway = "192.168.1.254";
-    nameservers = [ "192.168.1.254" ];
+    defaultGateway = "192.168.0.1";
+    nameservers = [ "192.168.0.1" ];
   };
 
   networking.firewall.enable = false;
   networking.nftables = {
     enable = true;
     ruleset = ''
-      #flush ruleset                                                                    
+      #flush ruleset
       table inet filter {
         chain input {
           type filter hook input priority 0; policy accept;
