@@ -47,6 +47,7 @@ let
     bat
     htop
     shfmt
+    iperf
   ];
 in {
   environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools

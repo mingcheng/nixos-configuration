@@ -9,6 +9,8 @@
 { pkgs, ... }: {
   environment.variables = { LIBVIRT_DEFAULT_URI = "qemu:///system"; };
 
+  security.polkit.enable = true;
+
   virtualisation.libvirtd = {
     enable = true;
     qemu = {

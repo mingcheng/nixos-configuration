@@ -6,13 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
+  services.rpcbind.enable = true;
   services.nfs.server = {
-    enable = true;
+    enable = lib.mkForce true;
     exports = ''
-      /archives   192.168.0.4(rw,no_root_squash,anonuid=0,anongid=0,no_subtree_check,sync)
+      /archives   192.168.0.4(rw,no_root_squash,no_subtree_check,sync)
       /public     192.168.0.0/23(rw,all_squash,anonuid=65534,anongid=65534,no_subtree_check,sync)
-      /downloads  192.168.0.0/23(rw,all_squash,anonuid=1000,anongid=1000,no_subtree_check,sync)
+      /downloads  192.168.0.0/23(rw,all_squash,anonuid=1000,anongid=100,no_subtree_check,sync)
     '';
   };
 }

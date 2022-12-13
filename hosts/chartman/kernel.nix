@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_10;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
 
   boot.kernel = {
     sysctl = {
@@ -28,6 +28,7 @@
     "vfio_iommu_type1.allow_unsafe_interrupts=1"
     # lspci -nn | grep -i Ether
     "vfio-pci.ids=8086:1533"
+    "mitigations=off"
   ];
 
   boot.kernelModules = [

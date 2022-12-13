@@ -24,8 +24,7 @@
     ./networking.nix
     ./openssh.nix
     ./packages.nix
-
-    #    ../../services/postgresql.nix
+    ./ld.nix
   ];
 
   fileSystems."/" = {

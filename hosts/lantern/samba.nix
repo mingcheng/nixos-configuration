@@ -35,8 +35,8 @@ in {
       printcap name = /dev/null
 
       server role = standalone server
-      bind interfaces only = yes
-      interfaces = eth0
+      ;bind interfaces only = yes
+      ;interfaces = 192.168.0.5/24
       unix extensions = no
 
       min protocol = SMB2
@@ -51,6 +51,22 @@ in {
     '';
 
     shares = {
+      "Public" = {
+        "path" = "/public";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "yes";
+        "force user" = "nobody";
+        "force group" = "+nogroup";
+        "public" = "no";
+        "writable" = "yes";
+        "only guest" = "yes";
+        "printable" = "no";
+        "spotlight" = "no";
+        "create mask" = "0660";
+        "directory mask" = "0770";
+      };
+
       "Downloads" = {
         "path" = "/downloads";
         "browseable" = "yes";

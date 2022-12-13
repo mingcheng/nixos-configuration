@@ -15,6 +15,8 @@
 
   networking = {
     hostName = "lantern";
+    # head -c4 /dev/urandom | od -A none -t x4
+    hostId = "f262c6e7";
 
     enableIPv6 = lib.mkForce false;
     useDHCP = lib.mkForce false;
@@ -31,5 +33,26 @@
 
     defaultGateway = "192.168.0.1";
     nameservers = [ "192.168.0.1" ];
+  };
+
+  networking.firewall.enable = false;
+  networking.nftables = {
+    enable = true;
+    ruleset = ''
+      flush ruleset                                                                    
+      table inet filter {
+        chain input {
+          type filter hook input priority 0; policy accept;
+        }
+
+        chain output {
+          type filter hook output priority 0; policy accept;
+        }
+
+        chain forward {
+          type filter hook forward priority 0; policy accept;
+        }
+      }
+    '';
   };
 }

@@ -18,11 +18,10 @@
     ../../system/user.nix
 
     ../../services/fstrim.nix
-    ../../services/libvirtd.nix
+    # ../../services/libvirtd.nix
     ../../services/prometheus.nix
     ../../services/timesyncd.nix
-
-    ../../packages/vim.nix
+    ../../services/docker.nix
 
     ./apcupsd.nix
     ./openssh.nix
@@ -31,6 +30,8 @@
     ./zfs.nix
     ./samba.nix
     ./nfs.nix
+    ../chartman/packages.nix
+    ../../packages/vim.nix
   ];
 
   powerManagement = {

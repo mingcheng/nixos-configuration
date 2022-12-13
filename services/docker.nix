@@ -7,11 +7,19 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, ... }: {
+
+  # https://iq.opengenus.org/failed-to-solve-with-frontend-dockerfile-v0/
+  environment.variables = {
+    DOCKER_BUILDKIT = "0";
+    COMPOSE_DOCKER_CLI_BUILD = "0";
+  };
+
   virtualisation.docker = {
     enable = true;
     daemon.settings = {
       "debug" = false;
       "experimental" = false;
+      "features" = { "buildkit" = false; };
       "exec-opts" = [ "native.cgroupdriver=systemd" ];
       "registry-mirrors" = [
         "https://053a453cb38026130fb6c00bb532d7c0.mirror.swr.myhuaweicloud.com"

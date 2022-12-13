@@ -54,4 +54,3 @@
     efiSysMountPoint = "/efi";
   };
 }
-

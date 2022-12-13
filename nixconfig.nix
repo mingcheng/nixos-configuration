@@ -12,8 +12,8 @@
       # https://nixos.wiki/wiki/Storage_optimization
       auto-optimise-store = true;
       substituters = [
-        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
         "https://mirror.sjtu.edu.cn/nix-channels/store"
+        "https://mirror.nju.edu.cn/nix-channels/store"
       ];
     };
 
@@ -32,7 +32,7 @@
   };
 
   nixpkgs.config = {
-    allowUnfree = false;
+    allowUnfree = true;
     allowAliases = true;
   };
 }

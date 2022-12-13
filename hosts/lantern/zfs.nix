@@ -8,16 +8,23 @@
 
 # https://github.com/NixOS/nixpkgs/blob/6039648c50c7c0858b5e506c6298773a98e0f066/nixos/modules/tasks/filesystems/zfs.nix#L303
 
-{
+{ config, lib, ... }: {
   boot.zfs = {
-    enabled = true;
+    #enabled = lib.mkForce true;
     enableUnstable = false;
+    #forceImportAll = true;
+    #devNodes = "/dev/disk/by-partuuid/4de39412-70a4-064b-a2ef-ce263a9f3274";
+    extraPools = [ "tank" ];
   };
 
   services.zfs = {
     trim.enable = true;
-    autoScrub.enable = true;
-    autoSnapshot.enable = true;
+    autoScrub = {
+      enable = true;
+      #interval = "monthly";
+      interval = "*-*-01 02:00:00";
+    };
+    # autoSnapshot.enable = true;
   };
 }
 

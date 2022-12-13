@@ -28,10 +28,10 @@ in {
 
       server role = standalone server
       bind interfaces only = yes
-      interfaces = eth0
+      interfaces = 172.16.0.201/24
       unix extensions = no
 
-      min protocol = SMB2
+      min protocol = SMB3
       spotlight = no
 
       inherit permissions = no
@@ -55,6 +55,8 @@ in {
         "only guest" = "yes";
         "printable" = "no";
         "spotlight" = "no";
+        "create mask" = "0660";
+        "directory mask" = "0770";
       };
 
       "Time Capsule" = {
@@ -69,10 +71,18 @@ in {
         "kernel oplocks" = "no";
         "kernel share modes" = "no";
         "posix locking" = "no";
-        "fruit:time machine" = "yes";
-        "vfs objects" = "catia fruit streams_xattr";
+        "vfs objects" = "fruit streams_xattr";
 
-        # fruit:time machine max size = 1T;
+        "fruit:delete_empty_adfiles" = "yes";
+        "fruit:metadata" = "stream";
+        "fruit:nfs_aces" = "no";
+        "fruit:posix_rename" = "yes";
+        "fruit:time machine" = "yes";
+        "fruit:veto_appledouble" = "no";
+        "fruit:wipe_intentionally_left_blank_rfork" = "yes";
+        "fruit:zero_file_id" = "yes";
+        "fruit:time machine max size" = "1T";
+
         "create mask" = 600;
         "directory mask" = 700;
       };

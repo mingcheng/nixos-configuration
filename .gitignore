@@ -32,6 +32,6 @@ coverage.html
 *~
 .*~
 
+/.vscode/*.log
 /hardware-configuration.nix
 /configuration.nix
-/.vscode/*.log

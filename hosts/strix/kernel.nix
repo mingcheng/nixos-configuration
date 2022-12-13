@@ -1,5 +1,6 @@
 { config, lib, pkgs, ... }: {
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
+  #boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
 
   boot.kernel = {
     sysctl = {
@@ -30,20 +31,22 @@
     "verbose"
     "rtw88_pci.disable_aspm=true"
     "rtw88_core.lps_deep_mode=0"
-    "module_blacklist=bluetooth,snd,nvidia"
+    "module_blacklist=snd,nvidia"
+    "iwlmvm.power_scheme=1"
+    "iwlwifi.swcrypto=0"
+    "iwlwifi.power_save=0"
   ];
 
-  boot.blacklistedKernelModules = [ "snd_pcsp" "bluetooth" ];
+  boot.blacklistedKernelModules = [ "snd_pcsp" ];
 
   # https://github.com/NixOS/nixos-hardware/blob/master/common/cpu/amd/default.nix
-  boot.initrd.kernelModules = [ "amdgpu" "amd-pstate" "asus_wmi" "kvm_amd" ];
+  #boot.initrd.kernelModules = [ "amdgpu" "amd-pstate" "asus_wmi" "kvm_amd" ];
+  boot.initrd.kernelModules = [ "amdgpu" "asus_wmi" "kvm_amd" ];
 
   boot.extraModprobeConfig = ''
-    blacklist bluetooth
     blacklist snd
-    options rtw88_core disable_lps_deep=y
-    options rtw_core disable_lps_deep=y
-    options rtw_pci disable_aspm=y
+    options iwlmvm power_scheme=1
+    options iwlwifi power_save=0 swcrypto=0
   '';
 
   hardware.enableRedistributableFirmware = true;

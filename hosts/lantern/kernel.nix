@@ -7,7 +7,8 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages = lib.mkForce pkgs.linuxKernel.packages.linux_5_10.zfs;
+  boot.kernelPackages =
+    lib.mkForce config.boot.zfs.package.latestCompatibleLinuxPackages;
 
   boot.kernel = {
     sysctl = {
@@ -33,5 +34,5 @@
     "selinux=0"
   ];
 
-  boot.supportedFilesystems = [ "zfs" "f2fs" "vfat" ];
+  boot.supportedFilesystems = lib.mkForce [ "zfs" "f2fs" "vfat" "nfs" ];
 }

@@ -23,23 +23,22 @@
       };
     };
 
-    bonds = {
-      "bond0" = {
-        interfaces = [ "enp1s0f0" "enp1s0f1" ];
-        driverOptions = { mode = "802.3 ad"; };
-      };
-      "bond1" = {
-        interfaces = [ "enp1s0f2" "enp1s0f3" ];
-        driverOptions = { mode = "802.3 ad"; };
-      };
-    };
+    #      "bond1" = {
+    #        interfaces = [ "enp1s0f2" "enp1s0f3" ];
+    #        driverOptions = { mode = "802.3 ad"; };
+    #      };
+    #    };
 
-    bridges = { "br0" = { interfaces = [ "bond0" "bond1" ]; }; };
+    # bridges = { "br0" = { interfaces = [ "bond0" "bond1" ]; }; };
+    bridges = {
+      "br0" = { interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ]; };
+    };
 
     defaultGateway = {
       address = "192.168.0.1";
       interface = "br0";
     };
+
     nameservers = [ "192.168.0.1" ];
   };
 }
