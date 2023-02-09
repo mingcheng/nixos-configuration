@@ -21,16 +21,21 @@
     ssid = "ChinaNet-fmE4";
     wpaPassphrase = "5Hgix6FxTwB60P";
     extraConfig = ''
+      auth_algs=1
       bridge=br0
-      wpa=3
+      channel=7
+      country_code=CN
+      ieee80211d=1
+      ieee80211n=1
+      ignore_broadcast_ssid=0
+      logger_stdout=1
+      logger_stdout_level=2
+      macaddr_acl=0
+      rsn_pairwise=CCMP
+      wmm_enabled=1
+      wpa=2
       wpa_key_mgmt=WPA-PSK
       wpa_pairwise=TKIP
-      rsn_pairwise=CCMP
-      macaddr_acl=0
-      auth_algs=1
-      ignore_broadcast_ssid=0
-      wmm_enabled=0
-      country_code=CN
     '';
   };
 }

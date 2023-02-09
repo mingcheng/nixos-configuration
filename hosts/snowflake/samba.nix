@@ -27,9 +27,9 @@ in {
       printcap name = /dev/null
 
       server role = standalone server
-      bind interfaces only = yes
-      interfaces = 172.16.0.201/24
-      unix extensions = no
+      ;bind interfaces only = yes
+      ;interfaces = 172.16.0.201/24
+      ;unix extensions = no
 
       min protocol = SMB3
       spotlight = no
@@ -81,7 +81,7 @@ in {
         "fruit:veto_appledouble" = "no";
         "fruit:wipe_intentionally_left_blank_rfork" = "yes";
         "fruit:zero_file_id" = "yes";
-        "fruit:time machine max size" = "1T";
+        "fruit:time machine max size" = "384G";
 
         "create mask" = 600;
         "directory mask" = 700;
