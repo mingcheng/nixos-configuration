@@ -15,33 +15,32 @@
   };
 
   boot.kernelParams = [
-    #"acpi=off"
     #"acpi_enforce_resources=lax"
-    #"amd_iommu=on"
+    "amd_iommu=on"
     "audit=0"
     "fsck.fix=yes"
     "fsck.mode=force"
     "fsck.repair=yes"
     "intremap=off"
     "iommu=pt"
+    "iwlwifi.power_save=0"
+    "iwlwifi.swcrypto=0"
     "loglevel=3"
+    "nofb"
     "nomodeset"
-    #"pcie_aspm.policy=performance"
-    #"processor.max_cstate=1"
+    "pcie_acs_override=downstream,multifunction"
     "selinux=0"
     "verbose"
-    #"rtw88_pci.disable_aspm=true"
-    #"rtw88_core.lps_deep_mode=0"
-    #"module_blacklist=snd,nvidia"
-    #"iwlmvm.power_scheme=1"
-    "iwlwifi.swcrypto=0"
-    "iwlwifi.power_save=0"
+    "vfio-pci.ids=1002:1636,1002:1637,1022:1639"
+    "vfio_iommu_type1.allow_unsafe_interrupts=1"
+    "video=efifb:off"
+    "kvm.ignore_msrs=1"
   ];
 
-  #boot.blacklistedKernelModules = [ "snd_pcsp" ];
+  boot.blacklistedKernelModules =
+    [ "snd_pcsp" "snd_hda_intel" "amdgpu" "amdkfd" ];
   # https://github.com/NixOS/nixos-hardware/blob/master/common/cpu/amd/default.nix
-  #boot.initrd.kernelModules = [ "amdgpu" "amd-pstate" "asus_wmi" "kvm_amd" ];
-  boot.initrd.kernelModules = [ "amdgpu" "asus_wmi" "kvm_amd" ];
+  boot.initrd.kernelModules = [ "amd-pstate" "asus_wmi" "kvm_amd" ];
 
   boot.extraModprobeConfig = ''
     blacklist snd

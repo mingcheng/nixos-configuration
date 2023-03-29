@@ -6,25 +6,31 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{
-  networking.firewall.enable = false;
-  networking.nftables = {
+{ config, pkgs, lib, ... }: {
+  networking.firewall = {
     enable = true;
-    ruleset = ''
-      flush ruleset                                                                    
-      table inet filter {
-        chain input {
-          type filter hook input priority 0; policy accept;
-        }
-
-        chain output {
-          type filter hook output priority 0; policy accept;
-        }
-
-        chain forward {
-          type filter hook forward priority 0; policy accept;
-        }
-      }
-    '';
+    allowedTCPPorts = [ 22 80 139 443 445 2375 ];
   };
+
+  /* networking.nftables = {
+       enable = false;
+       ruleset = ''
+         flush ruleset
+         table inet filter {
+           chain input {
+             type filter hook input priority 0; policy accept;
+           }
+
+           chain output {
+             type filter hook output priority 0; policy accept;
+           }
+
+           chain forward {
+             type filter hook forward priority 0; policy accept;
+           }
+         }
+       '';
+     };
+  */
 }
+

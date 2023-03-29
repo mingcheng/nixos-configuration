@@ -24,7 +24,10 @@
     ./networking.nix
     ./fs.nix
     ./samba.nix
+    ./firewall.nix
+    ./fail2ban.nix
     ../farlion/ld.nix
+    ./docker.nix
   ];
 
   fileSystems."/" = {

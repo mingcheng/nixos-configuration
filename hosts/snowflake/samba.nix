@@ -31,7 +31,7 @@ in {
       ;interfaces = 172.16.0.201/24
       ;unix extensions = no
 
-      min protocol = SMB3
+      ;min protocol = SMB2
       spotlight = no
 
       inherit permissions = no
@@ -63,11 +63,13 @@ in {
         "path" = "/opt/timemachine/%U";
         "valid users" = "@users";
         "force group" = "+users";
+
         "writable" = "yes";
         "browsable" = "yes";
         "read only" = "no";
         "guest ok" = "no";
         "public" = "no";
+
         "kernel oplocks" = "no";
         "kernel share modes" = "no";
         "posix locking" = "no";

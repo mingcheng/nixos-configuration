@@ -10,7 +10,9 @@
 
 mkdir -p ~/.config/nix
 #echo "substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" > ~/.config/nix/nix.conf
-echo "substituters = https://mirror.nju.edu.cn/nix-channels/store" > ~/.config/nix/nix.conf
+#echo "substituters = https://mirror.nju.edu.cn/nix-channels/store" > ~/.config/nix/nix.conf
+echo "substituters = https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/" > ~/.config/nix/nix.conf
+
 source ./channel.sh
 
 nix-channel --list
