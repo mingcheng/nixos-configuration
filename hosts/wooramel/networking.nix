@@ -46,10 +46,7 @@
       };
     };
 
-    defaultGateway = {
-      address = "192.168.0.1";
-      #interface = "bind0";
-    };
+    defaultGateway = { address = "192.168.0.1"; };
 
     nameservers = [ "192.168.0.1" ];
   };

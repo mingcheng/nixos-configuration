@@ -6,9 +6,11 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, ... }: {
+{ config, lib, ... }:
+let host = builtins.getEnv "NIX_BUILD_HOST";
+in {
   networking = {
-    hostName = "strix";
+    hostName = "${host}";
 
     enableIPv6 = lib.mkForce false;
     useDHCP = lib.mkForce false;
@@ -21,13 +23,10 @@
           prefixLength = 24;
         }];
       };
-
-      "br1" = { useDHCP = false; };
     };
 
     bridges = {
       "br0" = { interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ]; };
-      "br1" = { interfaces = [ "enp4s0" ]; };
     };
 
     defaultGateway = {

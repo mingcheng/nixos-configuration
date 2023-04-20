@@ -10,7 +10,7 @@
     ../../system/user.nix
     ../../system/supermicro.nix
 
-    ../../services/apcupsd.nix
+    # ../../services/apcupsd.nix
     ../../services/fstrim.nix
     ../../services/libvirtd.nix
     ../../services/prometheus.nix
@@ -18,7 +18,8 @@
     ../../services/sshd.nix
 
     ./kernel.nix
-    ./networking.nix
+    ../strix/networking.nix
+    # ../strix/hostapd.nix
     ./packages.nix
     ../../packages/vim.nix
   ];

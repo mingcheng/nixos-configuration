@@ -23,7 +23,7 @@
 
   boot.kernel = { sysctl = { "net.ipv6.conf.all.disable_ipv6" = 1; }; };
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
-  boot.kernelParams = [ "verbose" ];
+  boot.kernelParams = [ "verbose" "intel_iommu=on" "iommu=pt" ];
   boot.kernelModules = [
     "btrfs"
     "f2fs"

@@ -26,6 +26,7 @@ let
     mtr
     sysstat
     binutils
+    usbutils
     gnumake
     nodejs-16_x
     stow

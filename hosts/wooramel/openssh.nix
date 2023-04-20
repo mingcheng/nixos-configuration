@@ -9,6 +9,11 @@
 { config, lib, ... }: {
   services.openssh = lib.mkForce {
     enable = true;
+
+    passwordAuthentication = false;
+    kbdInteractiveAuthentication = false;
+    permitRootLogin = "no";
+
     listenAddresses = [{
       addr = "192.168.0.4";
       port = 22;

@@ -50,6 +50,8 @@ in {
         "guest ok" = "yes";
         "force user" = "nobody";
         "force group" = "nogroup";
+        "create mask" = "0666";
+        "directory mask" = "0777";
         "public" = "yes";
         "writable" = "yes";
         "only guest" = "yes";

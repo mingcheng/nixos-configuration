@@ -7,8 +7,8 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages =
-    lib.mkForce config.boot.zfs.package.latestCompatibleLinuxPackages;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_10;
+  #lib.mkForce config.boot.zfs.package.latestCompatibleLinuxPackages;
 
   boot.kernel = {
     sysctl = {
