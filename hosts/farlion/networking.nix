@@ -16,13 +16,18 @@ in {
     useDHCP = lib.mkForce false;
 
     interfaces = {
-      "enp7s0" = {
+      "eth0" = {
         useDHCP = false;
         ipv4.addresses = [{
           address = "192.168.0.11";
           prefixLength = 23;
         }];
       };
+    };
+
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 22 80 443 2375 ];
     };
 
     defaultGateway = "192.168.1.254";

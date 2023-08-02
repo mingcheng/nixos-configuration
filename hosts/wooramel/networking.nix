@@ -53,23 +53,25 @@
 
   #networking.dhcpcd.enable = false;
   networking.firewall.enable = false;
-  networking.nftables = {
-    enable = true;
-    ruleset = ''
-      flush ruleset
-      table inet filter {
-        chain input {
-          type filter hook input priority 0; policy accept;
-        }
 
-        chain output {
-          type filter hook output priority 0; policy accept;
-        }
+  /* networking.nftables = {
+       enable = true;
+       ruleset = ''
+         flush ruleset
+         table inet filter {
+           chain input {
+             type filter hook input priority 0; policy accept;
+           }
 
-        chain forward {
-          type filter hook forward priority 0; policy accept;
-        }
-      }
-    '';
-  };
+           chain output {
+             type filter hook output priority 0; policy accept;
+           }
+
+           chain forward {
+             type filter hook forward priority 0; policy accept;
+           }
+         }
+       '';
+     };
+  */
 }

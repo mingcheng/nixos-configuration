@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, modulesPath, ... }: {
+{ config, pkgs, lib, modulesPath, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../nixconfig.nix
@@ -34,8 +34,15 @@
     ../../packages/vim.nix
   ];
 
+  #environment.systemPackages = with pkgs; [ ffmpeg-full ];
   powerManagement = {
     enable = true;
-    cpuFreqGovernor = lib.mkDefault "performance";
+    #cpuFreqGovernor = lib.mkDefault "performance";
+    #cpuFreqGovernor = lib.mkDefault "powersave";
+    cpuFreqGovernor = lib.mkDefault "ondemand";
+    cpufreq = {
+      max = 1600000;
+      min = 800000;
+    };
   };
 }

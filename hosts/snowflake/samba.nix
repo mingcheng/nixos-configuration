@@ -35,8 +35,8 @@ in {
       spotlight = no
 
       inherit permissions = no
-      create mask = 0640
-      directory mask = 0750
+      create mask = 0600
+      directory mask = 0700
 
       fruit:aapl = yes
       fruit:model = TimeCapsule6,106
@@ -49,14 +49,14 @@ in {
         "read only" = "no";
         "guest ok" = "yes";
         "force user" = "nobody";
-        "force group" = "+nobody";
+        "force group" = "+nogroup";
         "public" = "yes";
         "writable" = "yes";
         "only guest" = "yes";
         "printable" = "no";
         "spotlight" = "no";
-        "create mask" = "0660";
-        "directory mask" = "0770";
+        "create mask" = 666;
+        "directory mask" = 777;
       };
 
       "Time Capsule" = {
@@ -83,7 +83,7 @@ in {
         "fruit:veto_appledouble" = "no";
         "fruit:wipe_intentionally_left_blank_rfork" = "yes";
         "fruit:zero_file_id" = "yes";
-        "fruit:time machine max size" = "384G";
+        "fruit:time machine max size" = "1T";
 
         "create mask" = 600;
         "directory mask" = 700;

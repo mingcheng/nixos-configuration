@@ -23,6 +23,7 @@
     ../../services/prometheus.nix
     ../../services/timesyncd.nix
     ../../services/sshd.nix
+    ../../services/apcupsd.nix
 
     ./kernel.nix
     ./networking.nix
@@ -32,7 +33,13 @@
 
   powerManagement = {
     enable = true;
-    cpuFreqGovernor = lib.mkDefault "performance";
+    #cpuFreqGovernor = lib.mkDefault "performance";
+    #cpuFreqGovernor = lib.mkDefault "powersave";
+    cpuFreqGovernor = lib.mkDefault "ondemand";
+    cpufreq = {
+      max = 1800000;
+      min = 800000;
+    };
   };
 
   # https://serverfault.com/questions/616485/e1000e-reset-adapter-unexpectedly-detected-hardware-unit-hang

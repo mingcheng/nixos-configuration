@@ -15,6 +15,7 @@
       /apps		192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
       /kubernetes 	192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
       /archives		192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
+      /webdav		192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
     '';
   };
 }

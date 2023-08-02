@@ -18,6 +18,6 @@
       "https://bobm60dq.mirror.aliyuncs.com"
     ];
 
-    "insecure-registries" = [ "localhost:5000" ];
+    "insecure-registries" = [ "localhost:5000" "172.16.0.201:5000" ];
   };
 }

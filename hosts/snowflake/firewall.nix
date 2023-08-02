@@ -9,7 +9,7 @@
 { config, pkgs, lib, ... }: {
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 22 80 139 443 445 2375 ];
+    allowedTCPPorts = [ 22 80 139 443 445 2375 6379 3306 ];
   };
 
   /* networking.nftables = {

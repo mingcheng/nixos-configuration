@@ -21,17 +21,22 @@ let
     nixpkgs-review
   ];
 
-  build-tools = with pkgs; [ binutils jq nodejs-16_x stow git unzip yq ];
+  build-tools = with pkgs; [ binutils jq nodejs stow git unzip yq p7zip ];
 
   system-tools = with pkgs; [
+    autofs5
     coreutils
+    davfs2
+    davfs2
     file
+    fuse
     iproute
     killall
     lsof
     lz4
     nfs-utils
     p7zip
+    sshfs
     stress
     unzip
   ];

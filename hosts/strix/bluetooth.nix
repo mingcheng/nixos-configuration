@@ -1,5 +1,4 @@
 { config, lib, modulesPath, pkgs, ... }: {
-  hardware.bluetooth.enable = true;
-  #services.blueman.enable = false;
+  services.blueman.enable = true;
   environment.systemPackages = with pkgs; [ bluez ];
 }

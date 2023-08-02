@@ -9,5 +9,6 @@
 ###
 
 #nix-channel --add https://mirror.nju.edu.cn/nix-channels/nixos-22.11 nixos
-nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-22.11 nixos
-# nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-22.11 nixos
+#nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-22.11 nixos
+#nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-22.11 nixos
+nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-23.05 nixos

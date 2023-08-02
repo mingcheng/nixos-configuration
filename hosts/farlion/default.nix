@@ -13,6 +13,7 @@
 
     ../../services/timesyncd.nix
     ../../services/docker.nix
+    ../snowflake/docker.nix
 
     ../../packages/kubectl.nix
     ../../packages/netutils.nix

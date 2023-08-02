@@ -7,16 +7,23 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, ... }: {
-  services.openssh = lib.mkForce {
+  services.openssh = {
     enable = true;
 
-    passwordAuthentication = false;
-    kbdInteractiveAuthentication = false;
-    permitRootLogin = "no";
+    extraConfig = ''
+      AllowAgentForwarding yes
+      AllowStreamLocalForwarding yes
+      AllowTcpForwarding yes
+      X11Forwarding no
 
-    listenAddresses = [{
-      addr = "192.168.0.4";
-      port = 22;
-    }];
+      Subsystem powershell /run/current-system/sw/bin/pwsh -sshs -nologo
+    '';
+
+    settings = {
+      #AllowSFTP = true;
+      #KbdInteractiveAuthentication = false;
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
   };
 }

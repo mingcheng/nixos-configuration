@@ -14,7 +14,7 @@ let
 in {
   programs.nix-ld.enable = true;
   environment.variables = {
-    NIX_LD_LIBRARY_PATH = libraryPath;
-    NIX_LD = nixLd;
+    NIX_LD_LIBRARY_PATH = lib.mkDefault libraryPath;
+    NIX_LD = lib.mkDefault nixLd;
   };
 }

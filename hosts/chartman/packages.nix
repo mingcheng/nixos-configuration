@@ -28,7 +28,7 @@ let
     binutils
     usbutils
     gnumake
-    nodejs-16_x
+    nodejs
     stow
     git
     unzip
@@ -43,18 +43,32 @@ let
     iproute
     killall
     lm_sensors
+    hddtemp
     lsof
     lz4
     nfs-utils
     p7zip
     pciutils
     smartmontools
+    powershell
     stress
     ethtool
     unzip
   ];
 
-  modern-unix = with pkgs; [ tree wget aria2 file rsync tmux bat htop shfmt ];
+  modern-unix = with pkgs; [
+    tree
+    wget
+    aria2
+    file
+    rsync
+    tmux
+    bat
+    htop
+    shfmt
+    gdu
+    duf
+  ];
 in {
   environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
     ++ system-tools

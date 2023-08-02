@@ -11,9 +11,8 @@
   services.nfs.server = {
     enable = lib.mkForce true;
     exports = ''
-      /archives   192.168.0.4(rw,no_root_squash,no_subtree_check,sync)
-      /public     192.168.0.0/23(rw,all_squash,anonuid=65534,anongid=65534,no_subtree_check,sync)
-      /downloads  192.168.0.0/23(rw,all_squash,anonuid=1000,anongid=100,no_subtree_check,sync)
+      /archives   192.168.0.0/23(rw,no_root_squash,no_subtree_check,sync)
+      /public     192.168.0.0/16(rw,all_squash,anonuid=65534,anongid=65534,no_subtree_check,sync)
     '';
   };
 }

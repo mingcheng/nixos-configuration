@@ -8,8 +8,11 @@
 { lib, ... }: {
   services.openssh = {
     enable = true;
-    passwordAuthentication = lib.mkForce false;
-    kbdInteractiveAuthentication = lib.mkForce false;
-    permitRootLogin = lib.mkForce "no";
+
+    settings = {
+      PasswordAuthentication = lib.mkForce false;
+      KbdInteractiveAuthentication = lib.mkForce false;
+      PermitRootLogin = lib.mkForce "no";
+    };
   };
 }

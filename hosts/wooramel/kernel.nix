@@ -24,12 +24,12 @@
 
   boot.kernelParams = [
     "verbose"
-    "nohibernate"
+    #"nohibernate"
     "fsck.mode=force"
     "fsck.fix=yes"
     "fsck.repair=yes"
     "pcie_aspm=off"
-    "acpi_enforce_resources=lax"
+    #"acpi_enforce_resources=lax"
     "intremap=off"
     "selinux=0"
   ];

@@ -32,14 +32,26 @@ in {
       unix extensions = no
 
       min protocol = SMB2
+      ea support = yes
+
       spotlight = no
 
       inherit permissions = no
       create mask = 0600
       directory mask = 0700
 
+      vfs objects = fruit streams_xattr  
+
       fruit:aapl = yes
       fruit:model = TimeCapsule6,106
+      fruit:zerofileid = yes
+
+      fruit:metadata = stream
+      fruit:posix_rename = yes 
+      fruit:veto_appledouble = no
+      fruit:nfs_aces = no
+      fruit:wipe_intentionally_left_blank_rfork = yes 
+      fruit:delete_empty_adfiles = yes 
     '';
 
     shares = {
@@ -80,17 +92,18 @@ in {
         "kernel oplocks" = "no";
         "kernel share modes" = "no";
         "posix locking" = "no";
-        "vfs objects" = "fruit streams_xattr";
 
-        "fruit:delete_empty_adfiles" = "yes";
-        "fruit:metadata" = "stream";
-        "fruit:nfs_aces" = "no";
-        "fruit:posix_rename" = "yes";
         "fruit:time machine" = "yes";
-        "fruit:veto_appledouble" = "no";
-        "fruit:wipe_intentionally_left_blank_rfork" = "yes";
-        "fruit:zero_file_id" = "yes";
         #"fruit:time machine max size" = "2T";
+      };
+
+      "WebDAV" = {
+        "path" = "/webdav";
+        "valid users" = "@users";
+        "force user" = "mingcheng";
+        "force group" = "+users";
+        "public" = "no";
+        "writable" = "yes";
       };
 
       "Software" = {

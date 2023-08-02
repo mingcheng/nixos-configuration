@@ -8,13 +8,7 @@
 
 {
   fileSystems."/opt" = {
-    device = "/dev/disk/by-label/tank";
-    fsType = "ext4";
-    options = [ "defaults" "discard" "errors=remount-ro" ];
-  };
-
-  fileSystems."/opt/timemachine" = {
-    device = "/dev/disk/by-label/timemachine";
+    device = "/dev/disk/by-label/fanxiang";
     fsType = "ext4";
     options = [ "defaults" "discard" "errors=remount-ro" "noexec" ];
   };

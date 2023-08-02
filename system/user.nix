@@ -11,7 +11,7 @@
     users.mingcheng = {
       isNormalUser = true;
       group = "users";
-      extraGroups = [ "wheel" "libvirtd" "docker" ];
+      extraGroups = [ "wheel" "libvirtd" "docker" "network" "davfs2" ];
       shell = pkgs.bash;
 
       openssh.authorizedKeys.keys = [

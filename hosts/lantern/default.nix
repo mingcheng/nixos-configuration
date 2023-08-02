@@ -24,7 +24,7 @@
     ../../services/docker.nix
 
     ./apcupsd.nix
-    ./openssh.nix
+    ../wooramel/openssh.nix
     ./kernel.nix
     ./networking.nix
     ./zfs.nix
