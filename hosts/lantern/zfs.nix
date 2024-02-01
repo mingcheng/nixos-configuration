@@ -12,8 +12,8 @@
   boot.zfs = {
     #enabled = lib.mkForce true;
     enableUnstable = false;
-    forceImportAll = true;
-    extraPools = [ "tank" ];
+    #forceImportAll = true;
+    extraPools = [ "tank" "ship" ];
     #devNodes = "/dev/disk/by-partuuid/4de39412-70a4-064b-a2ef-ce263a9f3274";
   };
 
@@ -22,9 +22,9 @@
     autoScrub = {
       enable = true;
       interval = "monthly";
-      #interval = "*-*-01 02:00:00";
     };
-    autoSnapshot.enable = false;
+
+    autoSnapshot.enable = true;
   };
 }
 

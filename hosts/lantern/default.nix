@@ -18,24 +18,17 @@
     ../../system/user.nix
 
     ../../services/fstrim.nix
-    # ../../services/libvirtd.nix
     ../../services/prometheus.nix
     ../../services/timesyncd.nix
     ../../services/docker.nix
+    ../../services/sshd.nix
+    ../wooramel/apcupsd.nix
 
-    ./apcupsd.nix
-    ../wooramel/openssh.nix
     ./kernel.nix
     ./networking.nix
     ./zfs.nix
-    ./samba.nix
     ./nfs.nix
-    ../chartman/packages.nix
+    ../wooramel/packages.nix
     ../../packages/vim.nix
   ];
-
-  powerManagement = {
-    enable = true;
-    cpuFreqGovernor = lib.mkDefault "performance";
-  };
 }

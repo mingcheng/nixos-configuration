@@ -12,7 +12,7 @@
     configText = ''
       UPSCABLE ether
       UPSTYPE net
-      DEVICE 192.168.0.4:3551
+      DEVICE 192.168.0.2:3551
     '';
   };
 }

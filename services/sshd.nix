@@ -5,14 +5,22 @@
 # Last Modified: Monday, August 15th 2022, 10:37:22 pm
 #
 # http://www.opensource.org/licenses/MIT
-{ lib, ... }: {
+{ config, lib, ... }: {
   services.openssh = {
     enable = true;
 
+    extraConfig = ''
+      AllowAgentForwarding yes
+      AllowStreamLocalForwarding yes
+      AllowTcpForwarding yes
+      X11Forwarding no
+
+      Subsystem powershell /run/current-system/sw/bin/pwsh -sshs -NoLogo -NoProfile
+    '';
+
     settings = {
-      PasswordAuthentication = lib.mkForce false;
-      KbdInteractiveAuthentication = lib.mkForce false;
-      PermitRootLogin = lib.mkForce "no";
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
     };
   };
 }

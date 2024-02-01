@@ -6,9 +6,11 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, ... }: {
+{ config, lib, ... }:
+let host = builtins.getEnv "NIX_BUILD_HOST";
+in {
   networking = {
-    hostName = "supermicro";
+    hostName = "${host}";
 
     enableIPv6 = lib.mkForce false;
     useDHCP = lib.mkForce false;
@@ -23,13 +25,6 @@
       };
     };
 
-    #      "bond1" = {
-    #        interfaces = [ "enp1s0f2" "enp1s0f3" ];
-    #        driverOptions = { mode = "802.3 ad"; };
-    #      };
-    #    };
-
-    # bridges = { "br0" = { interfaces = [ "bond0" "bond1" ]; }; };
     bridges = {
       "br0" = { interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ]; };
     };
@@ -39,6 +34,8 @@
       interface = "br0";
     };
 
-    nameservers = [ "192.168.0.1" ];
+    nameservers = [ "192.168.0.1" "114.114.114.114" ];
+
+    firewall.enable = false;
   };
 }

@@ -11,11 +11,11 @@
   services.nfs.server = {
     enable = lib.mkForce true;
     exports = ''
-      /public   	192.168.0.0/23(rw,all_squash,anonuid=65534,anongid=65534,no_subtree_check,async)
-      /apps		192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
-      /kubernetes 	192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
-      /archives		192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
-      /webdav		192.168.0.0/24(rw,no_root_squash,no_subtree_check,sync)
+      /public 192.168.0.0/23(rw,all_squash,anonuid=65534,anongid=65534,no_subtree_check,async)
     '';
   };
 }
+
+#/lantern     	192.168.0.15(rw,no_root_squash,no_subtree_check,sync)
+#/archives	192.168.0.15(rw,no_root_squash,no_subtree_check,sync)
+#/webdav	192.168.0.15(rw,no_root_squash,no_subtree_check,sync)

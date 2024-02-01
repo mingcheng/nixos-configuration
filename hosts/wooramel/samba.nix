@@ -12,46 +12,44 @@ let host = builtins.getEnv "NIX_BUILD_HOST";
 in {
   services.samba = {
     enable = true;
-    enableNmbd = false;
-    enableWinbindd = false;
-
     securityType = "user";
+    openFirewall = true;
+
     extraConfig = ''
-      netbios name = ${host}
-      dns proxy = no
-      load printers = no
-      log file = /var/log/samba/%U.log
+         workgroup = WORKGROUP
+         netbios name = ${host}
+         server string = ${host}
 
-      map to guest = bad user
-      passdb backend = tdbsam
-      printcap name = /dev/null
+         dns proxy = no
+         load printers = no
+         log file = /var/log/samba/%U.log
 
-      server role = standalone server
-      ;bind interfaces only = yes
-      ;interfaces = 192.168.0.4/24
-      unix extensions = no
+         min protocol = SMB3
 
-      min protocol = SMB2
-      ea support = yes
+         passdb backend = smbpasswd
+         server role = standalone server
+         unix extensions = no
 
-      spotlight = no
+         inherit permissions = yes
+         create mask = 0600
+         directory mask = 0700
 
-      inherit permissions = no
-      create mask = 0600
-      directory mask = 0700
+      	 hosts allow = 192.168.0. 192.168.1.
+         hosts deny = 0.0.0.0/0
+         guest account = nobody
 
-      vfs objects = fruit streams_xattr  
+         vfs objects = fruit streams_xattr  
 
-      fruit:aapl = yes
-      fruit:model = TimeCapsule6,106
-      fruit:zerofileid = yes
+         fruit:aapl = yes
+         fruit:model = TimeCapsule6,106
+         fruit:zerofileid = yes
 
-      fruit:metadata = stream
-      fruit:posix_rename = yes 
-      fruit:veto_appledouble = no
-      fruit:nfs_aces = no
-      fruit:wipe_intentionally_left_blank_rfork = yes 
-      fruit:delete_empty_adfiles = yes 
+         fruit:metadata = stream
+         fruit:posix_rename = yes 
+         fruit:veto_appledouble = no
+         fruit:nfs_aces = no
+         fruit:wipe_intentionally_left_blank_rfork = yes 
+         fruit:delete_empty_adfiles = yes 
     '';
 
     shares = {

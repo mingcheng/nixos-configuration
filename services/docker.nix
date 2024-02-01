@@ -7,7 +7,6 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, ... }: {
-
   # https://iq.opengenus.org/failed-to-solve-with-frontend-dockerfile-v0/
   environment.variables = {
     DOCKER_BUILDKIT = "0";
@@ -21,10 +20,7 @@
       "experimental" = false;
       "features" = { "buildkit" = false; };
       "exec-opts" = [ "native.cgroupdriver=systemd" ];
-      "registry-mirrors" = [
-        "https://053a453cb38026130fb6c00bb532d7c0.mirror.swr.myhuaweicloud.com"
-        "https://bobm60dq.mirror.aliyuncs.com"
-      ];
+      "registry-mirrors" = [ "https://bobm60dq.mirror.aliyuncs.com" ];
       "insecure-registries" = [ "localhost:5000" ];
     };
     autoPrune = {

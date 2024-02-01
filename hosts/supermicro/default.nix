@@ -15,8 +15,9 @@
     ../../services/prometheus.nix
     ../../services/timesyncd.nix
     ../../services/sshd.nix
+    ../../services/apcupsd.nix
 
-    ../chartman/kernel.nix
+    ./kernel.nix
     ./networking.nix
     ../chartman/packages.nix
     ../../packages/vim.nix
@@ -25,14 +26,5 @@
   powerManagement = {
     enable = true;
     cpuFreqGovernor = lib.mkDefault "performance";
-  };
-
-  services.apcupsd = {
-    enable = true;
-    configText = ''
-      UPSCABLE ether
-      UPSTYPE net
-      DEVICE 192.168.0.4:3551
-    '';
   };
 }

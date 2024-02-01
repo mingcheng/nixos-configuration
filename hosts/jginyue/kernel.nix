@@ -7,12 +7,11 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_10;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
   hardware.cpu.intel.updateMicrocode = true;
-
   boot.kernel = {
     sysctl = {
-      "net.ipv4.ip_forward" = 1;
+      #"net.ipv4.ip_forward" = 1;
       "net.ipv6.conf.all.disable_ipv6" = 1;
       "net.core.default_qdisc" = "fq";
       "net.ipv4.tcp_congestion_control" = "bbr";

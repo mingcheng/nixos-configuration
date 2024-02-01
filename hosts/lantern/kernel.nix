@@ -7,18 +7,16 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages =
-    lib.mkForce config.boot.zfs.package.latestCompatibleLinuxPackages;
-
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
   boot.kernel = {
     sysctl = {
-      "net.ipv4.ip_forward" = 1;
+      #"net.ipv4.ip_forward" = 1;
       "net.ipv6.conf.all.disable_ipv6" = 1;
       "net.core.default_qdisc" = "fq";
       "net.ipv4.tcp_congestion_control" = "bbr";
       "vm.swappiness" = 1;
       "vm.overcommit_memory" = 0;
-      "vm.panic_on_oom" = 0;
+      "vm.panic_on_oom" = 1;
     };
   };
 

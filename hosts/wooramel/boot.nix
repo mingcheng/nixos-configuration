@@ -1,0 +1,15 @@
+# File: farlion.nix
+# Author: Ming Cheng<mingcheng@outlook.com>
+#
+# Created Date: Monday, August 15th 2022, 9:48:13 am
+# Last Modified: Monday, August 15th 2022, 4:03:28 pm
+#
+# http://www.opensource.org/licenses/MIT
+
+{ pkgs, config, lib, modulesPath, ... }: {
+  boot.growPartition = true;
+
+  boot.kernelParams = [ "console=ttyS0" ];
+  boot.loader.grub.device = "/dev/vda";
+  boot.loader.timeout = 3;
+}

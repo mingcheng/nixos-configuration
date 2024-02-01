@@ -7,7 +7,7 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_10;
+  boot.kernelPackages = pkgs.linuxPackages_5_10;
   boot.blacklistedKernelModules = [ "e1000e" ];
 
   boot.kernel = {

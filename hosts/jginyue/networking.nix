@@ -28,7 +28,7 @@ in {
       "br0" = { interfaces = [ "enp3s0f0" "enp3s0f1" "enp4s0f0" "enp4s0f1" ]; };
     };
 
-    defaultGateway = "192.168.0.1";
-    nameservers = [ "192.168.0.1" ];
+    defaultGateway = "192.168.1.254";
+    nameservers = [ "192.168.1.254" "192.168.0.1" ];
   };
 }

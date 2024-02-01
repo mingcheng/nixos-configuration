@@ -11,6 +11,7 @@
   boot.zfs = {
     enableUnstable = false;
     extraPools = [ "tank" ];
+    #devNodes = "/dev/disk/by-path";
   };
 
   services.zfs = {

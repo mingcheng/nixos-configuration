@@ -8,41 +8,30 @@
 
 { config, pkgs, lib, modulesPath, ... }: {
   imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-    ../../nixconfig.nix
+    (modulesPath + "/profiles/qemu-guest.nix")
 
-    ../../system/boot.nix
-    ../../system/fs.nix
+    ../../nixconfig.nix
     ../../system/i18n.nix
     ../../system/sudo.nix
     ../../system/user.nix
 
     ../../services/fstrim.nix
-    # ../../services/libvirtd.nix
     ../../services/prometheus.nix
     ../../services/timesyncd.nix
     ../../services/docker.nix
-    ../../services/apcupsd.nix
+    ../../services/sshd.nix
+    ./apcupsd.nix
 
-    ./openssh.nix
+    ./packages.nix
+    ../../packages/vim.nix
+
+    ./boot.nix
     ./kernel.nix
-    ./networking.nix
+    ./fs.nix
     ./zfs.nix
+    ./networking.nix
+
     ./samba.nix
     ./nfs.nix
-    ../chartman/packages.nix
-    ../../packages/vim.nix
   ];
-
-  #environment.systemPackages = with pkgs; [ ffmpeg-full ];
-  powerManagement = {
-    enable = true;
-    #cpuFreqGovernor = lib.mkDefault "performance";
-    #cpuFreqGovernor = lib.mkDefault "powersave";
-    cpuFreqGovernor = lib.mkDefault "ondemand";
-    cpufreq = {
-      max = 1600000;
-      min = 800000;
-    };
-  };
 }
