@@ -3,9 +3,7 @@
     "diffEditor.wordWrap": "on"
   },
   "[markdown]": {
-    "editor.fontFamily": "Sarasa Fixed SC",
     "editor.wordWrap": "on",
-    "editor.fontSize": 14,
-    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    "editor.fontSize": 13
   },
 }

@@ -3,14 +3,16 @@
 <!-- TOC depthfrom:2 -->
 
 - [目录说明](#%E7%9B%AE%E5%BD%95%E8%AF%B4%E6%98%8E)
-- [主机列表](#%E4%B8%BB%E6%9C%BA%E5%88%97%E8%A1%A8)
+- [物理机列表](#%E7%89%A9%E7%90%86%E6%9C%BA%E5%88%97%E8%A1%A8)
 - [安装事项](#%E5%AE%89%E8%A3%85%E4%BA%8B%E9%A1%B9)
+    - [生成虚拟机镜像](#%E7%94%9F%E6%88%90%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F)
+    - [ZFS 相关自动备份](#zfs-%E7%9B%B8%E5%85%B3%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD)
 - [使用事项](#%E4%BD%BF%E7%94%A8%E4%BA%8B%E9%A1%B9)
 - [参考资源](#%E5%8F%82%E8%80%83%E8%B5%84%E6%BA%90)
 
 <!-- /TOC -->
 
-NixOS 可以说是我至今为止碰到的最合适的 Linux 发行版，因为它解决了很多我在部署和配置上的问题（对，我个人是拿它来做服务器环境部署使用）。
+NixOS 可以说是我至今为止碰到的最合适的 Linux 裸机发行版，因为它解决了很多我在部署和配置上的问题（对，我个人是拿它来做服务器环境部署使用）。
 
 ## 目录说明
 
@@ -34,16 +36,18 @@ NixOS 可以说是我至今为止碰到的最合适的 Linux 发行版，因为�
 
 备注：这个表格更新自 Sharkbay 项目的表格，主要是物理硬件的列表
 
-| 主机名称           | 网络地址    | 硬件配置                                                             | 相关说明                                                             |
-| ------------------ | ----------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| supermicro         | 192.168.0.2 | Xeon E-2236 (12)、64G DDR4、三星PM981a 1T SSD、四口英特尔350网卡     |                                                                      |
-| jginyue            | 192.168.0.3 | JGINYUE H97I PLUS、i7-4790T、8g DDR3、WD SSD 256G                    | 家庭主力软路由，上面跑了 OpenWRT 以及 Clash 服务                     |
-| chartman           | /           | Xeon E-2288G(ES)、三星 32G ECC DDR4 <del>1T 三星 NVME SSD</del>      | 开发测试二机，主板和 supermirco 一致（暂停使用）                     |
-| wooramel           | 192.168.0.4 | Supermicro X10SDV-F、Xeon D-1521， 23G、4T*4、HP Gen8 的定制机箱     | 存放比较重要的数据、备份等，同时提供数据相关的中间件和以及数据库等等 |
-| lantern            | 192.168.0.5 | AMD FX-8800P、8g DDR4、16T*2                                         | 娱乐相关的 NAS，主要存放小电影，同时也作 PT下载机                    |
-| sharkbay           | 192.168.0.6 | i5-4590T、16G、美光 256G                                             | 备用路由器，同时提供 PT 服务的另外个 IP 出口                         |
-| <del>strix</del>   | 172.16.0.2  | AMD 4750G、32G DDR4、512G SATA SSD * 2、京造 512G NVME SSD、四口网卡 | 主要的开发生产主力机，All In One、扔在办公室                         |
-| <del>openwrt</del> | 192.168.0.1 | Intel NUC 赛扬、8g DDR3、128G                                        | 专门给开发环境配置和使用的软路由和代理                               |
+| 主机名称   | 网络地址    | 硬件配置                                                         | 相关说明                                         |
+| ---------- | ----------- | ---------------------------------------------------------------- | ------------------------------------------------ |
+| supermicro | 192.168.0.2 | Xeon E-2236 (12)、64G DDR4、三星PM981a 1T SSD、四口英特尔350网卡 |                                                  |
+| lantern    | 192.168.0.4 | Supermicro X10SDV-F、Xeon D-1521， 23G、4T*4、HP Gen8 的定制机箱 | PT 下载机以及备份等服务                          |
+| jginyue    | 192.168.0.3 | JGINYUE H97I PLUS、i7-4790T、8g DDR3、WD SSD 256G                | 家庭主力软路由，上面跑了 OpenWRT 以及 Clash 服务 |
+| chartman   | /           | Xeon E-2288G(ES)、三星 32G ECC DDR4 <del>1T 三星 NVME SSD</del>  | 开发测试二机，主板和 supermirco 一致（暂停使用） |
+
+虚拟机列表
+
+| 主机名称 | 网络地址     | 硬件配置 | 相关说明                         |
+| -------- | ------------ | -------- | -------------------------------- |
+| wooramel | 192.168.0.14 | 8c16G    | 主数据库以及数据相关的应用服务器 |
 
 ## 安装事项
 
@@ -93,6 +97,36 @@ NIX_BUILD_HOST=farlion nixos-install --root /mnt --no-root-password
 
 如果一切没有问题，将安装完成。
 
+
+### 生成虚拟机镜像
+
+可以参考以下连个链接，同时建议使用 qemu 镜像资源，能够生成比较小的 QCOW2 镜像文件：
+
+* https://mynixos.com/nixos-generators
+* https://jade.fyi/blog/nixos-disk-images-m1/
+
+### ZFS 相关自动备份
+
+节选自 https://marcopolo.io/code/backups-made-simple/
+
+On NixOS setting up automatic snapshots is a breeze, just add the following to your NixOS Configuration:
+
+```nix
+{
+  services.zfs.autoSnapshot.enable = true;
+}
+```
+
+and setting the `com.sun:auto-snapshot` option on the filesystem. E.g.: `zfs set com.sun:auto-snapshot=true <pool>/<fs>`. Note that this can also be done on creation of the filesystem: `zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true tank/home`.
+
+简单的说，配置完成了以后，配置
+
+```
+zfs set com.sun:auto-snapshot=true tank/home
+```
+
+即可。
+
 ## 使用事项
 
 批量格式化可以使用以下命令
@@ -115,3 +149,4 @@ nix-shell -p nixfmt --run "find . -iname '*.nix' -exec nixfmt {} \;"
 - <https://nixos.wiki/wiki/Overview_of_the_Nix_Language>
 - <https://learnxinyminutes.com/docs/nix/>
 - <https://cheat.readthedocs.io/en/latest/nixos/nix_lang.html>
+`
