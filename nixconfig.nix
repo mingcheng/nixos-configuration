@@ -12,10 +12,13 @@
       # https://nixos.wiki/wiki/Storage_optimization
       auto-optimise-store = true;
       substituters = [
-        "https://mirror.sjtu.edu.cn/nix-channels/store"
-        "https://mirror.nju.edu.cn/nix-channels/store"
+        #"https://mirror.sjtu.edu.cn/nix-channels/store"
+        #"https://mirror.nju.edu.cn/nix-channels/store"
+        "https://mirrors.cernet.edu.cn/nix-channels/store"
       ];
     };
+
+    #nix.settings.substituters = lib.mkForce [ "https://mirrors.cernet.edu.cn/nix-channels/store" ];
 
     gc = {
       automatic = true;

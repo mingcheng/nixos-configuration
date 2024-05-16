@@ -50,8 +50,9 @@ let
     smartmontools
     hdparm
     powershell
-    lm_sensors
+    #lm_sensors
     stress
+    powershell
     ethtool
     unzip
   ];

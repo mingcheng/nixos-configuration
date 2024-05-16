@@ -34,7 +34,7 @@ in {
          create mask = 0600
          directory mask = 0700
 
-      	 hosts allow = 192.168.0. 192.168.1.
+      	 hosts allow = 192.168.0.
          hosts deny = 0.0.0.0/0
          guest account = nobody
 

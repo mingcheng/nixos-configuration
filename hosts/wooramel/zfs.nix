@@ -9,9 +9,8 @@
 # https://github.com/NixOS/nixpkgs/blob/6039648c50c7c0858b5e506c6298773a98e0f066/nixos/modules/tasks/filesystems/zfs.nix#L303
 { config, lib, ... }: {
   boot.zfs = {
-    enableUnstable = false;
     extraPools = [ "tank" ];
-    #devNodes = "/dev/disk/by-path";
+    devNodes = "/dev/disk/by-id";
   };
 
   services.zfs = {

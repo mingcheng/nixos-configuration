@@ -28,15 +28,14 @@ in {
       "eth0" = {
         useDHCP = false;
         ipv4.addresses = [{
-          address = "192.168.0.14";
-          prefixLength = 23;
+          address = "192.168.0.4";
+          prefixLength = 24;
         }];
       };
     };
 
-    #defaultGateway = { address = "192.168.0.1"; };
-    defaultGateway = { address = "192.168.1.254"; };
-    nameservers = [ "114.114.114.114" "192.168.1.254" ];
+    defaultGateway = { address = "192.168.0.254"; };
+    nameservers = [ "192.168.0.254" "114.114.114.114" "8.8.8.8" ];
   };
 
   #networking.dhcpcd.enable = false;

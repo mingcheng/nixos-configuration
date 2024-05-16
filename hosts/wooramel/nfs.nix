@@ -15,7 +15,3 @@
     '';
   };
 }
-
-#/lantern     	192.168.0.15(rw,no_root_squash,no_subtree_check,sync)
-#/archives	192.168.0.15(rw,no_root_squash,no_subtree_check,sync)
-#/webdav	192.168.0.15(rw,no_root_squash,no_subtree_check,sync)

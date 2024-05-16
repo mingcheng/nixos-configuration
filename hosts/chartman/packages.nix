@@ -14,7 +14,7 @@ let
     nix-direnv
     nix-du
     nix-index
-    nixfmt
+    #nixfmt
     nixpkgs-fmt
     nixpkgs-lint
     nixpkgs-pytools
@@ -23,6 +23,7 @@ let
 
   build-tools = with pkgs; [
     inetutils
+    iperf
     mtr
     sysstat
     binutils

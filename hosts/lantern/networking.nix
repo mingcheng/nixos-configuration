@@ -9,7 +9,6 @@
 { config, lib, ... }:
 
 let host = builtins.getEnv "NIX_BUILD_HOST";
-
 in {
   networking = {
     hostName = "${host}";

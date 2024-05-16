@@ -33,5 +33,11 @@
 
     ./samba.nix
     ./nfs.nix
+    #./mount.nix
   ];
+
+  services.cron = {
+    enable = true;
+    systemCronJobs = [ "*/1 * * * * root touch /tmp/crontab-health" ];
+  };
 }

@@ -88,7 +88,6 @@
         # create mask = 0600
         # directory mask = 0700
         # ;  fruit:time machine max size = 1T
-
       };
     };
   };
@@ -155,4 +154,3 @@
 # inherit permissions = no
 # create mask = 0640
 # directory mask = 0750
-
