@@ -11,11 +11,11 @@
 
     extraConfig = ''
       AllowAgentForwarding yes
-      AllowStreamLocalForwarding yes
       AllowTcpForwarding yes
-      X11Forwarding no
+      AuthorizedKeysFile .ssh/authorized_keys
+      PubkeyAuthentication yes
 
-      Subsystem powershell /run/current-system/sw/bin/pwsh -sshs -NoLogo -NoProfile
+      Subsystem powershell /run/current-system/sw/bin/pwsh -SSHServerMode -NoLogo -NoProfile
     '';
 
     settings = {

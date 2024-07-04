@@ -34,8 +34,8 @@ in {
       };
     };
 
-    defaultGateway = { address = "192.168.0.254"; };
-    nameservers = [ "192.168.0.254" "114.114.114.114" "8.8.8.8" ];
+    defaultGateway = { address = "192.168.0.252"; };
+    nameservers = [ "192.168.0.252" ];
   };
 
   #networking.dhcpcd.enable = false;

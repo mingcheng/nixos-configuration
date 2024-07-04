@@ -20,8 +20,8 @@
       "experimental" = false;
       "features" = { "buildkit" = false; };
       "exec-opts" = [ "native.cgroupdriver=systemd" ];
-      "registry-mirrors" = [ "https://bobm60dq.mirror.aliyuncs.com" ];
-      "insecure-registries" = [ "localhost:5000" ];
+      #"registry-mirrors" = [ "https://bobm60dq.mirror.aliyuncs.com" ];
+      #"insecure-registries" = [ "localhost:5000" ];
     };
     autoPrune = {
       enable = true;

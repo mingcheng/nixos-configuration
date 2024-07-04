@@ -10,4 +10,4 @@
 
 
 fmt:
-	@nix-shell -p nixfmt --run "find . -iname '*.nix' -exec nixfmt {} \;"
+	@nix-shell -p nixfmt-classic --run "find . -iname '*.nix' -exec nixfmt {} \;"

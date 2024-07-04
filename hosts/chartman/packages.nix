@@ -73,5 +73,5 @@ let
 in {
   environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
     ++ system-tools
-    ++ (with pkgs; [ neofetch qemu qemu_kvm virt-manager libosinfo libnfs ]);
+    ++ (with pkgs; [ fastfetch qemu qemu_kvm virt-manager libosinfo libnfs ]);
 }

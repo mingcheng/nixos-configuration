@@ -14,7 +14,7 @@ let
     nix-direnv
     nix-du
     nix-index
-    nixfmt
+    nixfmt-classic
     nixpkgs-fmt
     nixpkgs-lint
     nixpkgs-pytools
@@ -48,6 +48,7 @@ let
     pciutils
     iperf
     smartmontools
+    nvme-cli
     hdparm
     powershell
     #lm_sensors
@@ -72,5 +73,5 @@ let
   ];
 in {
   environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
-    ++ system-tools ++ (with pkgs; [ neofetch ]);
+    ++ system-tools ++ (with pkgs; [ fastfetch ]);
 }

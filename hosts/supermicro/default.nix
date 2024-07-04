@@ -23,6 +23,19 @@
     ../../packages/vim.nix
   ];
 
+  services.prometheus.exporters.smartctl = {
+    enable = true;
+    devices = [ "/dev/nvme0n1" ];
+  };
+
+  services.prometheus.exporters.apcupsd = {
+    enable = true;
+    apcupsdNetwork = "tcp4";
+    apcupsdAddress = "127.0.0.1:3551";
+  };
+
+  services.prometheus.exporters.ipmi = { enable = true; };
+
   powerManagement = {
     enable = true;
     cpuFreqGovernor = lib.mkDefault "performance";

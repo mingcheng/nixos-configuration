@@ -17,25 +17,33 @@ in {
 
     interfaces = {
       "br0" = {
-        useDHCP = false;
         ipv4.addresses = [{
           address = "192.168.0.2";
           prefixLength = 24;
         }];
+
       };
     };
 
-    bridges = {
-      "br0" = { interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ]; };
+    bonds = {
+      "bond0" = {
+        interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ];
+        driverOptions = {
+          miimon = "100";
+          #mode = "802.3ad";
+          mode = "active-backup";
+        };
+      };
     };
 
+    bridges = { "br0" = { interfaces = [ "bond0" ]; }; };
+
     defaultGateway = {
-      address = "192.168.0.254";
+      address = "192.168.0.252";
       interface = "br0";
     };
 
-    nameservers = [ "192.168.0.254" "114.114.114.114" ];
-
+    nameservers = [ "192.168.0.252" ];
     firewall.enable = false;
   };
 }
