@@ -20,7 +20,7 @@
     ../../services/timesyncd.nix
     ../../services/docker.nix
     ../../services/sshd.nix
-    ./apcupsd.nix
+    #./apcupsd.nix
 
     ./packages.nix
     ../../packages/vim.nix
@@ -42,20 +42,8 @@
     devices = [ "/dev/sda" "/dev/sdb" "/dev/sdc" "/dev/sdd" ];
   };
 
-  services.prometheus.exporters.apcupsd = {
-    enable = true;
-    listenAddress = "192.168.0.4";
-    apcupsdNetwork = "tcp4";
-    apcupsdAddress = "192.168.0.2:3551";
-  };
-
   services.prometheus.exporters.zfs = {
     enable = true;
     listenAddress = "192.168.0.4";
-  };
-
-  services.cron = {
-    enable = true;
-    systemCronJobs = [ "*/1 * * * * root touch /tmp/crontab-health" ];
   };
 }

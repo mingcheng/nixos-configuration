@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_6;
   #boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
 
   boot.kernel = {

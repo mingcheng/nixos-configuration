@@ -12,47 +12,43 @@ let host = builtins.getEnv "NIX_BUILD_HOST";
 in {
   services.samba = {
     enable = true;
-    securityType = "user";
     openFirewall = true;
 
-    extraConfig = ''
-         workgroup = WORKGROUP
-         netbios name = ${host}
-         server string = ${host}
+    settings = {
+      global = {
+        "security" = "user";
+        "workgroup" = "WORKGROUP";
+        "netbios name" = "${host}";
+        "server string" = "${host}";
 
-         dns proxy = no
-         load printers = no
-         log file = /var/log/samba/%U.log
+        "dns proxy" = "no";
+        "load printers" = "no";
+        "log file" = "/var/log/samba/%U.log";
+        "min protocol" = "SMB3";
+        "passdb backend" = "smbpasswd";
+        "server role" = "standalone server";
+        "unix extensions" = "no";
+        "inherit permissions" = "yes";
+        "create mask" = "0600";
+        "directory mask" = "0700";
+        "hosts allow" = "192.168.0.";
+        "hosts deny" = "0.0.0.0/0";
+        "guest account" = "nobody";
 
-         min protocol = SMB3
+        "fruit:aapl" = "yes";
+        "fruit:model" = "TimeCapsule6,106";
 
-         passdb backend = smbpasswd
-         server role = standalone server
-         unix extensions = no
+        "fruit:zerofileid" = "yes";
+        "fruit:metadata" = "stream";
+        "fruit:posix_rename" = "yes";
+        "fruit:veto_appledouble" = "no";
 
-         inherit permissions = yes
-         create mask = 0600
-         directory mask = 0700
+        "fruit:nfs_aces" = "no";
+        "fruit:wipe_intentionally_left_blank_rfork" = "yes";
+        "fruit:delete_empty_adfiles" = "yes";
+        #"vfs objects" = "catia fruit streams_xattr";
+      };
 
-      	 hosts allow = 192.168.0.
-         hosts deny = 0.0.0.0/0
-         guest account = nobody
-
-         vfs objects = fruit streams_xattr  
-
-         fruit:aapl = yes
-         fruit:model = TimeCapsule6,106
-         fruit:zerofileid = yes
-
-         fruit:metadata = stream
-         fruit:posix_rename = yes 
-         fruit:veto_appledouble = no
-         fruit:nfs_aces = no
-         fruit:wipe_intentionally_left_blank_rfork = yes 
-         fruit:delete_empty_adfiles = yes 
-    '';
-
-    shares = {
       "Public" = {
         "path" = "/public";
         "browseable" = "yes";
@@ -91,8 +87,11 @@ in {
         "kernel share modes" = "no";
         "posix locking" = "no";
 
-        "fruit:time machine" = "yes";
+        "fruit:aapl" = "yes";
         #"fruit:time machine max size" = "2T";
+        "fruit:time machine" = "yes";
+
+        "vfs objects" = "catia fruit streams_xattr";
       };
 
       "WebDAV" = {

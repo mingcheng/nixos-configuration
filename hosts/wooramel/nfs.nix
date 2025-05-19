@@ -12,6 +12,9 @@
     enable = lib.mkForce true;
     exports = ''
       /public 192.168.0.0/23(rw,all_squash,anonuid=65534,anongid=65534,no_subtree_check,async)
+      /webdav 192.168.0.0/23(ro,all_squash,anonuid=65534,anongid=65534,no_subtree_check,async)
+      /music  192.168.0.0/23(ro,all_squash,anonuid=65534,anongid=65534,no_subtree_check,async)
+      /archives 192.168.0.0/23(ro,all_squash,anonuid=65534,anongid=65534,no_subtree_check,async)
     '';
   };
 }

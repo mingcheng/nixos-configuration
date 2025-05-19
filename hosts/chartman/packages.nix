@@ -41,7 +41,7 @@ let
     coreutils
     f2fs-tools
     ipmitool
-    iproute
+    iproute2
     killall
     lm_sensors
     hddtemp

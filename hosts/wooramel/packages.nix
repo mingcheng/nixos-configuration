@@ -38,7 +38,7 @@ let
 
   system-tools = with pkgs; [
     coreutils
-    iproute
+    iproute2
     killall
     hddtemp
     lsof
@@ -54,6 +54,7 @@ let
     #lm_sensors
     stress
     powershell
+    nushell
     ethtool
     unzip
   ];

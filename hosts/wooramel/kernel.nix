@@ -7,7 +7,7 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, pkgs, ... }: {
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
   boot.kernel = {
     sysctl = {
       "net.ipv6.conf.all.disable_ipv6" = 1;
