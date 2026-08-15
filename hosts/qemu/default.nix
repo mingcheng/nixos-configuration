@@ -22,5 +22,5 @@
   users.extraUsers.root.password = "root";
 
   #boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_6;
+  boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_6_6;
 }

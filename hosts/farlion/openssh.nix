@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, ... }: {
+{ lib, ... }: {
   services.openssh = lib.mkForce {
     enable = true;
     listenAddresses = [{
@@ -14,7 +14,9 @@
       port = 22;
     }];
 
-    passwordAuthentication = false;
-    permitRootLogin = "no";
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
   };
 }

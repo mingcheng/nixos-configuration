@@ -35,7 +35,4 @@
     enable = true;
     cpuFreqGovernor = lib.mkDefault "performance";
   };
-
-  hardware.pulseaudio.enable = false;
-  sound.enable = false;
 }

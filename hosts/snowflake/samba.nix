@@ -6,43 +6,33 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }:
-
+{ ... }:
 let host = builtins.getEnv "NIX_BUILD_HOST";
 in {
   services.samba = {
     enable = true;
-    enableNmbd = false;
-    enableWinbindd = false;
+    nmbd.enable = false;
+    winbindd.enable = false;
 
-    securityType = "user";
-    extraConfig = ''
-      netbios name = ${host}
-      dns proxy = no
-      load printers = no
-      log file = /var/log/samba/%U.log
+    settings = {
+      global = {
+        security = "user";
+        "netbios name" = host;
+        "dns proxy" = "no";
+        "load printers" = "no";
+        "log file" = "/var/log/samba/%U.log";
+        "map to guest" = "bad user";
+        "passdb backend" = "tdbsam";
+        "printcap name" = "/dev/null";
+        "server role" = "standalone server";
+        spotlight = "no";
+        "inherit permissions" = "no";
+        "create mask" = "0600";
+        "directory mask" = "0700";
+        "fruit:aapl" = "yes";
+        "fruit:model" = "TimeCapsule6,106";
+      };
 
-      map to guest = bad user
-      passdb backend = tdbsam
-      printcap name = /dev/null
-
-      server role = standalone server
-      ;bind interfaces only = yes
-      ;interfaces = 172.16.0.201/24
-      ;unix extensions = no
-
-      ;min protocol = SMB2
-      spotlight = no
-
-      inherit permissions = no
-      create mask = 0600
-      directory mask = 0700
-
-      fruit:aapl = yes
-      fruit:model = TimeCapsule6,106
-    '';
-
-    shares = {
       "Public" = {
         "path" = "/opt/public";
         "browseable" = "yes";

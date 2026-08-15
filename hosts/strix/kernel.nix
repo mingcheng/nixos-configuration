@@ -53,13 +53,14 @@
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-  hardware.opengl.extraPackages = with pkgs; [
-    rocm-opencl-icd
-    rocm-opencl-runtime
-    amdvlk
-  ];
-
-  hardware.opengl = { driSupport = lib.mkDefault true; };
+  hardware.graphics = {
+    enable = lib.mkDefault true;
+    extraPackages = with pkgs; [
+      rocm-opencl-icd
+      rocm-opencl-runtime
+      amdvlk
+    ];
+  };
 
   environment.variables.AMD_VULKAN_ICD = lib.mkDefault "RADV";
 }

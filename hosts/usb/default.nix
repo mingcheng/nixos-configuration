@@ -36,7 +36,7 @@
     "sd_mod"
   ];
 
-  boot.tmpOnTmpfs = true;
+  boot.tmp.useTmpfs = true;
   boot.supportedFilesystems = [ "btrfs" "ext4" "vfat" "f2fs" "xfs" "ntfs" ];
 
   fileSystems."/" = {

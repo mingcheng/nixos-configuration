@@ -6,14 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }: {
+{ ... }: {
 
   # https://discourse.nixos.org/t/nixos-configuration-for-samba/17079/6
   # system.activationScripts = {
   #   sambaUserSetup = {
   #     text = ''
   #       PATH=$PATH:${lib.makeBinPath [ pkgs.samba ]}
-  #       pdbedit -i smbpasswd:/home/john/smbpasswd -e tdbsam:/var/lib/samba/private/passdb.tdb                                                                       
+  #       pdbedit -i smbpasswd:/home/john/smbpasswd -e tdbsam:/var/lib/samba/private/passdb.tdb
   #     '';
   #     deps = [ ];
   #   };
@@ -24,35 +24,31 @@
     enable = true;
     # package = pkgs.sambaFull;
 
-    enableNmbd = false;
-    enableWinbindd = false;
+    nmbd.enable = false;
+    winbindd.enable = false;
 
-    securityType = "user";
-    extraConfig = ''
-      netbios name = wooramel
-      server string = Samba Server Version %v
-      dns proxy = no
-      load printers = no
-      log file = /var/log/samba/%U.log
+    settings = {
+      global = {
+        security = "user";
+        "netbios name" = "wooramel";
+        "server string" = "Samba Server Version %v";
+        "dns proxy" = "no";
+        "load printers" = "no";
+        "log file" = "/var/log/samba/%U.log";
+        "map to guest" = "bad user";
+        "passdb backend" = "tdbsam";
+        "printcap name" = "/dev/null";
+        "server role" = "standalone server";
+        "bind interfaces only" = "yes";
+        interfaces = "eth0";
+        "unix extensions" = "no";
+        "min protocol" = "SMB2";
+        spotlight = "no";
+        "inherit permissions" = "no";
+        "create mask" = "0640";
+        "directory mask" = "0750";
+      };
 
-      map to guest = bad user
-      passdb backend = tdbsam
-      printcap name = /dev/null
-
-      server role = standalone server
-      bind interfaces only = yes
-      interfaces = eth0
-      unix extensions = no
-
-      min protocol = SMB2
-      spotlight = no
-
-      inherit permissions = no
-      create mask = 0640
-      directory mask = 0750
-    '';
-
-    shares = {
       Public = {
         path = "/data/";
         browseable = "yes";
@@ -147,7 +143,7 @@
 # allocation roundup size = 0
 # directory name cache size = 0
 # ;dos filemode = Yes
-# 
+#
 # ea support = yes
 # spotlight = no
 

@@ -6,36 +6,26 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, pkgs, lib, ... }: {
+{ ... }: {
   nix = {
     settings = {
       # https://nixos.wiki/wiki/Storage_optimization
       auto-optimise-store = true;
+      experimental-features = [ "nix-command" "flakes" ];
+      keep-derivations = true;
+      keep-outputs = true;
       substituters = [
-        #"https://mirror.sjtu.edu.cn/nix-channels/store"
-        #"https://mirror.nju.edu.cn/nix-channels/store"
         "https://mirrors.cernet.edu.cn/nix-channels/store"
       ];
+      trusted-users = [ "root" "@wheel" ];
     };
-
-    #nix.settings.substituters = lib.mkForce [ "https://mirrors.cernet.edu.cn/nix-channels/store" ];
 
     gc = {
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 30d";
     };
-
-    settings.trusted-users = [ "root" "@wheel" ];
-    extraOptions = ''
-      experimental-features = nix-command flakes
-      keep-outputs = true
-      keep-derivations = true
-    '';
   };
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowAliases = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 }
