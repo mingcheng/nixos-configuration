@@ -16,25 +16,39 @@
   boot = {
     initrd = {
       systemd.enable = true;
-      availableKernelModules = [
-        "xhci_pci"
-        "thunderbolt"
-        "usb_storage"
-        "sd_mod"
+      availableKernelModules = [ "thunderbolt" ];
+      kernelModules = [
+        "i915"
+        "f2fs"
       ];
-      kernelModules = [ "i915" ];
     };
 
-    kernelModules = [
-      "kvm-intel"
-      "thinkpad_acpi"
-    ];
+    kernelModules = [ "thinkpad_acpi" ];
 
     # Select Linux/S3 sleep in the firmware to expose the deep sleep state.
-    kernelParams = [ "mem_sleep_default=deep" ];
+    kernelParams = [
+      "mem_sleep_default=deep"
+      "verbose"
+      "fsck.mode=force"
+      "fsck.fix=yes"
+      "fsck.repair=yes"
+      # "pcie_aspm=off"
+      # "acpi_enforce_resources=lax"
+      "selinux=0"
+    ];
+
+    kernel.sysctl = {
+      "net.ipv6.conf.all.disable_ipv6" = 1;
+      "net.core.default_qdisc" = "fq";
+      "net.ipv4.tcp_congestion_control" = "bbr";
+      # "vm.swappiness" = 1;
+      "vm.overcommit_memory" = 0;
+      "vm.panic_on_oom" = 0;
+    };
   };
 
   hardware = {
+    bluetooth.enable = true;
     enableRedistributableFirmware = true;
     firmware = [ pkgs.sof-firmware ];
     graphics = {

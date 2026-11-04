@@ -7,8 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { lib, ... }:
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   services.udev = {
     extraRules = ''
       SUBSYSTEM == "net", ACTION=="add", DRIVERS=="igb", NAME="eth0"
@@ -20,9 +22,17 @@ in {
     enableIPv6 = lib.mkForce false;
     useDHCP = lib.mkForce false;
     interfaces = {
-      "eth0" = { useDHCP = false; };
-      "br0" = { useDHCP = true; };
+      "eth0" = {
+        useDHCP = false;
+      };
+      "br0" = {
+        useDHCP = true;
+      };
     };
-    bridges = { "br0" = { interfaces = [ "eth0" ]; }; };
+    bridges = {
+      "br0" = {
+        interfaces = [ "eth0" ];
+      };
+    };
   };
 }

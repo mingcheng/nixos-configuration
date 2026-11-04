@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, pkgs, lib, modulesPath, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  modulesPath,
+  ...
+}:
+{
 
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")

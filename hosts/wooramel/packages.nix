@@ -72,7 +72,8 @@ let
     gdu
     duf
   ];
-in {
-  environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
-    ++ system-tools ++ (with pkgs; [ fastfetch ]);
+in
+{
+  environment.systemPackages =
+    nixpkgs-tools ++ modern-unix ++ build-tools ++ system-tools ++ (with pkgs; [ fastfetch ]);
 }

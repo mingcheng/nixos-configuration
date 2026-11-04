@@ -8,8 +8,10 @@
 
 { config, lib, ... }:
 
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   networking = {
     hostName = "${host}";
 
@@ -21,15 +23,20 @@ in {
 
     interfaces."bond0" = {
       useDHCP = false;
-      ipv4.addresses = [{
-        address = "192.168.0.4";
-        prefixLength = 23;
-      }];
+      ipv4.addresses = [
+        {
+          address = "192.168.0.4";
+          prefixLength = 23;
+        }
+      ];
     };
 
     bonds = {
       "bond0" = {
-        interfaces = [ "eno3" "eno4" ];
+        interfaces = [
+          "eno3"
+          "eno4"
+        ];
         driverOptions = {
           #mode = "802.3ad";
           mode = "active-backup";
@@ -39,7 +46,12 @@ in {
     };
 
     defaultGateway = "192.168.0.1";
-    nameservers = [ "192.168.0.1" "192.168.1.254" ];
-    firewall = { enable = false; };
+    nameservers = [
+      "192.168.0.1"
+      "192.168.1.254"
+    ];
+    firewall = {
+      enable = false;
+    };
   };
 }

@@ -6,7 +6,12 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   services.davfs2 = {

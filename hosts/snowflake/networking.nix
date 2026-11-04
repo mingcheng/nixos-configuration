@@ -7,7 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, lib, ... }: {
-  imports = [ ../qemu/udev.nix ./firewall.nix ];
+  imports = [
+    ../qemu/udev.nix
+    ./firewall.nix
+  ];
 
   networking.useDHCP = lib.mkForce false;
   networking = {
@@ -15,10 +18,12 @@
     interfaces = {
       "eth0" = {
         useDHCP = false;
-        ipv4.addresses = [{
-          address = "172.16.0.201";
-          prefixLength = 24;
-        }];
+        ipv4.addresses = [
+          {
+            address = "172.16.0.201";
+            prefixLength = 24;
+          }
+        ];
       };
     };
 

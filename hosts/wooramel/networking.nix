@@ -7,8 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, ... }:
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   services.udev = {
     extraRules = ''
       SUBSYSTEM == "net", ACTION=="add", DRIVERS=="virtio_net", NAME="eth0"
@@ -27,14 +29,18 @@ in {
     interfaces = {
       "eth0" = {
         useDHCP = false;
-        ipv4.addresses = [{
-          address = "192.168.0.4";
-          prefixLength = 24;
-        }];
+        ipv4.addresses = [
+          {
+            address = "192.168.0.4";
+            prefixLength = 24;
+          }
+        ];
       };
     };
 
-    defaultGateway = { address = "192.168.0.252"; };
+    defaultGateway = {
+      address = "192.168.0.252";
+    };
     nameservers = [ "192.168.0.252" ];
   };
 

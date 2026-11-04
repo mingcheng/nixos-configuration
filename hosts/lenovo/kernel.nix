@@ -6,7 +6,13 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   boot.kernelPackages = pkgs.linuxPackages_5_10;
   boot.blacklistedKernelModules = [ "e1000e" ];
 

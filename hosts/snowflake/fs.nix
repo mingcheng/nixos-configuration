@@ -10,6 +10,11 @@
   fileSystems."/opt" = {
     device = "/dev/disk/by-label/fanxiang";
     fsType = "ext4";
-    options = [ "defaults" "discard" "errors=remount-ro" "noexec" ];
+    options = [
+      "defaults"
+      "discard"
+      "errors=remount-ro"
+      "noexec"
+    ];
   };
 }

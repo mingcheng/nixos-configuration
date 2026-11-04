@@ -7,8 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, ... }:
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   networking = {
     hostName = "${host}";
     enableIPv6 = lib.mkForce false;
@@ -17,18 +19,30 @@ in {
     interfaces = {
       "br0" = {
         useDHCP = false;
-        ipv4.addresses = [{
-          address = "192.168.0.3";
-          prefixLength = 23;
-        }];
+        ipv4.addresses = [
+          {
+            address = "192.168.0.3";
+            prefixLength = 23;
+          }
+        ];
       };
     };
 
     bridges = {
-      "br0" = { interfaces = [ "enp3s0f0" "enp3s0f1" "enp4s0f0" "enp4s0f1" ]; };
+      "br0" = {
+        interfaces = [
+          "enp3s0f0"
+          "enp3s0f1"
+          "enp4s0f0"
+          "enp4s0f1"
+        ];
+      };
     };
 
     defaultGateway = "192.168.1.254";
-    nameservers = [ "192.168.1.254" "192.168.0.1" ];
+    nameservers = [
+      "192.168.1.254"
+      "192.168.0.1"
+    ];
   };
 }

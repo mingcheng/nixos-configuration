@@ -9,10 +9,12 @@
 { lib, ... }: {
   services.openssh = lib.mkForce {
     enable = true;
-    listenAddresses = [{
-      addr = "192.168.0.11";
-      port = 22;
-    }];
+    listenAddresses = [
+      {
+        addr = "192.168.0.11";
+        port = 22;
+      }
+    ];
 
     settings = {
       PasswordAuthentication = false;

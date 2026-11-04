@@ -9,9 +9,16 @@
 { lib, pkgs, ... }:
 with pkgs;
 let
-  libraryPath = lib.makeLibraryPath [ stdenv.cc.cc zlib openssl glib dbus ];
+  libraryPath = lib.makeLibraryPath [
+    stdenv.cc.cc
+    zlib
+    openssl
+    glib
+    dbus
+  ];
   nixLd = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
-in {
+in
+{
   programs.nix-ld.enable = true;
   environment.variables = {
     NIX_LD_LIBRARY_PATH = lib.mkDefault libraryPath;

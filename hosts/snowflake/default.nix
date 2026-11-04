@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, modulesPath, pkgs, ... }: {
+{
+  config,
+  lib,
+  modulesPath,
+  pkgs,
+  ...
+}:
+{
   imports = [
     ../qemu
     ../../nixconfig.nix
@@ -35,7 +42,11 @@
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
     neededForBoot = true;
-    options = [ "defaults" "discard" "noatime" ];
+    options = [
+      "defaults"
+      "discard"
+      "noatime"
+    ];
   };
 
   # boot.kernelPackages = pkgs.linuxPackages_5_18;

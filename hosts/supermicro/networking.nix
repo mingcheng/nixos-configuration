@@ -7,8 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { config, lib, ... }:
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   networking = {
     hostName = "${host}";
 
@@ -17,17 +19,24 @@ in {
 
     interfaces = {
       "br0" = {
-        ipv4.addresses = [{
-          address = "192.168.0.2";
-          prefixLength = 24;
-        }];
+        ipv4.addresses = [
+          {
+            address = "192.168.0.2";
+            prefixLength = 24;
+          }
+        ];
 
       };
     };
 
     bonds = {
       "bond0" = {
-        interfaces = [ "enp1s0f0" "enp1s0f1" "enp1s0f2" "enp1s0f3" ];
+        interfaces = [
+          "enp1s0f0"
+          "enp1s0f1"
+          "enp1s0f2"
+          "enp1s0f3"
+        ];
         driverOptions = {
           miimon = "100";
           #mode = "802.3ad";
@@ -36,7 +45,11 @@ in {
       };
     };
 
-    bridges = { "br0" = { interfaces = [ "bond0" ]; }; };
+    bridges = {
+      "br0" = {
+        interfaces = [ "bond0" ];
+      };
+    };
 
     defaultGateway = {
       address = "192.168.0.252";

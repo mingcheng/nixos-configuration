@@ -10,7 +10,11 @@
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos";
     neededForBoot = true;
-    options = [ "defaults" "discard" "noatime" ];
+    options = [
+      "defaults"
+      "discard"
+      "noatime"
+    ];
     fsType = "ext4";
   };
 

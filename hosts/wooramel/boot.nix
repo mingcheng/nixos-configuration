@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, config, lib, modulesPath, ... }: {
+{
+  pkgs,
+  config,
+  lib,
+  modulesPath,
+  ...
+}:
+{
   boot.growPartition = true;
 
   boot.kernelParams = [ "console=ttyS0" ];

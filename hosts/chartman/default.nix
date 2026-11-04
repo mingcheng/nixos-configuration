@@ -1,4 +1,11 @@
-{ config, pkgs, lib, modulesPath, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  modulesPath,
+  ...
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../nixconfig.nix
@@ -46,9 +53,7 @@
   # https://nixos.wiki/wiki/Visual_Studio_Code#Remote_SSH
   programs.nix-ld.enable = true;
   environment.variables = {
-    NIX_LD_LIBRARY_PATH =
-      lib.mkDefault (lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]);
-    NIX_LD = lib.mkDefault
-      (lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker");
+    NIX_LD_LIBRARY_PATH = lib.mkDefault (lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]);
+    NIX_LD = lib.mkDefault (lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker");
   };
 }

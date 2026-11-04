@@ -1,4 +1,10 @@
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
   boot.kernel = {
     sysctl = {

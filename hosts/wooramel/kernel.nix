@@ -6,7 +6,13 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
   boot.kernel = {
     sysctl = {
@@ -23,5 +29,10 @@
     "fsck.repair=yes"
   ];
 
-  boot.supportedFilesystems = lib.mkForce [ "zfs" "ext4" "vfat" "nfs" ];
+  boot.supportedFilesystems = lib.mkForce [
+    "zfs"
+    "ext4"
+    "vfat"
+    "nfs"
+  ];
 }

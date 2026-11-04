@@ -7,5 +7,8 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, ... }: {
-  environment.systemPackages = with pkgs; [ gnumake go ];
+  environment.systemPackages = with pkgs; [
+    gnumake
+    go
+  ];
 }

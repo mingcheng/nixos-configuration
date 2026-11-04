@@ -21,7 +21,16 @@ let
     nixpkgs-review
   ];
 
-  build-tools = with pkgs; [ binutils jq nodejs stow git unzip yq p7zip ];
+  build-tools = with pkgs; [
+    binutils
+    jq
+    nodejs
+    stow
+    git
+    unzip
+    yq
+    p7zip
+  ];
 
   system-tools = with pkgs; [
     autofs5
@@ -54,7 +63,8 @@ let
     shfmt
     iperf
   ];
-in {
-  environment.systemPackages = nixpkgs-tools ++ modern-unix ++ build-tools
-    ++ system-tools ++ (with pkgs; [ neofetch ]);
+in
+{
+  environment.systemPackages =
+    nixpkgs-tools ++ modern-unix ++ build-tools ++ system-tools ++ (with pkgs; [ neofetch ]);
 }

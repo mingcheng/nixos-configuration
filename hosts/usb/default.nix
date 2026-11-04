@@ -6,7 +6,13 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, modulesPath, ... }: {
+{
+  pkgs,
+  lib,
+  modulesPath,
+  ...
+}:
+{
   imports = [
     #https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/profiles
     (modulesPath + "/profiles/all-hardware.nix")
@@ -21,9 +27,17 @@
     ../chartman/packages.nix
   ];
 
-  boot.kernel = { sysctl = { "net.ipv6.conf.all.disable_ipv6" = 1; }; };
+  boot.kernel = {
+    sysctl = {
+      "net.ipv6.conf.all.disable_ipv6" = 1;
+    };
+  };
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
-  boot.kernelParams = [ "verbose" "intel_iommu=on" "iommu=pt" ];
+  boot.kernelParams = [
+    "verbose"
+    "intel_iommu=on"
+    "iommu=pt"
+  ];
   boot.kernelModules = [
     "btrfs"
     "f2fs"
@@ -37,7 +51,14 @@
   ];
 
   boot.tmp.useTmpfs = true;
-  boot.supportedFilesystems = [ "btrfs" "ext4" "vfat" "f2fs" "xfs" "ntfs" ];
+  boot.supportedFilesystems = [
+    "btrfs"
+    "ext4"
+    "vfat"
+    "f2fs"
+    "xfs"
+    "ntfs"
+  ];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/24e24f36-6056-42a2-90a2-d0d60027b2ab";

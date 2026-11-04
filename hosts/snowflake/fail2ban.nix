@@ -6,12 +6,22 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, pkgs, lib, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+{
   services.fail2ban = {
     enable = true;
     maxretry = 3;
 
-    ignoreIP = [ "127.0.0.0/8" "172.16.0.0/16" "192.168.0.0/16" ];
+    ignoreIP = [
+      "127.0.0.0/8"
+      "172.16.0.0/16"
+      "192.168.0.0/16"
+    ];
 
     jails.DEFAULT = ''
       bantime  = 1d

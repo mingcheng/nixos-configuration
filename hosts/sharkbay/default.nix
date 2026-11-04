@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, pkgs, modulesPath, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../lenovo/default.nix
@@ -23,10 +30,12 @@
   networking.hostName = lib.mkForce "sharkbay";
   networking.interfaces."br0" = lib.mkForce {
     useDHCP = false;
-    ipv4.addresses = [{
-      address = "192.168.0.6";
-      prefixLength = 23;
-    }];
+    ipv4.addresses = [
+      {
+        address = "192.168.0.6";
+        prefixLength = 23;
+      }
+    ];
   };
 
   networking.defaultGateway = "192.168.0.1";

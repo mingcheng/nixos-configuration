@@ -12,10 +12,10 @@
     viAlias = true;
     vimAlias = true;
     defaultEditor = true;
-    configure = {
-      packages.myVimPackage = with pkgs.vimPlugins; {
-        start = [ fugitive vim-nix ];
-      };
-    };
+    # configure = {
+    #   packages.myVimPackage = with pkgs.vimPlugins; {
+    #     start = [ fugitive vim-nix ];
+    #   };
+    # };
   };
 }

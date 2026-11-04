@@ -1,4 +1,10 @@
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
   #boot.kernelPackages = lib.mkForce pkgs.linuxPackages_5_15;
 
@@ -37,10 +43,18 @@
     "kvm.ignore_msrs=1"
   ];
 
-  boot.blacklistedKernelModules =
-    [ "snd_pcsp" "snd_hda_intel" "amdgpu" "amdkfd" ];
+  boot.blacklistedKernelModules = [
+    "snd_pcsp"
+    "snd_hda_intel"
+    "amdgpu"
+    "amdkfd"
+  ];
   # https://github.com/NixOS/nixos-hardware/blob/master/common/cpu/amd/default.nix
-  boot.initrd.kernelModules = [ "amd-pstate" "asus_wmi" "kvm_amd" ];
+  boot.initrd.kernelModules = [
+    "amd-pstate"
+    "asus_wmi"
+    "kvm_amd"
+  ];
 
   boot.extraModprobeConfig = ''
     blacklist snd
@@ -50,8 +64,7 @@
 
   hardware.enableRedistributableFirmware = true;
 
-  hardware.cpu.amd.updateMicrocode =
-    lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   hardware.graphics = {
     enable = lib.mkDefault true;

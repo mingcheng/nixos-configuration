@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, modulesPath, pkgs, ... }: {
+{
+  config,
+  lib,
+  modulesPath,
+  pkgs,
+  ...
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../nixconfig.nix

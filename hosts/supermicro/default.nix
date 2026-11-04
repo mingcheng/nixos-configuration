@@ -1,4 +1,10 @@
-{ config, lib, modulesPath, ... }: {
+{
+  config,
+  lib,
+  modulesPath,
+  ...
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../nixconfig.nix
@@ -34,7 +40,9 @@
     apcupsdAddress = "127.0.0.1:3551";
   };
 
-  services.prometheus.exporters.ipmi = { enable = true; };
+  services.prometheus.exporters.ipmi = {
+    enable = true;
+  };
 
   powerManagement = {
     enable = true;

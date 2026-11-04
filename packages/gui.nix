@@ -33,7 +33,7 @@ in
     (lib.mkIf hasGui {
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
-      programs.firefox.enable = lib.mkDefault true;
+      # programs.firefox.enable = lib.mkDefault true;
       programs.git.enable = lib.mkDefault true;
       services.flatpak.enable = lib.mkDefault true;
 

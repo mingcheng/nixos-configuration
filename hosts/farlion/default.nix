@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, config, lib, modulesPath, ... }: {
+{
+  pkgs,
+  config,
+  lib,
+  modulesPath,
+  ...
+}:
+{
   imports = [
     ../qemu
     ../../nixconfig.nix
@@ -32,7 +39,11 @@
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
     neededForBoot = true;
-    options = [ "defaults" "discard" "noatime" ];
+    options = [
+      "defaults"
+      "discard"
+      "noatime"
+    ];
   };
 
   boot.growPartition = true;

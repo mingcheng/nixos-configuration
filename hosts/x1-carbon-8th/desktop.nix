@@ -1,4 +1,6 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
+  imports = [ ../../packages/gui.nix ];
   services = {
     desktopManager.plasma6.enable = true;
     displayManager = {
@@ -10,6 +12,7 @@
     };
 
     libinput.enable = true;
+    printing.enable = true;
     pulseaudio.enable = false;
     pipewire = {
       enable = true;
@@ -20,7 +23,8 @@
   };
 
   security.rtkit.enable = true;
-  hardware.bluetooth.enable = true;
+
+  users.users.mingcheng.packages = [ pkgs.kdePackages.kate ];
 
   fonts.packages = with pkgs; [
     noto-fonts

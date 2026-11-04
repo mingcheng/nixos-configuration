@@ -7,6 +7,8 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, ... }: {
-  environment.variables = { EDITOR = "vim"; };
+  environment.variables = {
+    EDITOR = "vim";
+  };
   environment.systemPackages = with pkgs; [ vim ];
 }

@@ -7,5 +7,9 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, ... }: {
-  environment.systemPackages = with pkgs; [ bind inetutils netcat-gnu ];
+  environment.systemPackages = with pkgs; [
+    bind
+    inetutils
+    netcat-gnu
+  ];
 }

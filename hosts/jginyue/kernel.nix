@@ -6,7 +6,13 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
   hardware.cpu.intel.updateMicrocode = true;
   boot.kernel = {

@@ -6,7 +6,14 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, pkgs, lib, modulesPath, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  modulesPath,
+  ...
+}:
+{
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
 
@@ -39,7 +46,12 @@
   services.prometheus.exporters.smartctl = {
     enable = true;
     listenAddress = "192.168.0.4";
-    devices = [ "/dev/sda" "/dev/sdb" "/dev/sdc" "/dev/sdd" ];
+    devices = [
+      "/dev/sda"
+      "/dev/sdb"
+      "/dev/sdc"
+      "/dev/sdd"
+    ];
   };
 
   services.prometheus.exporters.zfs = {

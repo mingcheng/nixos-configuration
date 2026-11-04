@@ -7,8 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { pkgs, lib, ... }:
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   networking = {
     hostName = "${host}";
 
@@ -18,16 +20,23 @@ in {
     interfaces = {
       "eth0" = {
         useDHCP = false;
-        ipv4.addresses = [{
-          address = "192.168.0.11";
-          prefixLength = 23;
-        }];
+        ipv4.addresses = [
+          {
+            address = "192.168.0.11";
+            prefixLength = 23;
+          }
+        ];
       };
     };
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 80 443 2375 ];
+      allowedTCPPorts = [
+        22
+        80
+        443
+        2375
+      ];
     };
 
     defaultGateway = "192.168.1.254";

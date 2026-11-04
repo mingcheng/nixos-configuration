@@ -7,8 +7,10 @@
 # http://www.opensource.org/licenses/MIT
 
 { ... }:
-let host = builtins.getEnv "NIX_BUILD_HOST";
-in {
+let
+  host = builtins.getEnv "NIX_BUILD_HOST";
+in
+{
   services.samba = {
     enable = true;
     nmbd.enable = false;

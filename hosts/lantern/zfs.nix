@@ -13,7 +13,10 @@
     #enabled = lib.mkForce true;
     enableUnstable = false;
     #forceImportAll = true;
-    extraPools = [ "tank" "ship" ];
+    extraPools = [
+      "tank"
+      "ship"
+    ];
     #devNodes = "/dev/disk/by-partuuid/4de39412-70a4-064b-a2ef-ce263a9f3274";
   };
 
