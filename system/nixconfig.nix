@@ -13,6 +13,10 @@
 ##
 
 { lib, ... }: {
+  environment.variables = {
+    NIXPKGS_ALLOW_UNFREE = 1;
+  };
+
   nix = {
     settings = {
       # https://nixos.wiki/wiki/Storage_optimization
@@ -46,6 +50,4 @@
       options = "--delete-older-than 30d";
     };
   };
-
-  nixpkgs.config.allowUnfree = true;
 }

@@ -17,11 +17,14 @@
   pkgs,
   hasGui,
 }:
-{
-  # Keep this lazy: evaluating session packages already requires nixpkgs.
-  nixpkgs.config = lib.mkBefore {
-    allowUnfreePredicate = package: lib.getName package == "vscode" && hasGui;
+let
+  # Import packages only, not NixOS modules; keep the rest of the system stable.
+  # Lazy evaluation means headless hosts do not require the unstable channel.
+  unstable = import <unstable> {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfreePredicate = package: lib.getName package == "vscode";
   };
-
-  environment.systemPackages = lib.mkIf hasGui [ pkgs.vscode ];
+in
+{
+  environment.systemPackages = lib.mkIf hasGui [ unstable.vscode ];
 }
