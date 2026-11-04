@@ -17,6 +17,8 @@
 
     # Hardware, desktop composition, and host tools.
     ./kernel.nix
+    ./tuning.nix
+
     ./desktop.nix
     ./packages.nix
   ];

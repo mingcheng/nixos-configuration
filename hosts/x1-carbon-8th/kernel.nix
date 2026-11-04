@@ -14,6 +14,10 @@
 
 { pkgs, ... }: {
   boot = {
+    # 6.18 is the newest upstream LTS branch (November 2026).
+    # Follow its fixes from the stable channel, not linuxPackages_latest.
+    kernelPackages = pkgs.linuxPackages_6_18;
+
     initrd = {
       systemd.enable = true;
       availableKernelModules = [ "thunderbolt" ];
@@ -39,7 +43,6 @@
       "net.ipv6.conf.all.disable_ipv6" = 1;
       "net.core.default_qdisc" = "fq";
       "net.ipv4.tcp_congestion_control" = "bbr";
-      # "vm.swappiness" = 1;
       "vm.overcommit_memory" = 0;
       "vm.panic_on_oom" = 0;
     };
