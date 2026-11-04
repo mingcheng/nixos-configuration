@@ -24,5 +24,8 @@
     networkmanager.enable = true;
     useDHCP = false;
   };
-
+	
+  environment.variables = {
+    NIXPKGS_ALLOW_UNFREE = 1;
+  };
 }
