@@ -1,6 +1,12 @@
 { pkgs, ... }:
 {
-  imports = [ ../../packages/gui.nix ];
+  # Keep desktop-only features together; locale/timezone live in system/i18n.nix.
+  imports = [
+    ../../packages/gui.nix
+    ./fonts.nix
+    ./input-method.nix
+  ];
+
   services = {
     desktopManager.plasma6.enable = true;
     displayManager = {
@@ -25,10 +31,4 @@
   security.rtkit.enable = true;
 
   users.users.mingcheng.packages = [ pkgs.kdePackages.kate ];
-
-  fonts.packages = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-color-emoji
-  ];
 }
