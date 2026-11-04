@@ -7,5 +7,7 @@
 # http://www.opensource.org/licenses/MIT
 
 {
-  programs.fish = { enable = true; };
+  programs.fish = {
+    enable = true;
+  };
 }
