@@ -18,17 +18,15 @@
     daemon.settings = {
       debug = lib.mkDefault false;
       experimental = lib.mkDefault false;
-      "exec-opts" = lib.mkDefault [ "native.cgroupdriver=systemd" ];
-      "log-driver" = lib.mkDefault "json-file";
-      "log-opts" = {
-        "max-size" = lib.mkDefault "10m";
-        "max-file" = lib.mkDefault "3";
-      };
     };
     autoPrune = {
       enable = lib.mkDefault true;
       dates = lib.mkDefault "weekly";
-      flags = lib.mkDefault [ "--all" "--filter" "until=168h" ];
+      flags = lib.mkDefault [
+        "--all"
+        "--filter"
+        "until=168h"
+      ];
     };
     liveRestore = lib.mkDefault true;
   };

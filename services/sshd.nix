@@ -1,26 +1,35 @@
-# File: openssh.nix
-# Author: Ming Cheng<mingcheng@outlook.com>
+#!#
+# Copyright (c) 2026 mingcheng
 #
-# Created Date: Sunday, August 14th 2022, 11:17:23 pm
-# Last Modified: Monday, August 15th 2022, 10:37:22 pm
+# This source code is licensed under the MIT License,
+# which is located in the LICENSE file in the source tree's root directory.
 #
-# http://www.opensource.org/licenses/MIT
-{ config, lib, ... }: {
+# File: sshd.nix
+# Author: mingcheng <mingcheng@apache.org>
+# File Created: Sunday, August 14th 2022, 11:17:23 pm
+#
+# Modified By: mingcheng <mingcheng@apache.org>
+# Last Modified: 2026-11-04 15:19:54
+##
+
+{ lib, ... }: {
   services.openssh = {
     enable = true;
 
-    extraConfig = ''
-      AllowAgentForwarding yes
-      AllowTcpForwarding yes
-      AuthorizedKeysFile .ssh/authorized_keys
-      PubkeyAuthentication yes
-
-      Subsystem powershell /run/current-system/sw/bin/pwsh -SSHServerMode -NoLogo -NoProfile
-    '';
-
     settings = {
+      PubkeyAuthentication = true;
+      AuthenticationMethods = "publickey";
       PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
+
+      AllowAgentForwarding = lib.mkDefault true;
+      AllowTcpForwarding = lib.mkDefault "yes";
+      UseDns = lib.mkDefault false;
+
+      LoginGraceTime = lib.mkDefault 60;
+      ClientAliveInterval = lib.mkDefault 60;
+      ClientAliveCountMax = lib.mkDefault 5;
     };
   };
 }

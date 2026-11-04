@@ -17,8 +17,7 @@
       serviceConfig = {
         Type = "simple";
         User = "mingcheng";
-        ExecStart =
-          "${pkgs.qbittorrent-nox}/bin/qbittorrent-nox --webui-port=8080 --profile=/data/qbittorrent";
+        ExecStart = "${pkgs.qbittorrent-nox}/bin/qbittorrent-nox --webui-port=8080 --profile=/data/qbittorrent";
       };
       wantedBy = [ "network-online.target" ];
     };
