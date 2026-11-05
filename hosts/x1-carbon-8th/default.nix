@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 12:39:25
+# Last Modified: 2026-11-05 13:51:44
 ##
 
 { pkgs, ... }:
@@ -59,6 +59,10 @@
         "libvirtd"
         "docker"
         "networkmanager"
+
+        "video"
+        "input"
+        "audio"
       ];
       shell = pkgs.bash;
     };

@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 12:50:29
+# Last Modified: 2026-11-05 13:55:12
 ##
 
 { pkgs, ... }:
@@ -40,12 +40,22 @@
     pciutils
     smartmontools
     usbutils
+    inetutils
+    dnsutils
+    nmap
+
+    f2fs-tools
+    ntfs3g
+    exfat
+    direnv
+    nix-direnv
 
     # Basic system inspection and process management.
     file
     killall
     lsof
     sysstat
+    readline
   ];
 
   users.users.mingcheng.packages = with pkgs; [
@@ -61,6 +71,7 @@
     nixpkgs-review
     shfmt
     stow
+    gnupg
 
     # Networking and transfers.
     aria2
@@ -91,5 +102,29 @@
     nushell
     mise
     powershell
+
+    # Development tools and utilities.
+    python3
+    go
+    gopls
+    gotools
+    go-tools
+    delve
+    golangci-lint
+    nodejs
+    pnpm
+    typescript
+    typescript-language-server
+    rustc
+    rustup
+    cargo
+    rustfmt
+    clippy
+    rust-analyzer
+    gcc
+    cmake
+    pkg-config
+    openssl
+    openssl.dev
   ];
 }

@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 12:50:20
+# Last Modified: 2026-11-05 13:18:35
 ##
 
 {
@@ -18,6 +18,7 @@
     ../../packages/gui.nix
     ./fonts.nix
     ./input-method.nix
+    ../../services/pipewire.nix
   ];
 
   services = {
@@ -32,13 +33,6 @@
 
     libinput.enable = true;
     printing.enable = true;
-    pulseaudio.enable = false;
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
   };
 
   security.rtkit.enable = true;

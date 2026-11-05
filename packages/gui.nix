@@ -24,6 +24,23 @@ let
     config.services.xserver.enable
     || config.services.displayManager.enable
     || config.services.displayManager.sessionPackages != [ ];
+
+  # Keep Plasma services, shared plugins and system settings installed globally.
+  plasmaUserPackages =
+    with pkgs.kdePackages;
+    [
+      ark
+      dolphin
+      elisa
+      gwenview
+      kate
+      khelpcenter
+      konsole
+      okular
+      spectacle
+    ]
+    ++ lib.optional config.networking.networkmanager.enable qrca
+    ++ lib.optional (config.services.flatpak.enable || config.services.fwupd.enable) discover;
 in
 {
   imports = [ ../services/flatpak.nix ];
@@ -45,6 +62,10 @@ in
           lib.mkDefault [ "gtk" ]
         );
       };
+    })
+    (lib.mkIf config.services.desktopManager.plasma6.enable {
+      environment.plasma6.excludePackages = plasmaUserPackages;
+      users.users.mingcheng.packages = plasmaUserPackages;
     })
   ];
 }

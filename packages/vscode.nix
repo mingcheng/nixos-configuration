@@ -25,6 +25,6 @@ let
     config.allowUnfreePredicate = package: lib.getName package == "vscode";
   };
 in
-{
-  environment.systemPackages = lib.mkIf hasGui [ unstable.vscode ];
+lib.mkIf hasGui {
+  users.users.mingcheng.packages = [ unstable.vscode ];
 }
