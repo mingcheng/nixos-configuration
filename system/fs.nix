@@ -24,8 +24,4 @@
     fsType = "vfat";
   };
 
-  boot.loader.efi = {
-    canTouchEfiVariables = true;
-    efiSysMountPoint = "/efi";
-  };
 }

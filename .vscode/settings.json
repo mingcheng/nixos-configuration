@@ -1,9 +1,21 @@
 {
   "[nix]": {
-    "diffEditor.wordWrap": "on"
+    "diffEditor.wordWrap": "on",
+    "editor.fontSize": 12
   },
   "[markdown]": {
     "editor.wordWrap": "on",
-    "editor.fontSize": 13
+    "editor.fontSize": 12
   },
+  "psi-header.lang-config": [
+    {
+      "language": "nix",
+      "mapTo": "yaml"
+    }
+  ],
+  "psi-header.config": {
+    "author": "mingcheng",
+    "authorEmail": "mingcheng@apache.org",
+    "company": "mingcheng",
+  }
 }

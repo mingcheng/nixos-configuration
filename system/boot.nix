@@ -6,21 +6,33 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, ... }: {
+{ lib, ... }: {
   boot = {
     plymouth.enable = false;
 
     loader = {
       timeout = 3;
+      efi.canTouchEfiVariables = true;
+      grub.enable = false;
       systemd-boot = {
         enable = true;
-        configurationLimit = 5;
+        configurationLimit = 3;
       };
     };
-    supportedFilesystems = lib.mkForce [ "ext4" "vfat" "f2fs" ];
+    supportedFilesystems = lib.mkForce [
+      "ext4"
+      "vfat"
+      "f2fs"
+    ];
 
     initrd = {
-      availableKernelModules = [ "f2fs" "ext4" "nvme" "ahci" "vfat" ];
+      availableKernelModules = [
+        "f2fs"
+        "ext4"
+        "nvme"
+        "ahci"
+        "vfat"
+      ];
     };
   };
 }

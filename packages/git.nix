@@ -1,36 +1,113 @@
+#!#
+# Copyright (c) 2026 mingcheng
+#
+# This source code is licensed under the MIT License,
+# which is located in the LICENSE file in the source tree's root directory.
+#
 # File: git.nix
-# Author: Ming Cheng<mingcheng@outlook.com>
+# Author: mingcheng <mingcheng@apache.org>
+# File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
-# Created Date: Sunday, August 14th 2022, 9:45:39 pm
-# Last Modified: Monday, August 15th 2022, 11:45:02 am
-#
-# http://www.opensource.org/licenses/MIT
+# Modified By: mingcheng <mingcheng@apache.org>
+# Last Modified: 2026-11-04 12:18:24
+##
 
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   programs.git = {
     enable = true;
 
     config = {
-      aliases = {
+      user = {
+        name = "mingcheng";
+        email = "mingcheng@apache.org";
+      };
+      core = {
+        editor = "nvim";
+        autocrlf = "input";
+        whitespace = "trailing-space,cr-at-eol";
+        excludesFile = "/etc/gitignore";
+      };
+
+      alias = {
         c = "commit";
         p = "push";
         st = "status";
+        s = "status --short --branch";
+        co = "checkout";
+        sw = "switch";
+        br = "branch";
+        d = "diff";
+        ds = "diff --staged";
+        lg = "log --graph --decorate --oneline";
+        last = "log -1 --stat";
       };
 
-      pull = {
-        ff = "only";
-        rebase = true;
+      color.ui = "auto";
+      commit.verbose = true;
+      diff = {
+        algorithm = "histogram";
+        colorMoved = "default";
       };
-      init = { defaultBranch = "main"; };
+      status.showStash = true;
+      fetch.prune = true;
+      push = {
+        default = "simple";
+        autoSetupRemote = true;
+      };
+      pull.ff = "only";
+      init.defaultBranch = "main";
       rebase = {
         autoStash = true;
         autoSquash = true;
       };
+      merge.conflictStyle = "zdiff3";
+      rerere = {
+        enabled = true;
+        # Reused conflict resolutions still need review before staging.
+        autoUpdate = false;
+      };
 
-      # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/javascript.section.md#git-protocol-error
-      url = { "https://github.com" = { insteadOf = "git://github.com"; }; };
+      # Credential helper configuration set to store credentials in plaintext (uncomment to enable)
+      # credential.helper = "store";
+
+      url = {
+        "git@github.com:".insteadOf = "gh:";
+        "https://github.com/".insteadOf = "git://github.com/";
+      };
     };
   };
 
-  environment.systemPackages = with pkgs; [ gitflow ];
+  environment.etc."gitignore".text = ''
+    *.swp
+    *.swo
+    *~
+    .idea/
+    .vscode/
+    *.sublime-*
+
+    .DS_Store
+    Thumbs.db
+
+    *.log
+    *.tmp
+    *.temp
+    node_modules/
+    __pycache__/
+    *.pyc
+    .env
+    .env.local
+
+    dist/
+    build/
+    *.o
+    *.a
+    *.so
+  '';
+
+  environment.systemPackages = with pkgs; [
+    gitflow
+    gh
+    lazygit
+  ];
 }
