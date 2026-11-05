@@ -31,6 +31,24 @@
         allowNullPassword = lib.mkForce false;
       };
 
+      sddm = lib.mkIf config.services.displayManager.sddm.enable {
+        # SDDM delegates to login, so fprintAuth = false alone cannot bypass its fingerprint rule.
+        # Copy resolved args, not settings, which would expand those arguments a second time.
+        rules.auth =
+          lib.mapAttrs (_: rule: {
+            inherit (rule)
+              enable
+              order
+              control
+              modulePath
+              args
+              ;
+          }) (builtins.removeAttrs config.security.pam.services.login.rules.auth [ "fprintd" ])
+          // {
+            login.enable = false;
+          };
+      };
+
       kde = lib.mkIf config.services.desktopManager.plasma6.enable {
         fprintAuth = false;
         allowNullPassword = lib.mkForce false;
