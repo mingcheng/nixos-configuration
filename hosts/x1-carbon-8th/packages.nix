@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 11:26:32
+# Last Modified: 2026-11-05 12:50:29
 ##
 
 { pkgs, ... }:
@@ -30,6 +30,25 @@
   };
 
   environment.systemPackages = with pkgs; [
+    # Network, storage and hardware maintenance, including use from root.
+    ethtool
+    iproute2
+    nfs-utils
+    hddtemp
+    hdparm
+    nvme-cli
+    pciutils
+    smartmontools
+    usbutils
+
+    # Basic system inspection and process management.
+    file
+    killall
+    lsof
+    sysstat
+  ];
+
+  users.users.mingcheng.packages = with pkgs; [
     # Nix and development tools.
     binutils
     gnumake
@@ -45,35 +64,22 @@
 
     # Networking and transfers.
     aria2
-    ethtool
     inetutils
     iperf
-    iproute2
-    nfs-utils
     wget
 
-    # Storage and hardware diagnostics.
-    hddtemp
-    hdparm
-    nvme-cli
-    pciutils
-    smartmontools
-    usbutils
+    # Interactive navigation.
     eza
     fzf
     zoxide
 
-    # System monitoring.
+    # Optional monitoring and benchmarking.
     fastfetch
     htop
     btop
-    killall
-    lsof
     stress
-    sysstat
 
     # Files, text and terminals.
-    file
     jq
     lz4
     p7zip

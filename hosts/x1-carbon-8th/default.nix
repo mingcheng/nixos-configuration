@@ -9,9 +9,10 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 11:23:53
+# Last Modified: 2026-11-05 12:39:25
 ##
 
+{ pkgs, ... }:
 {
   imports = [
     # Shared system policy.
@@ -39,5 +40,27 @@
   networking = {
     networkmanager.enable = true;
     useDHCP = false;
+  };
+
+  systemd.services.nix-daemon.environment = {
+    https_proxy = "http://127.0.0.1:7890";
+    http_proxy = "http://127.0.0.1:7890";
+    all_proxy = "http://127.0.0.1:7890";
+  };
+
+  users = {
+    mutableUsers = true;
+    users."mingcheng" = {
+      description = "mingcheng <mingcheng@outlook.com>";
+      isNormalUser = true;
+      group = "users";
+      extraGroups = [
+        "wheel"
+        "libvirtd"
+        "docker"
+        "networkmanager"
+      ];
+      shell = pkgs.bash;
+    };
   };
 }

@@ -38,9 +38,9 @@
     kernelParams = [
       "mem_sleep_default=deep"
       "verbose"
-      "fsck.mode=force"
-      "fsck.fix=yes"
-      "fsck.repair=yes"
+      #"fsck.mode=force"
+      #"fsck.fix=yes"
+      #"fsck.repair=yes"
       "selinux=0"
     ];
 
