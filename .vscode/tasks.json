@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Check NixOS modules",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"check-modules"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Check NixOS configuration",
+			"type": "shell",
+			"command": "set -o pipefail && make check 2>&1 | tee .vscode/check.log",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Check local X1 configuration",
+			"type": "shell",
+			"command": "set -o pipefail && env -u NIXPKGS_ALLOW_UNFREE NIX_BUILD_HOST=x1-carbon-8th make check-local 2>&1 | tee .vscode/check-local.log",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}
