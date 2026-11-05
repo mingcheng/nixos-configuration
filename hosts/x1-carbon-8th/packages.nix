@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 20:15:04
+# Last Modified: 2026-11-05 21:01:06
 ##
 
 { pkgs, ... }:
@@ -106,6 +106,10 @@
 
     # Development tools and utilities.
     mise
+    gcc
+    cmake
+    ninja
+    pkg-config
     python3
   ];
 }
