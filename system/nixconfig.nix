@@ -33,6 +33,8 @@
 
       fallback = true;
       connect-timeout = 5;
+      stalled-download-timeout = 30;
+      download-attempts = 3;
       require-sigs = true;
     };
 

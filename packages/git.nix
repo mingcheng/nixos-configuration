@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 2026 mingcheng
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 12:18:24
+# Last Modified: 2026-11-05 19:14:24
 ##
 
 { pkgs, ... }:
@@ -70,11 +70,10 @@
 
       # Credential helper configuration set to store credentials in plaintext (uncomment to enable)
       # credential.helper = "store";
-
-      url = {
-        "git@github.com:".insteadOf = "gh:";
-        "https://github.com/".insteadOf = "git://github.com/";
-      };
+      # url = {
+      #   "git@github.com:".insteadOf = "gh:";
+      #   "https://github.com/".insteadOf = "git://github.com/";
+      # };
     };
   };
 

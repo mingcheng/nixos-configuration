@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 14:53:23
+# Last Modified: 2026-11-05 20:15:04
 ##
 
 { pkgs, ... }:
@@ -58,11 +58,11 @@
     lsof
     sysstat
     readline
+    binutils
   ];
 
   users.users.mingcheng.packages = with pkgs; [
     # Nix and development tools.
-    binutils
     gnumake
     manix
     nix-du
@@ -102,31 +102,10 @@
 
     # Additional interactive shells; the login shell remains unchanged.
     nushell
-    mise
     powershell
 
     # Development tools and utilities.
+    mise
     python3
-    go
-    gopls
-    gotools
-    go-tools
-    delve
-    golangci-lint
-    nodejs
-    pnpm
-    typescript
-    typescript-language-server
-    rustc
-    rustup
-    cargo
-    rustfmt
-    clippy
-    rust-analyzer
-    gcc
-    cmake
-    pkg-config
-    openssl
-    openssl.dev
   ];
 }
