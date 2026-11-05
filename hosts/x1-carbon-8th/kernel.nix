@@ -13,6 +13,8 @@
 ##
 
 { pkgs, ... }: {
+  imports = [ ../../system/kernel.nix ];
+
   boot = {
     # 6.18 is the newest upstream LTS branch (November 2026).
     # Follow its fixes from the stable channel, not linuxPackages_latest.
@@ -27,24 +29,23 @@
       ];
     };
 
-    kernelModules = [ "thinkpad_acpi" ];
+    kernelModules = [
+      "thinkpad_acpi"
+      "f2fs"
+    ];
 
     # Select Linux/S3 sleep in the firmware to expose the deep sleep state.
     kernelParams = [
       "mem_sleep_default=deep"
       "verbose"
-      # "fsck.mode=force"
-      # "fsck.fix=yes"
-      # "fsck.repair=yes"
+      "fsck.mode=force"
+      "fsck.fix=yes"
+      "fsck.repair=yes"
       "selinux=0"
     ];
 
     kernel.sysctl = {
       "net.ipv6.conf.all.disable_ipv6" = 1;
-      "net.core.default_qdisc" = "fq";
-      "net.ipv4.tcp_congestion_control" = "bbr";
-      "vm.overcommit_memory" = 0;
-      "vm.panic_on_oom" = 0;
     };
   };
 

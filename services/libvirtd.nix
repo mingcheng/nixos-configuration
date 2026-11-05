@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }: {
+{
   environment.variables = {
     LIBVIRT_DEFAULT_URI = "qemu:///system";
   };
@@ -17,7 +17,6 @@
     enable = true;
     qemu = {
       runAsRoot = false;
-      ovmf.enable = true;
     };
     onShutdown = "shutdown";
     allowedBridges = [

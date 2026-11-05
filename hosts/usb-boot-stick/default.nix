@@ -1,38 +1,34 @@
-# File: usb.nix
-# Author: Ming Cheng<mingcheng@outlook.com>
+#!#
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
-# Created Date: Monday, August 15th 2022, 2:33:25 pm
-# Last Modified: Monday, August 15th 2022, 2:33:26 pm
+# This source code is licensed under the MIT License,
+# which is located in the LICENSE file in the source tree's root directory.
 #
-# http://www.opensource.org/licenses/MIT
+# File: default.nix
+# Author: mingcheng <mingcheng@apache.org>
+# File Created: Monday, August 15th 2022, 2:33:25 pm
+#
+# Modified By: mingcheng <mingcheng@apache.org>
+# Last Modified: 2026-11-05 11:25:10
+##
 
 {
-  pkgs,
-  lib,
   modulesPath,
   ...
 }:
 {
   imports = [
-    #https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/profiles
     (modulesPath + "/profiles/all-hardware.nix")
 
-    ../qemu
+    ../../profiles/base.nix
+    ../../system/networking.nix
     ../../packages/kubectl.nix
     ../../packages/git.nix
     ../../packages/nvim.nix
     ../../packages/netutils.nix
     ../../system/grub.nix
-
-    ../chartman/packages.nix
   ];
 
-  boot.kernel = {
-    sysctl = {
-      "net.ipv6.conf.all.disable_ipv6" = 1;
-    };
-  };
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
   boot.kernelParams = [
     "verbose"
     "intel_iommu=on"
@@ -59,16 +55,6 @@
     "xfs"
     "ntfs"
   ];
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/24e24f36-6056-42a2-90a2-d0d60027b2ab";
-    fsType = "f2fs";
-  };
-
-  fileSystems."/efi" = {
-    device = "/dev/disk/by-uuid/7E68-0551";
-    fsType = "vfat";
-  };
 
   boot.loader.efi = {
     canTouchEfiVariables = false;

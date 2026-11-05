@@ -12,11 +12,23 @@
 # Last Modified: 2026-11-04 12:18:24
 ##
 
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   programs.git = {
     enable = true;
 
     config = {
+      user = {
+        name = "mingcheng";
+        email = "mingcheng@apache.org";
+      };
+      core = {
+        editor = "nvim";
+        autocrlf = "input";
+        whitespace = "trailing-space,cr-at-eol";
+        excludesFile = "/etc/gitignore";
+      };
+
       alias = {
         c = "commit";
         p = "push";
@@ -43,13 +55,8 @@
         default = "simple";
         autoSetupRemote = true;
       };
-      pull = {
-        ff = "only";
-        rebase = true;
-      };
-      init = {
-        defaultBranch = "main";
-      };
+      pull.ff = "only";
+      init.defaultBranch = "main";
       rebase = {
         autoStash = true;
         autoSquash = true;
@@ -61,14 +68,46 @@
         autoUpdate = false;
       };
 
-      # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/javascript.section.md#git-protocol-error
+      # Credential helper configuration set to store credentials in plaintext (uncomment to enable)
+      # credential.helper = "store";
+
       url = {
-        "https://github.com/" = {
-          insteadOf = "git://github.com/";
-        };
+        "git@github.com:".insteadOf = "gh:";
+        "https://github.com/".insteadOf = "git://github.com/";
       };
     };
   };
 
-  environment.systemPackages = with pkgs; [ gitflow ];
+  environment.etc."gitignore".text = ''
+    *.swp
+    *.swo
+    *~
+    .idea/
+    .vscode/
+    *.sublime-*
+
+    .DS_Store
+    Thumbs.db
+
+    *.log
+    *.tmp
+    *.temp
+    node_modules/
+    __pycache__/
+    *.pyc
+    .env
+    .env.local
+
+    dist/
+    build/
+    *.o
+    *.a
+    *.so
+  '';
+
+  environment.systemPackages = with pkgs; [
+    gitflow
+    gh
+    lazygit
+  ];
 }

@@ -6,32 +6,18 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }: {
+{
   fileSystems."/public" = {
     device = "/data";
+    fsType = "none";
     options = [ "bind" ];
   };
 
   services.nfs.server = {
     enable = true;
     exports = ''
-      /public 172.16.0.0/24(rw,all_squash,no_subtree_check,async)
+      # /public 172.16.0.0/24(rw,all_squash,no_subtree_check,async)
     '';
   };
 
-  # services.rpcbind.enable = true; # needed for NFS
-  # systemd.mounts = [{
-  #   type = "nfs";
-  #   mountConfig = {
-  #     Options = "noatime nfsvers=4.2";
-  #   };
-  #   what = "172.16.0.201:/public";
-  #   where = "/data2";
-  # }];
-
-  # fileSystems."/mnt/tomoyo" = {
-  #   device = "server:/tomoyo";
-  #   fsType = "nfs";
-  #   options = [ "nfsvers=4.2" ];
-  # };
 }

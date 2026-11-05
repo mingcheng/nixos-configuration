@@ -8,7 +8,7 @@
 
 {
   programs.bat = {
-    config = {
+    settings = {
       theme = "ansi-dark";
     };
     enable = true;

@@ -27,11 +27,10 @@ if host == "" then
 else if !(builtins.elem host availableHosts) then
   throw "Unknown NIX_BUILD_HOST '${host}'. ${hostHint}"
 else
+  { lib, ... }:
   {
     imports = [ (hostConfiguration host) ];
 
-    environment.variables = {
-      NIX_BUILD_HOST = host;
-      HOSTNAME = host;
-    };
+    networking.hostName = lib.mkDefault host;
+    environment.variables.NIX_BUILD_HOST = host;
   }

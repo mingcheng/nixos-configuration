@@ -13,10 +13,6 @@
 ##
 
 { lib, ... }: {
-  environment.variables = {
-    NIXPKGS_ALLOW_UNFREE = 1;
-  };
-
   nix = {
     settings = {
       # https://nixos.wiki/wiki/Storage_optimization
@@ -32,12 +28,8 @@
         "@wheel"
       ];
 
-      substituters = lib.mkForce [
-        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-        "https://mirrors.ustc.edu.cn/nix-channels/store"
-        "https://mirror.sjtu.edu.cn/nix-channels/store"
-        "https://mirrors.cernet.edu.cn/nix-channels/store"
-      ];
+      # Substituters for binary caches, defined in ../sources.nix for mainland China users
+      substituters = lib.mkForce (import ../sources.nix).substituters;
 
       fallback = true;
       connect-timeout = 5;

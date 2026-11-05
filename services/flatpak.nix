@@ -15,7 +15,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -32,6 +31,8 @@ in
       environment.FLATHUB_URL = flathubUrl;
       script = ''
         set -eu
+        flatpak remote-add --system --if-not-exists --from flathub \
+          https://flathub.org/repo/flathub.flatpakrepo
         flatpak remote-modify --system --gpg-verify --no-follow-redirect \
           --url="$FLATHUB_URL" flathub
       '';

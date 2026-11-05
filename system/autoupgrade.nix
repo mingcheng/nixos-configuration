@@ -12,11 +12,13 @@
 # Last Modified: 2026-11-04 12:00:38
 ##
 
-{
+{ config, ... }: {
   system.autoUpgrade = {
     enable = true;
     allowReboot = false;
-    # stateVersion = "26.05";
-    channel = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-26.05";
+    channel = (import ../sources.nix).channels.nixos;
   };
+
+  systemd.services.nixos-upgrade.environment.NIX_BUILD_HOST =
+    config.environment.variables.NIX_BUILD_HOST;
 }

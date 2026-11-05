@@ -6,14 +6,11 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, ... }: {
-  #  https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/databases/postgresql.nix
+{ pkgs, ... }:
+{
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_14;
-    enableTCPIP = true;
-
     dataDir = "/data/postgresql";
-    settings.listen_addresses = lib.mkForce "192.168.0.11";
   };
 }

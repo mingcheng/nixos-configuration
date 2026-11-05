@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 2026 mingcheng
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,14 +9,19 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 16:07:04
+# Last Modified: 2026-11-05 11:26:32
 ##
 
 { pkgs, ... }:
 {
   imports = [
+    ../../packages/bat.nix
     ../../packages/fish.nix
+    ../../packages/git.nix
     ../../packages/nvim.nix
+    ../../packages/starship.nix
+    ../../packages/atuin.nix
+    ../../packages/tmux.nix
   ];
 
   programs = {
@@ -54,9 +59,11 @@
     pciutils
     smartmontools
     usbutils
+    eza
+    fzf
+    zoxide
 
     # System monitoring.
-    # duf
     fastfetch
     htop
     btop
@@ -66,20 +73,17 @@
     sysstat
 
     # Files, text and terminals.
-    bat
     file
     jq
     lz4
     p7zip
-    tmux
     tree
     unzip
     yq
 
     # Additional interactive shells; the login shell remains unchanged.
     nushell
-    # starship
-    # mise
+    mise
     powershell
   ];
 }
