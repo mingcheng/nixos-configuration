@@ -16,7 +16,7 @@
       grub.enable = false;
       systemd-boot = {
         enable = true;
-        configurationLimit = 3;
+        configurationLimit = 7;
       };
     };
     supportedFilesystems = lib.mkForce [

@@ -24,6 +24,8 @@
     ../../system/swap.nix
 
     # Host services.
+    ../../services/fprintd.nix
+
     ../../services/fstrim.nix
     ../../services/timesyncd.nix
     ../../services/docker.nix
