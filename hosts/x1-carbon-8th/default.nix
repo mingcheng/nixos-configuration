@@ -12,7 +12,12 @@
 # Last Modified: 2026-11-05 14:53:06
 ##
 
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
     # Shared system policy.
@@ -43,6 +48,9 @@
   networking = {
     networkmanager.enable = true;
     useDHCP = false;
+    resolvconf.extraConfig = lib.optionalString (
+      config.services.nscd.enable && config.services.nscd.enableNsncd
+    ) "libc_restart=':'";
     proxy = {
       default = "http://127.0.0.1:7890";
       noProxy = "127.0.0.1,localhost,internal.domain";

@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 2026 mingcheng
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,7 +9,7 @@
 # File Created: 2026-11-04 11:15:44
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 11:55:59
+# Last Modified: 2026-11-05 23:54:08
 ##
 
 { pkgs, ... }: {
@@ -37,7 +37,9 @@
     # Select Linux/S3 sleep in the firmware to expose the deep sleep state.
     kernelParams = [
       "mem_sleep_default=deep"
-      "verbose"
+      "preempt=full"
+      "intel_iommu=on"
+      "i915.enable_psr=0"
       #"fsck.mode=force"
       #"fsck.fix=yes"
       #"fsck.repair=yes"
