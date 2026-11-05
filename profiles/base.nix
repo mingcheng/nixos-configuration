@@ -9,12 +9,13 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 11:26:59
+# Last Modified: 2026-11-05 14:16:55
 ##
 
 {
   imports = [
     ../system/nixconfig.nix
+    ../system/mainland.nix
     ../system/i18n.nix
     ../system/sudo.nix
   ];
