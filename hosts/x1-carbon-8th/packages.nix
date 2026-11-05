@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 13:55:12
+# Last Modified: 2026-11-05 14:53:23
 ##
 
 { pkgs, ... }:
@@ -34,6 +34,7 @@
     ethtool
     iproute2
     nfs-utils
+    lm_sensors
     hddtemp
     hdparm
     nvme-cli
@@ -44,6 +45,7 @@
     dnsutils
     nmap
 
+    # File system tools
     f2fs-tools
     ntfs3g
     exfat

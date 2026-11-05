@@ -1,5 +1,7 @@
 # 明城的 NixOS 配置
 
+![Screenshot of X1 Carbon 8th Gen](screenshot.png)
+
 用于 ThinkPad X1 Carbon Gen 8、QEMU 虚拟机和 USB 启动盘的个人配置。当前面向 **NixOS 26.05 / x86_64-linux**，使用传统 channel，无需 flakes
 
 ## 选择主机

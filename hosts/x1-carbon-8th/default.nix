@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 13:51:44
+# Last Modified: 2026-11-05 14:53:06
 ##
 
 { pkgs, ... }:
@@ -32,6 +32,7 @@
     # Hardware, desktop composition, and host tools.
     ./kernel.nix
     ./tuning.nix
+    ./security.nix
 
     ./desktop.nix
     ./packages.nix
@@ -40,6 +41,10 @@
   networking = {
     networkmanager.enable = true;
     useDHCP = false;
+    proxy = {
+      default = "http://127.0.0.1:7890";
+      noProxy = "127.0.0.1,localhost,internal.domain";
+    };
   };
 
   systemd.services.nix-daemon.environment = {
@@ -59,7 +64,6 @@
         "libvirtd"
         "docker"
         "networkmanager"
-
         "video"
         "input"
         "audio"
