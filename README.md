@@ -1,152 +1,111 @@
-# 明城的 NixOS 配置文件
+# 明城的 NixOS 配置
 
-<!-- TOC depthfrom:2 -->
+用于 ThinkPad X1 Carbon Gen 8、QEMU 虚拟机和 USB 启动盘的个人配置。当前面向 **NixOS 26.05 / x86_64-linux**，使用传统 channel，无需 flakes
 
-- [目录说明](#%E7%9B%AE%E5%BD%95%E8%AF%B4%E6%98%8E)
-- [物理机列表](#%E7%89%A9%E7%90%86%E6%9C%BA%E5%88%97%E8%A1%A8)
-- [安装事项](#%E5%AE%89%E8%A3%85%E4%BA%8B%E9%A1%B9)
-    - [生成虚拟机镜像](#%E7%94%9F%E6%88%90%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F)
-    - [ZFS 相关自动备份](#zfs-%E7%9B%B8%E5%85%B3%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD)
-- [使用事项](#%E4%BD%BF%E7%94%A8%E4%BA%8B%E9%A1%B9)
-- [参考资源](#%E5%8F%82%E8%80%83%E8%B5%84%E6%BA%90)
+## 选择主机
 
-<!-- /TOC -->
+| `NIX_BUILD_HOST`                                     | 适用场景                                                                         |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)   | ThinkPad X1 Carbon Gen 8；Plasma Wayland 桌面、PipeWire 音频、Fcitx5/Rime 输入法 |
+| [`vm-image`](hosts/vm-image/default.nix)             | QEMU 客户机基础配置，不是可直接启动的磁盘镜像                                    |
+| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix) | USB 启动盘；通用硬件支持、可移动 UEFI 引导、命令行维护工具                       |
 
-NixOS 可以说是我至今为止碰到的最合适的 Linux 裸机发行版，因为它解决了很多我在部署和配置上的问题（对，我个人是拿它来做服务器环境部署使用）。
+构建时必须通过 `NIX_BUILD_HOST` 指定上述配置之一。系统主机名默认与其一致，可在本机配置中用 `networking.hostName` 修改。
 
-## 目录说明
+## 快速开始
 
-目录结构还是非常的简单，主要为以下的安排：
+以下以**已安装 NixOS 的 X1** 为例，假设仓库位于 `/etc/nixos`。使用其他主机时，请替换命令中的 `x1-carbon-8th`。
 
-```text
-.
-├── hosts // 存放各个主机平台的配置
-│   ├── chartman
-│   ├── farlion
-│   ├── qemu
-│   ├── ...
-│   └── usb
-├── packages // 软件包相关的配置
-├── scripts // Shell 脚本
-├── services // 系统服务相关的配置
-└── system // 系统相关的配置
-```
+### 1. 接入本机配置
 
-## 物理机列表
-
-备注：这个表格更新自 Sharkbay 项目的表格，主要是物理硬件的列表
-
-| 主机名称   | 网络地址    | 硬件配置                                                         | 相关说明                                         |
-| ---------- | ----------- | ---------------------------------------------------------------- | ------------------------------------------------ |
-| supermicro | 192.168.0.2 | Xeon E-2236 (12)、64G DDR4、三星PM981a 1T SSD、四口英特尔350网卡 |                                                  |
-| lantern    | 192.168.0.4 | Supermicro X10SDV-F、Xeon D-1521， 23G、4T*4、HP Gen8 的定制机箱 | PT 下载机以及备份等服务                          |
-| jginyue    | 192.168.0.3 | JGINYUE H97I PLUS、i7-4790T、8g DDR3、WD SSD 256G                | 家庭主力软路由，上面跑了 OpenWRT 以及 Clash 服务 |
-| chartman   | /           | Xeon E-2288G(ES)、三星 32G ECC DDR4 <del>1T 三星 NVME SSD</del>  | 开发测试二机，主板和 supermirco 一致（暂停使用） |
-
-虚拟机列表
-
-| 主机名称 | 网络地址     | 硬件配置 | 相关说明                         |
-| -------- | ------------ | -------- | -------------------------------- |
-| wooramel | 192.168.0.14 | 8c16G    | 主数据库以及数据相关的应用服务器 |
-
-## 安装事项
-
-注意，分区起码要有两个分区，分别是根分区以及对应的 EFI 分区，同时需要在 fdisk 中指定 EFI 分区的类型；mkfs 的时候，需要设置对应的卷标为 nixos 以及 EFI（具体参考 `system/fs.nix`）文件的配置。
-
-分别挂载到 /mnt 以及 /mnt/efi 目录下；然后执行（如果有需要的话）
-
-```bash
-nix-shell -p nixos-generators
-```
-
-参考生成的文件，修改 为 `configuration.nix` 这里主要固定版本号。
+先备份 `configuration.nix` 和 `hardware-configuration.nix`，再在 `configuration.nix` 的 `imports` 中加入 [main.nix](main.nix)：
 
 ```nix
-{ config, pkgs, ... }: {
-  imports = [ ./main.nix ];
-  system.stateVersion = "22.11"; # Did you read the comment?
-}
+imports = [
+  ./hardware-configuration.nix
+  ./main.nix
+];
 ```
 
-同时，可以参考具体的配置重新定义主机名称以及网络地址，例如
+保留原有账户、登录凭据和其他必需配置；不要用此片段替换整个文件。两份本机文件已被 Git 忽略，不应复制其他机器的磁盘 UUID 或硬件配置。
 
-```nix
-networking.hostName = lib.mkForce "lenovo";
-networking.interfaces = lib.mkForce {
-  "br0" = {
-    useDHCP = false;
-    ipv4.addresses = [{
-      address = "192.168.0.7";
-      prefixLength = 23;
-    }];
-  };
-};
+`system.stateVersion` 是首次安装时的兼容基线，不是软件版本；更新 channel 时不要同步修改它。
 
-networking.defaultGateway = lib.mkForce {
-  address = "192.168.0.1";
-  interface = "br0";
-};
-networking.nameservers = lib.mkForce [ "192.168.0.1" ];
-```
+### 2. 配置软件通道
 
-配置镜像源，参考 `scripts/nixconfig.sh` 文件，然后根据主机名称注入环境变量安装
+以下地址与 [sources.nix](sources.nix) 一致。稳定通道用于系统和大部分软件，桌面的 VS Code 另需 `unstable`：
 
 ```bash
-NIX_BUILD_HOST=farlion nixos-install --root /mnt --no-root-password
+sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-26.05 nixos
+sudo nix-channel --update nixos
+
+# 仅使用 VM 或 USB 配置时，可跳过以下两条命令。
+sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable unstable
+sudo nix-channel --update unstable
 ```
 
-如果一切没有问题，将安装完成。
+这些命令会替换 **root 的同名通道**；普通用户的通道与 root 独立。请使用上述命令，[旧初始化脚本](scripts/nixconfig.sh) 仍引用旧通道，并会覆盖用户 Nix 配置。
 
+### 3. 构建并应用
 
-### 生成虚拟机镜像
-
-可以参考以下连个链接，同时建议使用 qemu 镜像资源，能够生成比较小的 QCOW2 镜像文件：
-
-* https://mynixos.com/nixos-generators
-* https://jade.fyi/blog/nixos-disk-images-m1/
-
-### ZFS 相关自动备份
-
-节选自 https://marcopolo.io/code/backups-made-simple/
-
-On NixOS setting up automatic snapshots is a breeze, just add the following to your NixOS Configuration:
-
-```nix
-{
-  services.zfs.autoSnapshot.enable = true;
-}
-```
-
-and setting the `com.sun:auto-snapshot` option on the filesystem. E.g.: `zfs set com.sun:auto-snapshot=true <pool>/<fs>`. Note that this can also be done on creation of the filesystem: `zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true tank/home`.
-
-简单的说，配置完成了以后，配置
-
-```
-zfs set com.sun:auto-snapshot=true tank/home
-```
-
-即可。
-
-## 使用事项
-
-批量格式化可以使用以下命令
+先构建，确认配置能够正常生成；这一步不会切换运行中的系统：
 
 ```bash
-nix-shell -p nixfmt --run "find . -iname '*.nix' -exec nixfmt {} \;"
+sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild build
 ```
 
-或者直接使用 `make fmt`
+构建成功后再应用：
 
-如果需要参考具体的包以及配置，需要了解具体的软件包定义，这块需要参考例如：
+```bash
+sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild switch
+```
 
-- <https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/databases/redis.nix>
-- <https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/databases/mongodb.nix>
+`switch` 会立即应用配置，并可能重启服务。内核等变更需重启后生效；首次切换或升级后，请检查网络、桌面、输入法和睡眠恢复。
 
-## 参考资源
+## 更新与回退
 
-- <https://mirrors.tuna.tsinghua.edu.cn/help/nix/>
-- <https://nixos.wiki/wiki/Storage_optimization>
-- <https://nixos.wiki/wiki/Overview_of_the_Nix_Language>
-- <https://learnxinyminutes.com/docs/nix/>
-- <https://cheat.readthedocs.io/en/latest/nixos/nix_lang.html>
-`
+| 操作         | 做法                                                                                                              |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| 更新软件     | 执行 `sudo nix-channel --update nixos`；使用桌面时另执行 `sudo nix-channel --update unstable`，然后重新构建并应用 |
+| 回退配置     | 执行 `sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild switch --rollback`                                      |
+| 无法正常启动 | 在启动菜单中选择仍保留的上一代配置                                                                                |
+
+系统回退不能撤销数据库迁移等应用数据变更，重要数据仍需单独备份。
+
+## 个性化配置
+
+| 想调整什么                   | 修改位置                                                                 |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| 账户、SSH 公钥、代理、主机名 | 本机 `configuration.nix`                                                 |
+| 磁盘、swap、EFI 挂载点       | 本机生成的 `hardware-configuration.nix`                                  |
+| 主机硬件策略、桌面和软件组合 | [hosts/](hosts/)                                                         |
+| 系统设置、可选服务、程序配置 | [system/](system/)、[services/](services/)、[packages/](packages/)       |
+| 通道地址与系统二进制缓存     | [sources.nix](sources.nix)；修改通道地址后需重新执行 `nix-channel --add` |
+
+通过 `imports` 按需引入模块，文件存在不代表服务已启用。可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口、数据目录和访问权限。
+
+需要 SSH 时可导入 [services/sshd.nix](services/sshd.nix)：仅允许公钥认证，禁止 root 远程登录，请先为自己的账户配置公钥。
+
+## 新安装
+
+先手动完成分区并挂载到 `/mnt`，再运行 `sudo nixos-generate-config --root /mnt`。将仓库文件放入 `/mnt/etc/nixos`，保留生成的本机配置，按上面的步骤添加导入、配置通道，并设置自己的账户及登录凭据。
+
+确认磁盘、引导和账户配置后执行：
+
+```bash
+sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
+```
+
+X1 默认使用 `/boot` 挂载 EFI 分区，USB 配置使用 `/efi`；挂载布局必须与硬件配置一致。VM 需另行配置适合目标磁盘的引导器。分区和安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
+
+## 使用提醒
+
+- **X1 休眠**：硬件配置必须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代它。固件需选择 Linux/S3 睡眠模式。
+- **管理权限**：`wheel` 组可免密码 sudo，并被列为 Nix trusted-users，只应加入可信账户。
+- **秘密信息**：不要把密码、令牌等写入 Nix 表达式，它们可能进入其他用户可读的 Nix store。
+
+## 参考
+
+- [NixOS 手册](https://nixos.org/manual/nixos/stable/)
+- [NixOS 选项查询](https://search.nixos.org/options)
+- [NixOS Wiki](https://wiki.nixos.org/)
