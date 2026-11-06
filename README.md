@@ -46,7 +46,16 @@ sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-u
 sudo nix-channel --update unstable
 ```
 
-这些命令会替换 **root 的同名通道**；普通用户的通道与 root 独立。请使用上述命令，[旧初始化脚本](scripts/nixconfig.sh) 仍引用旧通道，并会覆盖用户 Nix 配置。
+这些命令会替换 **root 的同名通道**；普通用户的通道与 root 独立。
+
+也可使用 [nixconfig.sh](scripts/nixconfig.sh)，从任意工作目录登记并更新指定通道：
+
+```bash
+sudo bash /etc/nixos/scripts/nixconfig.sh          # 默认只更新 nixos
+sudo bash /etc/nixos/scripts/nixconfig.sh unstable # 桌面另需 unstable
+```
+
+脚本读取 [sources.nix](sources.nix)，不会覆盖用户的 `nix.conf`，也不会更新其他通道；出错时立即停止。[channel.sh](scripts/channel.sh) 使用相同参数，但只登记通道、不更新。
 
 ### 3. 构建并应用
 
@@ -81,12 +90,58 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild switch
 | 账户、SSH 公钥、代理、主机名 | 本机 `configuration.nix`                                                 |
 | 磁盘、swap、EFI 挂载点       | 本机生成的 `hardware-configuration.nix`                                  |
 | 主机硬件策略、桌面和软件组合 | [hosts/](hosts/)                                                         |
+| 所有主机共用的策略           | [profiles/base.nix](profiles/base.nix)                                    |
 | 系统设置、可选服务、程序配置 | [system/](system/)、[services/](services/)、[packages/](packages/)       |
 | 通道地址与系统二进制缓存     | [sources.nix](sources.nix)；修改通道地址后需重新执行 `nix-channel --add` |
 
 通过 `imports` 按需引入模块，文件存在不代表服务已启用。可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口、数据目录和访问权限。
 
 需要 SSH 时可导入 [services/sshd.nix](services/sshd.nix)：仅允许公钥认证，禁止 root 远程登录，请先为自己的账户配置公钥。
+
+X1 默认使用 `http://127.0.0.1:7890` 代理。只需配置 `networking.proxy`，NixOS 会将其传递给登录会话和 `nix-daemon`，不要另外重复设置守护进程代理。若不使用该本地代理，在本机配置中加入：
+
+```nix
+networking.proxy = {
+  default = null;
+  noProxy = "";
+};
+```
+
+## 测试与维护
+
+测试按职责拆分，不依赖仓库中被忽略的本机配置：
+
+| 层次 | 位置 | 验证内容 |
+| ---- | ---- | -------- |
+| 模块 | [tests/modules/](tests/modules/) | 系统策略、镜像与代理、swap 边界、程序与可选服务、GUI/输入法、PAM |
+| 主机 | [tests/hosts/](tests/hosts/) | 三种主机的完整配置求值及各自主机策略 |
+| 入口 | [tests/selection.nix](tests/selection.nix) | 未设置、空值、未知主机、路径绕过及主机测试是否齐全 |
+| 脚本 | [tests/scripts/](tests/scripts/) | 通道来源、任意工作目录/含空格路径、配置保留、错误传播与挂载顺序 |
+
+需要 Nix、GNU Make、Bash，以及可通过 `<nixpkgs>` 访问的稳定通道；完整测试和 GUI/X1 测试还需要 `<unstable>`。测试通道属于运行命令的用户，请留意它们与 root 通道的区别。
+
+```bash
+make check                               # 全部语法、模块、主机与脚本测试
+make check-modules                       # 仅模块
+make check-hosts                         # 仅主机及入口
+make check-scripts                       # 仅脚本
+make check-module-swap check-module-docker
+make check-host-vm-image check-host-usb-boot-stick
+```
+
+[公共测试夹具](tests/lib.nix) 使用虚拟磁盘标签求值真实 NixOS 模块，检查系统断言、警告和顶层 derivation；不构建或切换系统，也不启动服务。无桌面测试将 `<unstable>` 替换为禁止导入的夹具，保证 VM、USB 和无 GUI 场景不依赖它。脚本测试模拟通道和挂载命令，不修改真实通道、不访问磁盘设备。
+
+本机配置需要单独检查；以下命令默认读取仓库中的 `configuration.nix`，不会注入测试硬件：
+
+```bash
+NIX_BUILD_HOST=x1-carbon-8th make check-local
+# 检查其他位置的本机配置：
+NIX_BUILD_HOST=x1-carbon-8th make check-local LOCAL_CONFIG=/etc/nixos/configuration.nix
+```
+
+这些是**求值和脚本回归测试**，不能替代实际构建、启动及硬件测试。首次安装或调整驱动后，仍需按前文构建并验证网络、输入法、音频和睡眠恢复。
+
+[VS Code 任务](.vscode/tasks.json) 提供模块、主机、脚本、全量和本机检查入口。新增 `tests/modules/*.nix`、`tests/hosts/*.nix` 或 `tests/scripts/*.sh` 会由 [Makefile](Makefile) 自动发现；新增主机时还需更新 [入口测试](tests/selection.nix) 的主机列表。`make fmt` 格式化仓库配置及 Nix 测试，不处理被忽略的本机配置。
 
 ## 新安装
 
@@ -100,10 +155,12 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 
 X1 默认使用 `/boot` 挂载 EFI 分区，USB 配置使用 `/efi`；挂载布局必须与硬件配置一致。VM 需另行配置适合目标磁盘的引导器。分区和安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
 
+[mount.sh](scripts/mount.sh) 仅适用于已有 `nixos`、`EFI` 分区标签且使用 `/efi` 的 USB 布局，不负责分区，不适用于 X1 的默认布局；任何一步失败都会停止，已成功的挂载不会自动撤销。
+
 ## 使用提醒
 
 - **X1 休眠**：硬件配置必须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代它。固件需选择 Linux/S3 睡眠模式。
-- **管理权限**：`wheel` 组可免密码 sudo，并被列为 Nix trusted-users，只应加入可信账户。
+- **管理权限**：`wheel` 组可免密码 sudo。共享配置的 Nix trusted-users 包含 `root` 和 `@wheel`；X1 收紧为 `root` 和 `mingcheng`。这些权限只应授予可信账户。
 - **秘密信息**：不要把密码、令牌等写入 Nix 表达式，它们可能进入其他用户可读的 Nix store。
 
 ## 参考
