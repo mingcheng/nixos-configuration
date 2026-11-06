@@ -50,9 +50,9 @@ expect_failure() {
 bash "$repo_dir/scripts/mount.sh"
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
-  'mkdir -p /mnt/efi' \
-  'mount /dev/disk/by-label/EFI /mnt/efi' \
-  'df -lh /mnt')"
+  'mkdir -p /mnt/boot' \
+  'mount /dev/disk/by-label/EFI /mnt/boot' \
+  'df -lh /mnt /mnt/boot')"
 
 : >"$TEST_LOG"
 export FAIL_MOUNT=/mnt
@@ -60,12 +60,12 @@ expect_failure
 assert_calls 'mount /dev/disk/by-label/nixos /mnt'
 
 : >"$TEST_LOG"
-export FAIL_MOUNT=/mnt/efi
+export FAIL_MOUNT=/mnt/boot
 expect_failure
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
-  'mkdir -p /mnt/efi' \
-  'mount /dev/disk/by-label/EFI /mnt/efi')"
+  'mkdir -p /mnt/boot' \
+  'mount /dev/disk/by-label/EFI /mnt/boot')"
 
 : >"$TEST_LOG"
 unset FAIL_MOUNT
@@ -73,6 +73,6 @@ export FAIL_MKDIR=1
 expect_failure 27
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
-  'mkdir -p /mnt/efi')"
+  'mkdir -p /mnt/boot')"
 
 printf '%s\n' 'scripts/mount: all checks passed'

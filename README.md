@@ -116,7 +116,7 @@ networking.proxy = {
 | 模块 | [tests/modules/](tests/modules/) | 系统策略、镜像与代理、swap 边界、程序与可选服务、GUI/输入法、PAM |
 | 主机 | [tests/hosts/](tests/hosts/) | 三种主机的完整配置求值及各自主机策略 |
 | 入口 | [tests/selection.nix](tests/selection.nix) | 未设置、空值、未知主机、路径绕过及主机测试是否齐全 |
-| 脚本 | [tests/scripts/](tests/scripts/) | 通道来源、任意工作目录/含空格路径、配置保留、错误传播与挂载顺序 |
+| 脚本 | [tests/scripts/](tests/scripts/) | 通道来源、路径兼容、配置保留、磁盘布局、swap 容量、安全检查、错误传播与挂载顺序 |
 
 需要 Nix、GNU Make、Bash，以及可通过 `<nixpkgs>` 访问的稳定通道；完整测试和 GUI/X1 测试还需要 `<unstable>`。测试通道属于运行命令的用户，请留意它们与 root 通道的区别。
 
@@ -145,7 +145,9 @@ NIX_BUILD_HOST=x1-carbon-8th make check-local LOCAL_CONFIG=/etc/nixos/configurat
 
 ## 新安装
 
-先手动完成分区并挂载到 `/mnt`，再运行 `sudo nixos-generate-config --root /mnt`。将仓库文件放入 `/mnt/etc/nixos`，保留生成的本机配置，按上面的步骤添加导入、配置通道，并设置自己的账户及登录凭据。
+可使用 [disk-init.sh](scripts/disk-init.sh) 创建 GPT、1 GiB FAT32 EFI 分区和 F2FS 根分区；添加 `--hibernate` 会预留不少于内存 1.2 倍的 swap。**初始化会清空指定磁盘，必须核对目标并确认。** 参数与脚本介绍见 [scripts/README.md](scripts/README.md)。
+
+将分区挂载到 `/mnt`；如果创建了 swap，先执行 `sudo swapon /dev/disk/by-label/swap`，再运行 `sudo nixos-generate-config --root /mnt`。将仓库文件放入 `/mnt/etc/nixos`，保留生成的本机配置，按上面的步骤添加导入、配置通道，并设置自己的账户及登录凭据。
 
 确认磁盘、引导和账户配置后执行：
 
@@ -155,7 +157,7 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 
 X1 默认使用 `/boot` 挂载 EFI 分区，USB 配置使用 `/efi`；挂载布局必须与硬件配置一致。VM 需另行配置适合目标磁盘的引导器。分区和安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
 
-[mount.sh](scripts/mount.sh) 仅适用于已有 `nixos`、`EFI` 分区标签且使用 `/efi` 的 USB 布局，不负责分区，不适用于 X1 的默认布局；任何一步失败都会停止，已成功的挂载不会自动撤销。
+[mount.sh](scripts/mount.sh) 将 `nixos`、`EFI` 标签对应的分区挂载到 `/mnt` 和 `/mnt/boot`，适用于 X1 的默认布局，不负责分区或启用 swap。USB 布局需改为将 EFI 挂载到 `/mnt/efi`；任何一步失败都会停止，已成功的挂载不会自动撤销。
 
 ## 使用提醒
 
