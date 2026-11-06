@@ -12,7 +12,7 @@
 # Last Modified: 2026-11-06 10:30:39
 ##
 
-{ lib, ... }: {
+{
   boot = {
     plymouth.enable = false;
 

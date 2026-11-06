@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, lib, ... }: {
+{
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos";
     fsType = "f2fs";

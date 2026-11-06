@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, ... }: {
+{
   environment.shellAliases = {
     cp = "cp -i";
     df = "df -h";

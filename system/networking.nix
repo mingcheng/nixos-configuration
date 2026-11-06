@@ -6,7 +6,7 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ config, ... }: {
+{
   networking = {
     enableIPv6 = false;
     useDHCP = true;

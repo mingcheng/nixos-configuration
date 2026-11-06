@@ -23,10 +23,7 @@
       ];
       keep-derivations = true;
       keep-outputs = true;
-      trusted-users = [
-        "root"
-        "@wheel"
-      ];
+      trusted-users = [ "@wheel" ];
 
       # Substituters for binary caches, defined in ../sources.nix for mainland China users
       substituters = lib.mkForce (import ../sources.nix).substituters;

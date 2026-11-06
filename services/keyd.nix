@@ -12,7 +12,7 @@
 # Last Modified: 2026-11-05 11:27:36
 ##
 
-{ lib, ... }: {
+{
   services.keyd = {
     enable = true;
   };
