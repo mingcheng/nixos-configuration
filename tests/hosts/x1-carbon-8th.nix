@@ -53,6 +53,7 @@ t.check "hosts/x1-carbon-8th" {
     changed.networking.hostName == "custom-x1"
     && changed.environment.variables.NIX_BUILD_HOST == "x1-carbon-8th";
   shared-profile = config.nix.gc.automatic && config.time.timeZone == "Asia/Shanghai";
+  selected-user = config.workstation.users == [ "mingcheng" ];
   wayland-desktop =
     config.services.desktopManager.plasma6.enable
     && config.services.displayManager.sddm.wayland.enable
@@ -61,14 +62,38 @@ t.check "hosts/x1-carbon-8th" {
     !(config.xdg.portal.config.common ? default) && config.xdg.portal.configPackages != [ ];
   user-applications = t.hasPackages config.users.users.mingcheng.packages [
     "vscode"
-    "cursor"
+
     "konsole"
     "dolphin"
+    "fastfetch"
+    "htop"
+    "btop"
+    "gnumake"
+
     "cmake"
+    "ninja"
+    "mise"
+    "nixfmt"
+    "gnupg"
+    "stow"
+    "zoxide"
+    "jq"
+    "aria2"
+    "powershell"
+    "opencode"
+
   ];
+  all-shared-applications-assigned = lib.all (
+    package:
+    builtins.elem package.outPath (
+      map (installed: installed.outPath) config.users.users.mingcheng.packages
+    )
+  ) config.workstation.userPackages;
+  cursor-remains-disabled = !(t.hasPackages config.users.users.mingcheng.packages [ "cursor" ]);
   applications-not-global =
     !(t.hasPackages config.environment.systemPackages [ "vscode" ])
     && !(t.hasPackages config.environment.systemPackages [ "cursor" ])
+    && !(t.hasPackages config.environment.systemPackages [ "fastfetch" ])
     && !(t.hasPackages config.environment.systemPackages [ "konsole" ]);
   lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.18";
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
@@ -105,6 +130,7 @@ t.check "hosts/x1-carbon-8th" {
         "rsync_proxy"
       ];
   no-protocol-fallback = !(protocolProxy.systemd.services.nix-daemon.environment ? all_proxy);
+  nsncd-no-dns-restarts = config.networking.resolvconf.extraConfig == "libc_restart=':'";
   firewall =
     config.networking.firewall.enable
     && config.networking.firewall.allowedTCPPorts == [ ]

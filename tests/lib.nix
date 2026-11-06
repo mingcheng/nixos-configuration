@@ -12,9 +12,10 @@ in
   eval =
     modules:
     (import <nixpkgs/nixos/lib/eval-config.nix> {
-      inherit system pkgs;
+      inherit system;
       modules = [
         {
+          nixpkgs.config.allowUnfree = lib.mkDefault false;
           system.stateVersion = "26.05";
           boot.loader.grub.enable = lib.mkDefault false;
           fileSystems = {

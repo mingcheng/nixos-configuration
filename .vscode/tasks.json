@@ -1,5 +1,14 @@
 {
 	"version": "2.0.0",
+	"options": {
+		"cwd": "${workspaceFolder}",
+		"shell": {
+			"executable": "bash",
+			"args": [
+				"-c"
+			]
+		}
+	},
 	"tasks": [
 		{
 			"label": "Check NixOS modules",
@@ -15,7 +24,7 @@
 		{
 			"label": "Check NixOS configuration",
 			"type": "shell",
-			"command": "set -o pipefail && make check 2>&1 | tee .vscode/check.log",
+			"command": "set -o pipefail && make --keep-going check 2>&1 | tee .vscode/check.log",
 			"isBackground": false,
 			"problemMatcher": [],
 			"group": "test"
@@ -27,6 +36,14 @@
 			"isBackground": false,
 			"problemMatcher": [],
 			"group": "test"
+		},
+		{
+			"label": "Build local X1 configuration",
+			"type": "shell",
+			"command": "set -o pipefail && env -u NIXPKGS_ALLOW_UNFREE NIX_BUILD_HOST=x1-carbon-8th nix-build '<nixpkgs/nixos>' -A system -I nixos-config=\"$PWD/configuration.nix\" --no-out-link 2>&1 | tee .vscode/build-local.log",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }

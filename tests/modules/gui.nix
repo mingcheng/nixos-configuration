@@ -2,19 +2,26 @@ let
   t = import ../lib.nix;
   unstable = import <unstable> {
     system = t.pkgs.stdenv.hostPlatform.system;
-    config.allowUnfreePredicate = package: t.lib.getName package == "cursor";
+    config.allowUnfreePredicate = package: t.lib.getName package == "vscode";
   };
   gui =
     extra:
     t.eval (
       [
         ../../packages/gui.nix
-        { users.users.mingcheng.isNormalUser = true; }
+        {
+          workstation.users = [ "alice" ];
+          users.users.alice.isNormalUser = true;
+        }
       ]
       ++ extra
     );
   xorg = gui [ { services.xserver.enable = true; } ];
   wayland = gui [ { programs.sway.enable = true; } ];
+  stable = import <nixpkgs> {
+    system = t.pkgs.stdenv.hostPlatform.system;
+    inherit (wayland.nixpkgs) config overlays;
+  };
   displayManager = gui [ { services.displayManager.sddm.enable = true; } ];
   disabledFlatpak = gui [
     {
@@ -33,13 +40,16 @@ t.check "modules/gui" {
     && !wayland.services.displayManager.enable
     && wayland.services.flatpak.enable;
   display-manager-detection = displayManager.services.flatpak.enable;
-  vscode = t.hasPackages wayland.users.users.mingcheng.packages [ "vscode" ];
+  vscode = t.hasPackages wayland.users.users.alice.packages [ "vscode" ];
   vscode-not-global = !(t.hasPackages wayland.environment.systemPackages [ "vscode" ]);
-  code-cursor-from-unstable = builtins.any (
-    package: package.drvPath == unstable.code-cursor.drvPath
-  ) wayland.users.users.mingcheng.packages;
-  code-cursor-not-global = !(t.hasPackages wayland.environment.systemPackages [ "cursor" ]);
-  stable-unfree-remains-disabled = !(builtins.tryEval t.pkgs.vscode.drvPath).success;
+  vscode-from-unstable = builtins.any (
+    package: package.drvPath == unstable.vscode.drvPath
+  ) wayland.users.users.alice.packages;
+  cursor-remains-disabled =
+    !(t.hasPackages wayland.users.users.alice.packages [ "cursor" ])
+    && !(t.hasPackages wayland.environment.systemPackages [ "cursor" ]);
+  no-fixed-account = !(wayland.users.users ? mingcheng);
+  stable-unfree-remains-disabled = !(builtins.tryEval stable.vscode.drvPath).success;
   gtk-portals =
     wayland.xdg.portal.enable
     && wayland.xdg.portal.config.common.default == "gtk"
