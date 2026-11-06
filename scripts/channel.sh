@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ###
 # File: channel.sh
 # Author: Ming Cheng<mingcheng@outlook.com>
@@ -8,8 +9,15 @@
 # http://www.opensource.org/licenses/MIT
 ###
 
-nix-channel --add https://mirror.nju.edu.cn/nix-channels/nixos-24.11 nixos
-#nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-23.11 nixos
-#nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-23.11 nixos
-#nix-channel --add https://mirrors.bfsu.edu.cn/nix-channels/nixos-23.11 nixos
-#nix-channel --add https://mirrors.cernet.edu.cn/nix-channels/nixos-23.11 nixos
+set -euo pipefail
+
+channel=${1-nixos}
+if (($# > 1)) || [[ "$channel" != nixos && "$channel" != unstable ]]; then
+  printf 'Usage: %s [nixos|unstable]\n' "${0##*/}" >&2
+  exit 2
+fi
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+url=$(nix --extra-experimental-features nix-command eval --raw \
+  --file "$script_dir/../sources.nix" "channels.$channel")
+nix-channel --add "$url" "$channel"

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ###
 # File: mount.sh
 # Author: Ming Cheng<mingcheng@outlook.com>
@@ -8,8 +9,11 @@
 # http://www.opensource.org/licenses/MIT
 ###
 
-mount /dev/disk/by-label/nixos /mnt
-mkdir -p /mnt/efi
-mount /dev/disk/by-label/EFI /mnt/efi
+set -euo pipefail
 
-df -lh /mnt
+mount /dev/disk/by-label/nixos /mnt
+mkdir -p /mnt/boot
+mount /dev/disk/by-label/EFI /mnt/boot
+
+df -lh /mnt /mnt/boot
+

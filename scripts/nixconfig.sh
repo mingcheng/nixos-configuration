@@ -1,21 +1,16 @@
+#!/usr/bin/env bash
 ###
 # File: nixconfig.sh
 # Author: Ming Cheng<mingcheng@outlook.com>
-# 
+#
 # Created Date: Thursday, August 18th 2022, 2:38:16 pm
 # Last Modified: Thursday, August 18th 2022, 2:40:02 pm
-# 
+#
 # http://www.opensource.org/licenses/MIT
 ###
 
-mkdir -p ~/.config/nix
-#echo "substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" > ~/.config/nix/nix.conf
-echo "substituters = https://mirror.nju.edu.cn/nix-channels/store https://cache.nixos.org" > ~/.config/nix/nix.conf
-#echo "substituters = https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org" > ~/.config/nix/nix.conf
-#echo "substituters = https://mirrors.bfsu.edu.cn/nix-channels/store https://cache.nixos.org" > ~/.config/nix/nix.conf
-#echo "substituters = https://mirrors.cernet.edu.cn/nix-channels/store https://cache.nixos.org" > ~/.config/nix/nix.conf
+set -euo pipefail
 
-source ./channel.sh
-
-nix-channel --list
-nix-channel --update
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+bash "$script_dir/channel.sh" "$@"
+nix-channel --update "${1-nixos}"
