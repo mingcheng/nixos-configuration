@@ -9,7 +9,7 @@
 # File Created: 2026-11-04 11:15:44
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 23:54:08
+# Last Modified: 2026-11-06 17:33:20
 ##
 
 { pkgs, ... }: {
@@ -34,7 +34,11 @@
       "f2fs"
     ];
 
-    # Select Linux/S3 sleep in the firmware to expose the deep sleep state.
+    # X1 Carbon Gen 8 / Comet Lake-U: the Linux/S3 firmware setting exposes
+    # "deep" and avoids s2idle battery drain; full preemption suits the Plasma
+    # Wayland + PipeWire desktop; VT-d isolates Thunderbolt 3 DMA (bolt
+    # authorises devices in userspace), it is not for GPU passthrough here;
+    # disabling PSR avoids eDP flicker on the UHD GT2 panel.
     kernelParams = [
       "mem_sleep_default=deep"
       "preempt=full"
@@ -52,6 +56,11 @@
   };
 
   hardware = {
+    # Comet Lake-U (06-8e-0c) needs updated microcode for the Spectre v2,
+    # GDS, SRBDS and MMIO stale data mitigations; do not tie it to the
+    # redistributable-firmware toggle.
+    cpu.intel.updateMicrocode = true;
+    # CNVi AX201 Wi-Fi 6 + Bluetooth use linux-firmware; cAVS audio uses SOF.
     bluetooth.enable = true;
     enableRedistributableFirmware = true;
     firmware = [ pkgs.sof-firmware ];
