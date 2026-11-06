@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 14:53:06
+# Last Modified: 2026-11-06 10:28:22
 ##
 
 {
@@ -52,15 +52,15 @@
       config.services.nscd.enable && config.services.nscd.enableNsncd
     ) "libc_restart=':'";
     proxy = {
-      default = "http://127.0.0.1:7890";
-      noProxy = "127.0.0.1,localhost,internal.domain";
+      default = lib.mkDefault "http://127.0.0.1:7890";
+      noProxy = lib.mkDefault "127.0.0.1,localhost,internal.domain";
     };
   };
 
   systemd.services.nix-daemon.environment = {
-    https_proxy = "http://127.0.0.1:7890";
-    http_proxy = "http://127.0.0.1:7890";
-    all_proxy = "http://127.0.0.1:7890";
+    https_proxy = lib.mkDefault "http://127.0.0.1:7890";
+    http_proxy = lib.mkDefault "http://127.0.0.1:7890";
+    all_proxy = lib.mkDefault "http://127.0.0.1:7890";
   };
 
   users = {

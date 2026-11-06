@@ -18,7 +18,7 @@
   ...
 }:
 let
-  flathubUrl = "https://mirrors.ustc.edu.cn/flathub";
+  flathub = (import ../sources.nix).flathub;
 in
 {
   config = lib.mkIf config.services.flatpak.enable {
@@ -28,11 +28,14 @@ in
       wants = [ "network-online.target" ];
       after = [ "network-online.target" ];
       path = [ config.services.flatpak.package ];
-      environment.FLATHUB_URL = flathubUrl;
+      environment = {
+        FLATHUB_REPO = flathub.repository;
+        FLATHUB_URL = flathub.mirror;
+      };
       script = ''
         set -eu
         flatpak remote-add --system --if-not-exists --from flathub \
-          https://flathub.org/repo/flathub.flatpakrepo
+          "$FLATHUB_REPO"
         flatpak remote-modify --system --gpg-verify --no-follow-redirect \
           --url="$FLATHUB_URL" flathub
       '';

@@ -9,13 +9,18 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 14:16:04
+# Last Modified: 2026-11-06 10:29:27
 ##
 
 {
   channels = {
     nixos = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-26.05";
     unstable = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable";
+  };
+
+  flathub = {
+    repository = "https://flathub.org/repo/flathub.flatpakrepo";
+    mirror = "https://mirrors.cernet.edu.cn/flathub";
   };
 
   development = {

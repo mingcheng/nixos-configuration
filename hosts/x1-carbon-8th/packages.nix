@@ -49,8 +49,6 @@
     f2fs-tools
     ntfs3g
     exfat
-    direnv
-    nix-direnv
 
     # Basic system inspection and process management.
     file
@@ -77,7 +75,6 @@
 
     # Networking and transfers.
     aria2
-    inetutils
     iperf
     wget
 

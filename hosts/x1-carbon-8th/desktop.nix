@@ -34,6 +34,4 @@
     libinput.enable = true;
     printing.enable = true;
   };
-
-  security.rtkit.enable = true;
 }
