@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 21:01:06
+# Last Modified: 2026-11-06 16:29:52
 ##
 
 { pkgs, ... }:
@@ -108,5 +108,10 @@
     ninja
     pkg-config
     python3
+
+    # ai agent
+    opencode
+    claude-code
+    codex
   ];
 }

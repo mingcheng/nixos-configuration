@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 2026 mingcheng
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,10 +9,13 @@
 # Created Date: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 15:36:55
+# Last Modified: 2026-11-06 16:32:37
 ##
 
 { lib, ... }: {
+  # allow unfree packages
+  nixpkgs.config.allowUnfree = lib.mkForce true;
+
   nix = {
     settings = {
       # https://nixos.wiki/wiki/Storage_optimization
