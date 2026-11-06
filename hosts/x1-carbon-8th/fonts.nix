@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 11:24:18
+# Last Modified: 2026-11-06 16:16:13
 ##
 
 { pkgs, ... }:
@@ -21,10 +21,17 @@
     packages = with pkgs; [
       # Desktop and programming fonts.
       adwaita-fonts
+      inter
+      source-sans
+      source-serif
       source-code-pro
       hack-font
       jetbrains-mono
       maple-mono.variable
+
+      # Metric-compatible alternatives to Calibri and Cambria.
+      carlito
+      caladea
 
       # Chinese coverage and emoji fallback.
       noto-fonts
@@ -34,28 +41,42 @@
       source-han-sans
       source-han-serif
       sarasa-gothic
+      lxgw-wenkai
+      lxgw-wenkai-tc
+      lxgw-neoxihei
+      babelstone-han
 
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
     ];
+
+    fontconfig.enable = true;
+    fontconfig.antialias = true;
+    fontconfig.hinting = {
+      enable = true;
+      style = "slight";
+    };
+    # Avoid assuming the same subpixel layout on internal and external displays.
+    fontconfig.subpixel.rgba = "none";
+    fontconfig.useEmbeddedBitmaps = false;
 
     # These are font family names, not Nix package names. Order is significant.
     fontconfig.defaultFonts = {
       emoji = [ "Noto Color Emoji" ];
       monospace = [
         "Noto Sans Mono CJK SC"
-        "Sarasa Mono SC"
         "DejaVu Sans Mono"
+        "Noto Color Emoji"
       ];
       sansSerif = [
         "Noto Sans CJK SC"
-        "Source Han Sans SC"
         "DejaVu Sans"
+        "Noto Color Emoji"
       ];
       serif = [
         "Noto Serif CJK SC"
-        "Source Han Serif SC"
         "DejaVu Serif"
+        "Noto Color Emoji"
       ];
     };
   };
