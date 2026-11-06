@@ -9,7 +9,7 @@
 # File Created: Sunday, August 14th 2022, 9:45:39 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-06 16:29:52
+# Last Modified: 2026-11-06 17:33:54
 ##
 
 { pkgs, ... }:
@@ -111,7 +111,7 @@
 
     # ai agent
     opencode
-    claude-code
-    codex
+    # claude-code
+    # codex
   ];
 }
