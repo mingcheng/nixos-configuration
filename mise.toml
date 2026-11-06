@@ -1,0 +1,3 @@
+[tools]
+make = "latest"
+shfmt = "latest"
