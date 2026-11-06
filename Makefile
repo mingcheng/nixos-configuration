@@ -9,30 +9,58 @@
 ###
 
 
-.PHONY: fmt check check-docker-config check-git-config check-gui-packages check-x1-carbon-8th check-autopartten
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
+.DEFAULT_GOAL := check
 
-NIX_EVAL = nix-instantiate --eval --strict --option allow-import-from-derivation false
+NIX_EVAL = env -u NIXPKGS_ALLOW_UNFREE nix-instantiate --eval --strict --option allow-import-from-derivation false
+LOCAL_CONFIG ?= $(CURDIR)/configuration.nix
+NIX_SOURCES := main.nix sources.nix hosts packages profiles services system tests
+MODULE_CHECKS := $(patsubst tests/modules/%.nix,check-module-%,$(wildcard tests/modules/*.nix))
+HOST_CHECKS := $(patsubst tests/hosts/%.nix,check-host-%,$(wildcard tests/hosts/*.nix))
+SCRIPT_CHECKS := $(patsubst tests/scripts/%.sh,check-script-%,$(wildcard tests/scripts/*.sh))
+HEADLESS_CHECKS := check-module-gui-headless check-host-vm-image check-host-usb-boot-stick
+
+.PHONY: fmt check check-syntax check-modules check-hosts check-host-selection check-scripts check-local \
+	$(MODULE_CHECKS) $(HOST_CHECKS) $(SCRIPT_CHECKS) \
+	check-docker-config check-git-config check-gui-packages check-x1-carbon-8th
 
 fmt:
-	@nix-shell -p nixfmt --run "find . -type f -iname '*.nix' -exec nixfmt {} +"
+	@nix-shell -p nixfmt --run "find $(NIX_SOURCES) -type f -name '*.nix' -exec nixfmt {} +"
 
-check: check-docker-config check-git-config check-gui-packages check-x1-carbon-8th check-autopartten
-	@bash -n scripts/channel.sh scripts/nixconfig.sh
+check: check-syntax check-modules check-hosts check-scripts
 
-check-autopartten:
-	@bash -n scripts/autopartten.sh
-	@bash tests/autopartten.sh
+check-syntax:
+	@find $(NIX_SOURCES) -type f -name '*.nix' -print0 | xargs -0 -r -n1 nix-instantiate --parse > /dev/null
+	@for script in scripts/*.sh tests/scripts/*.sh; do bash -n "$$script"; done
 
-check-docker-config:
-	@$(NIX_EVAL) --json tests/docker-config.nix
+check-modules: $(MODULE_CHECKS)
 
-check-git-config:
-	@$(NIX_EVAL) --json tests/git-config.nix
+check-hosts: check-host-selection $(HOST_CHECKS)
 
-check-gui-packages:
-	@$(NIX_EVAL) --json tests/gui-packages.nix
+$(HEADLESS_CHECKS): private CHANNEL_FLAGS = -I unstable="$(CURDIR)/tests/fixtures/no-unstable.nix"
 
-check-x1-carbon-8th:
-	@NIX_BUILD_HOST= $(NIX_EVAL) --expr 'assert !(builtins.tryEval (import ./main.nix)).success; "Empty host rejected"'
-	@NIX_BUILD_HOST=unknown-host $(NIX_EVAL) --expr 'assert !(builtins.tryEval (import ./main.nix)).success; "Unknown host rejected"'
-	@NIX_BUILD_HOST=x1-carbon-8th $(NIX_EVAL) --json tests/x1-carbon-8th.nix
+$(MODULE_CHECKS): check-module-%: tests/modules/%.nix
+	@$(NIX_EVAL) $(CHANNEL_FLAGS) --json $<
+
+$(HOST_CHECKS): check-host-%: tests/hosts/%.nix
+	@NIX_BUILD_HOST=$* $(NIX_EVAL) $(CHANNEL_FLAGS) --json $<
+
+check-host-selection:
+	@env -u NIX_BUILD_HOST $(NIX_EVAL) --json tests/selection.nix
+	@for host in "" unknown-host "x1-carbon-8th/../x1-carbon-8th" x1-carbon-8th vm-image usb-boot-stick; do \
+		NIX_BUILD_HOST="$$host" $(NIX_EVAL) --json tests/selection.nix; \
+	done
+
+check-scripts: $(SCRIPT_CHECKS)
+
+$(SCRIPT_CHECKS): check-script-%: tests/scripts/%.sh
+	@bash $<
+
+check-local:
+	@$(NIX_EVAL) --json tests/local.nix --argstr configuration "$(abspath $(LOCAL_CONFIG))"
+
+check-docker-config: check-module-docker
+check-git-config: check-module-packages
+check-gui-packages: check-module-gui check-module-gui-headless
+check-x1-carbon-8th: check-host-selection check-host-x1-carbon-8th
