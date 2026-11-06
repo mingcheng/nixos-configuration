@@ -9,12 +9,10 @@
 # File Created: 2026-11-04 11:15:44
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-06 17:33:20
+# Last Modified: 2026-11-06 22:28:44
 ##
 
 { pkgs, ... }: {
-  imports = [ ../../system/kernel.nix ];
-
   boot = {
     # 6.18 is the newest upstream LTS branch (November 2026).
     # Follow its fixes from the stable channel, not linuxPackages_latest.

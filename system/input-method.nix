@@ -9,11 +9,19 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 11:24:26
+# Last Modified: 2026-11-06 23:01:44
 ##
 
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
+  inputMethod = config.i18n.inputMethod;
+  fcitxEnabled = inputMethod.enable && inputMethod.type == "fcitx5";
+
   # Keep the Rime engine and its schema data in one place.
   fcitx5Rime = pkgs.fcitx5-rime.override {
     rimeDataPkgs = [ pkgs.rime-wanxiang ];
@@ -43,7 +51,7 @@ in
 
   # Toolkit/XWayland compatibility; native Electron uses KWin's input method
   # connection instead of these GTK/Qt variables.
-  environment.sessionVariables = {
+  environment.sessionVariables = lib.mkIf fcitxEnabled {
     GTK_IM_MODULE = "fcitx";
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";
@@ -53,10 +61,10 @@ in
   # Plasma-specific integration: KWin must launch Fcitx to pass it the privileged
   # Wayland input-method socket. waylandFrontend alone does not select it.
   # User-level kwinrc settings can override this system default.
-  environment.etc = {
+  environment.etc = lib.mkIf fcitxEnabled {
     "xdg/kwinrc".text = ''
       [Wayland]
-      InputMethod=${config.i18n.inputMethod.package}/share/applications/org.fcitx.Fcitx5.desktop
+      InputMethod=${inputMethod.package}/share/applications/org.fcitx.Fcitx5.desktop
       VirtualKeyboardEnabled=true
     '';
 

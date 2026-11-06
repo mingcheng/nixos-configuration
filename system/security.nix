@@ -19,14 +19,6 @@
     '';
   };
 
-  nix.settings = {
-    sandbox = true;
-    trusted-users = lib.mkForce [
-      "root"
-      "mingcheng"
-    ];
-  };
-
   boot.kernel.sysctl = {
     "kernel.dmesg_restrict" = 1;
     "kernel.kptr_restrict" = 2;

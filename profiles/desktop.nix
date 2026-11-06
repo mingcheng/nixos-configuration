@@ -9,17 +9,28 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 13:18:35
+# Last Modified: 2026-11-06 22:47:12
 ##
 
+{ config, lib, ... }:
 {
   # Keep desktop-only features together; locale/timezone live in system/i18n.nix.
   imports = [
-    ../../packages/gui.nix
-    ./fonts.nix
-    ./input-method.nix
-    ../../services/pipewire.nix
+    ./base.nix
+    ../packages/gui.nix
+    ../system/fonts.nix
+    ../system/input-method.nix
+    ../services/pipewire.nix
+    ../services/keyd.nix
   ];
+
+  networking = {
+    networkmanager.enable = true;
+    useDHCP = false;
+    resolvconf.extraConfig = lib.optionalString (
+      config.services.nscd.enable && config.services.nscd.enableNsncd
+    ) "libc_restart=':'";
+  };
 
   services = {
     desktopManager.plasma6.enable = true;

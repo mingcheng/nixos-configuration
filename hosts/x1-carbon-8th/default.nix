@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-06 10:28:22
+# Last Modified: 2026-11-06 22:21:14
 ##
 
 {
@@ -20,48 +20,34 @@
 }:
 {
   imports = [
-    # Shared system policy.
-    ../../profiles/base.nix
+    ../../profiles/workstation.nix
 
     ../../system/boot.nix
-    ../../system/ld.nix
     ../../system/power.nix
     ../../system/swap.nix
-
-    # Host services.
     ../../services/fprintd.nix
 
-    ../../services/fstrim.nix
-    ../../services/timesyncd.nix
-    ../../services/docker.nix
-    ../../services/keyd.nix
-
-    # Hardware, desktop composition, and host tools.
     ./kernel.nix
     ./tuning.nix
-    ./security.nix
-
-    ./desktop.nix
-    ./packages.nix
   ];
 
-  networking = {
-    networkmanager.enable = true;
-    useDHCP = false;
-    resolvconf.extraConfig = lib.optionalString (
-      config.services.nscd.enable && config.services.nscd.enableNsncd
-    ) "libc_restart=':'";
-    proxy = {
-      default = lib.mkDefault "http://127.0.0.1:7890";
-      noProxy = lib.mkDefault "127.0.0.1,localhost,internal.domain";
-    };
+  networking.proxy = {
+    default = lib.mkDefault "http://127.0.0.1:7890";
+    noProxy = lib.mkDefault "127.0.0.1,localhost,internal.domain";
   };
 
-  systemd.services.nix-daemon.environment = {
-    https_proxy = lib.mkDefault "http://127.0.0.1:7890";
-    http_proxy = lib.mkDefault "http://127.0.0.1:7890";
-    all_proxy = lib.mkDefault "http://127.0.0.1:7890";
-  };
+  # Keep the explicit daemon configuration, but share one proxy source with
+  # login sessions so disabling or overriding networking.proxy also works here.
+  systemd.services.nix-daemon.environment = config.networking.proxy.envVars;
+
+  # The shared profiles intentionally do not select or create personal accounts.
+  workstation.users = [ "mingcheng" ];
+
+  # Keep this host's narrower trust policy out of the reusable profiles.
+  nix.settings.trusted-users = lib.mkForce [
+    "root"
+    "mingcheng"
+  ];
 
   users = {
     mutableUsers = true;

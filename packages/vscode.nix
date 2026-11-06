@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 2026 mingcheng
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,7 +9,7 @@
 # File Created: 2026-11-04 12:14:45
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 12:16:54
+# Last Modified: 2026-11-06 19:17:22
 ##
 
 {
@@ -27,13 +27,13 @@ let
       builtins.elem (lib.getName package) [
         "vscode"
         # The code-cursor attribute uses "cursor" as its package name.
-        "cursor"
+        # "cursor"
       ];
   };
 in
 lib.mkIf hasGui {
-  users.users.mingcheng.packages = [
+  workstation.userPackages = [
     unstable.vscode
-    unstable.code-cursor
+    # unstable.code-cursor
   ];
 }

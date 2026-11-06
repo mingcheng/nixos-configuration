@@ -43,10 +43,12 @@ let
     ++ lib.optional (config.services.flatpak.enable || config.services.fwupd.enable) discover;
 in
 {
-  imports = [ ../services/flatpak.nix ];
+  imports = [
+    ./user-packages.nix
+    ../services/flatpak.nix
+  ];
 
   config = lib.mkMerge [
-    (import ./vscode.nix { inherit lib pkgs hasGui; })
     (lib.mkIf hasGui {
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
@@ -63,9 +65,13 @@ in
         );
       };
     })
-    (lib.mkIf config.services.desktopManager.plasma6.enable {
+    (lib.mkIf (config.services.desktopManager.plasma6.enable && config.workstation.users != [ ]) {
       environment.plasma6.excludePackages = plasmaUserPackages;
-      users.users.mingcheng.packages = plasmaUserPackages;
+      workstation.userPackages = plasmaUserPackages;
+    })
+    (import ./vscode.nix {
+      inherit lib pkgs;
+      hasGui = hasGui && config.workstation.users != [ ];
     })
   ];
 }
