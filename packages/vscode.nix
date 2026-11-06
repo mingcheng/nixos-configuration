@@ -22,9 +22,18 @@ let
   # Lazy evaluation means headless hosts do not require the unstable channel.
   unstable = import <unstable> {
     system = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfreePredicate = package: lib.getName package == "vscode";
+    config.allowUnfreePredicate =
+      package:
+      builtins.elem (lib.getName package) [
+        "vscode"
+        # The code-cursor attribute uses "cursor" as its package name.
+        "cursor"
+      ];
   };
 in
 lib.mkIf hasGui {
-  users.users.mingcheng.packages = [ unstable.vscode ];
+  users.users.mingcheng.packages = [
+    unstable.vscode
+    unstable.code-cursor
+  ];
 }
