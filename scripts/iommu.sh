@@ -13,14 +13,13 @@
 # Last Modified: 2026-11-06 15:33:32
 ##
 
-
 set -euo pipefail
 
 shopt -s nullglob
 for group in /sys/kernel/iommu_groups/*; do
-  printf 'IOMMU Group %s:\n' "${group##*/}"
-  for device in "$group"/devices/*; do
-    printf '\t'
-    lspci -nns "${device##*/}"
-  done
+	printf 'IOMMU Group %s:\n' "${group##*/}"
+	for device in "$group"/devices/*; do
+		printf '\t'
+		lspci -nns "${device##*/}"
+	done
 done

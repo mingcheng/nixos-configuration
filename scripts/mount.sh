@@ -16,4 +16,3 @@ mkdir -p /mnt/boot
 mount /dev/disk/by-label/EFI /mnt/boot
 
 df -lh /mnt /mnt/boot
-
