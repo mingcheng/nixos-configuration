@@ -61,12 +61,14 @@ t.check "hosts/x1-carbon-8th" {
     !(config.xdg.portal.config.common ? default) && config.xdg.portal.configPackages != [ ];
   user-applications = t.hasPackages config.users.users.mingcheng.packages [
     "vscode"
+    "cursor"
     "konsole"
     "dolphin"
     "cmake"
   ];
   applications-not-global =
     !(t.hasPackages config.environment.systemPackages [ "vscode" ])
+    && !(t.hasPackages config.environment.systemPackages [ "cursor" ])
     && !(t.hasPackages config.environment.systemPackages [ "konsole" ]);
   lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.18";
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
