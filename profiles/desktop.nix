@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-06 22:47:12
+# Last Modified: 2026-11-07 08:32:02
 ##
 
 { config, lib, ... }:
@@ -19,7 +19,7 @@
     ./base.nix
     ../packages/gui.nix
     ../system/fonts.nix
-    ../system/input-method.nix
+    ../system/input_method.nix
     ../services/pipewire.nix
     ../services/keyd.nix
   ];

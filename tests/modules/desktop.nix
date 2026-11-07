@@ -3,21 +3,21 @@ let
   inherit (t) lib pkgs;
   config = t.eval [
     ../../system/fonts.nix
-    ../../system/input-method.nix
+    ../../system/input_method.nix
   ];
   plasma = t.eval [
-    ../../system/input-method.nix
+    ../../system/input_method.nix
     { services.desktopManager.plasma6.enable = true; }
   ];
   disabled = t.eval [
-    ../../system/input-method.nix
+    ../../system/input_method.nix
     {
       services.desktopManager.plasma6.enable = true;
       i18n.inputMethod.enable = lib.mkForce false;
     }
   ];
   otherEngine = t.eval [
-    ../../system/input-method.nix
+    ../../system/input_method.nix
     { i18n.inputMethod.type = lib.mkForce "ibus"; }
   ];
   inputMethod = config.i18n.inputMethod;
