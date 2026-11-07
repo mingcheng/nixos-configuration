@@ -107,7 +107,7 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 | 主机硬件策略与软件组合       | [hosts/](hosts/)                                                   |
 | 分层共用策略                 | [profiles/](profiles/)（`base`、`desktop`、`workstation`）         |
 | 系统设置、可选服务、程序配置 | [system/](system/)、[services/](services/)、[packages/](packages/) |
-| 通道地址与二进制缓存         | [sources.nix](sources.nix)                                         |
+| 通道地址、二进制缓存、在线 hosts | [sources.nix](sources.nix)                                     |
 
 模块通过 `imports` 按需启用，文件存在不代表服务已开启；可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口与数据目录。修改通道地址后需重新执行 `nix-channel --add`。
 
@@ -120,6 +120,22 @@ networking.proxy = {
   noProxy = "";
 };
 ```
+
+### 自定义 hosts
+
+桌面配置通过 [system/network_hosts.nix](system/network_hosts.nix) 读取 [sources.nix](sources.nix) 的 `hosts` URL 列表，统一用 `builtins.fetchurl` 加入 `networking.hostFiles` 即可。
+
+本机条目仍使用原生选项，也可追加本地文件：
+
+```nix
+networking.hosts."192.0.2.10" = [ "build.example.test" ];
+networking.extraHosts = ''
+  192.0.2.11 nas.example.test
+'';
+# networking.hostFiles = [ ./my_hosts ];
+```
+
+关闭任一来源时，从 [sources.nix](sources.nix) 的 `hosts` 列表中删除对应 URL 即可；设为 `[]` 会关闭全部远端注入，包括 StevenBlack，但不会删除本机条目。
 
 ## 测试与维护
 

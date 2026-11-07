@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-07 08:32:02
+# Last Modified: 2026-11-07 08:33:00
 ##
 
 { config, lib, ... }:
@@ -18,8 +18,11 @@
   imports = [
     ./base.nix
     ../packages/gui.nix
+
     ../system/fonts.nix
     ../system/input_method.nix
+    ../system/network_hosts.nix
+
     ../services/pipewire.nix
     ../services/keyd.nix
   ];

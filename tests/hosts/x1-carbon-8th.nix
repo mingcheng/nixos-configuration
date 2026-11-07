@@ -53,6 +53,9 @@ t.check "hosts/x1-carbon-8th" {
     changed.networking.hostName == "custom-x1"
     && changed.environment.variables.NIX_BUILD_HOST == "x1-carbon-8th";
   shared-profile = config.nix.gc.automatic && config.time.timeZone == "Asia/Shanghai";
+  online_hosts = lib.all (
+    url: builtins.elem (toString (builtins.fetchurl url)) (map toString config.networking.hostFiles)
+  ) (import ../../sources.nix).hosts;
   selected-user = config.workstation.users == [ "mingcheng" ];
   wayland-desktop =
     config.services.desktopManager.plasma6.enable

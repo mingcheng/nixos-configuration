@@ -56,7 +56,9 @@ t.check "modules/system" {
   kernel-defaults-overridable =
     changed.boot.kernel.sysctl."net.ipv4.tcp_congestion_control" == "cubic";
   networking = config.networking.useDHCP && !config.networking.enableIPv6;
-  hosts-entry = lib.hasInfix "alive.github.com" config.networking.extraHosts;
+  hosts_module = lib.all (
+    url: builtins.elem (toString (builtins.fetchurl url)) (map toString config.networking.hostFiles)
+  ) (import ../../sources.nix).hosts;
   power-management = config.powerManagement.enable && config.services.power-profiles-daemon.enable;
   lid-policy =
     config.services.logind.settings.Login.HandleLidSwitch == "suspend"

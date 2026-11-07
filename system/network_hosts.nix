@@ -12,8 +12,14 @@
 # Last Modified: 2026-11-06 10:25:38
 ##
 
+{ lib, ... }:
+let
+  sources = import ../sources.nix;
+in
 {
-  networking.extraHosts = ''
-    140.82.113.26                 alive.github.com
-  '';
+  networking = {
+    # Terminate local entries before NixOS concatenates the remote host files.
+    extraHosts = lib.mkAfter "";
+    hostFiles = map builtins.fetchurl sources.hosts;
+  };
 }
