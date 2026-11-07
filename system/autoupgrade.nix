@@ -9,16 +9,18 @@
 # File Created: Tuesday, August 16th 2022, 9:10:16 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 12:00:38
+# Last Modified: 2026-11-07 22:35:57
 ##
 
-{ config, ... }: {
+{ config, lib, ... }:
+{
   system.autoUpgrade = {
     enable = true;
     allowReboot = false;
     channel = (import ../sources.nix).channels.nixos;
   };
 
-  systemd.services.nixos-upgrade.environment.NIX_BUILD_HOST =
-    config.environment.variables.NIX_BUILD_HOST;
+  systemd.services.nixos-upgrade = lib.mkIf config.system.autoUpgrade.enable {
+    environment.NIX_BUILD_HOST = config.environment.variables.NIX_BUILD_HOST;
+  };
 }

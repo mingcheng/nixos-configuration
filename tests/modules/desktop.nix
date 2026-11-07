@@ -9,6 +9,13 @@ let
     ../../system/input_method.nix
     { services.desktopManager.plasma6.enable = true; }
   ];
+  nonWayland = t.eval [
+    ../../system/input_method.nix
+    {
+      services.desktopManager.plasma6.enable = true;
+      i18n.inputMethod.fcitx5.waylandFrontend = lib.mkForce false;
+    }
+  ];
   disabled = t.eval [
     ../../system/input_method.nix
     {
@@ -38,6 +45,7 @@ in
 t.check "modules/desktop" {
   evaluates = t.validSystem config;
   plasma-evaluates = t.validSystem plasma;
+  non-wayland-evaluates = t.validSystem nonWayland;
   disabled-evaluates = t.validSystem disabled;
   other-engine-evaluates = t.validSystem otherEngine;
   input-method =
@@ -57,12 +65,10 @@ t.check "modules/desktop" {
   no-duplicate-autostart =
     lib.hasInfix "Hidden=true"
       plasma.environment.etc."xdg/autostart/org.fcitx.Fcitx5.desktop".text;
-  fcitx-integration-without-plasma =
-    !config.services.desktopManager.plasma6.enable
-    && config.environment.etc."xdg/kwinrc".text == plasma.environment.etc."xdg/kwinrc".text
-    &&
-      config.environment.etc."xdg/autostart/org.fcitx.Fcitx5.desktop".text
-      == plasma.environment.etc."xdg/autostart/org.fcitx.Fcitx5.desktop".text;
+  no-kwin-integration-without-plasma =
+    !config.services.desktopManager.plasma6.enable && noFcitxIntegration config;
+  no-kwin-integration-without-wayland =
+    !nonWayland.i18n.inputMethod.fcitx5.waylandFrontend && noFcitxIntegration nonWayland;
   disabled-input-method-cleanup =
     !disabled.i18n.inputMethod.enable && noFcitxIntegration disabled && noFcitxVariables disabled;
   other-engine-cleanup =

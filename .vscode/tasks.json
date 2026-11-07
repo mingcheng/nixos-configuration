@@ -11,6 +11,17 @@
 	},
 	"tasks": [
 		{
+			"label": "Check shell syntax (no Nix)",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"check-shell-syntax"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
 			"label": "Check NixOS modules",
 			"type": "shell",
 			"command": "make",

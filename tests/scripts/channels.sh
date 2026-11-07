@@ -3,9 +3,8 @@ set -euo pipefail
 
 repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 export SOURCE_FILE="$repo_dir/sources.nix"
-STABLE_URL=$(nix --extra-experimental-features nix-command eval --raw --file "$SOURCE_FILE" channels.nixos)
-UNSTABLE_URL=$(nix --extra-experimental-features nix-command eval --raw --file "$SOURCE_FILE" channels.unstable)
-export STABLE_URL UNSTABLE_URL
+export STABLE_URL="https://channels.example.test/stable"
+export UNSTABLE_URL="https://channels.example.test/unstable"
 
 work=$(mktemp -d)
 mkdir -p "$work/home/.config/nix"

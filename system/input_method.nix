@@ -61,19 +61,24 @@ in
   # Plasma-specific integration: KWin must launch Fcitx to pass it the privileged
   # Wayland input-method socket. waylandFrontend alone does not select it.
   # User-level kwinrc settings can override this system default.
-  environment.etc = lib.mkIf fcitxEnabled {
-    "xdg/kwinrc".text = ''
-      [Wayland]
-      InputMethod=${inputMethod.package}/share/applications/org.fcitx.Fcitx5.desktop
-      VirtualKeyboardEnabled=true
-    '';
+  environment.etc =
+    lib.mkIf
+      (
+        fcitxEnabled && inputMethod.fcitx5.waylandFrontend && config.services.desktopManager.plasma6.enable
+      )
+      {
+        "xdg/kwinrc".text = ''
+          [Wayland]
+          InputMethod=${inputMethod.package}/share/applications/org.fcitx.Fcitx5.desktop
+          VirtualKeyboardEnabled=true
+        '';
 
-    # Avoid a second instance started without KWin's Wayland socket.
-    "xdg/autostart/org.fcitx.Fcitx5.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Fcitx 5
-      Hidden=true
-    '';
-  };
+        # Avoid a second instance started without KWin's Wayland socket.
+        "xdg/autostart/org.fcitx.Fcitx5.desktop".text = ''
+          [Desktop Entry]
+          Type=Application
+          Name=Fcitx 5
+          Hidden=true
+        '';
+      };
 }

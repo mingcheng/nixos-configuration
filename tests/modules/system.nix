@@ -19,6 +19,10 @@ let
     }
   ];
   grub = t.eval [ ../../system/grub.nix ];
+  disabledUpgrade = t.eval [
+    ../../system/autoupgrade.nix
+    { system.autoUpgrade.enable = lib.mkForce false; }
+  ];
   changed = t.eval [
     ../../system/kernel.nix
     ../../system/cpu_intel.nix
@@ -31,9 +35,14 @@ in
 t.check "modules/system" {
   evaluates = t.validSystem config;
   grub-evaluates = t.validSystem grub;
+  disabled-upgrade-evaluates = t.validSystem disabledUpgrade;
   upgrade-channel = config.system.autoUpgrade.channel == (import ../../sources.nix).channels.nixos;
   upgrade-host = config.systemd.services.nixos-upgrade.environment.NIX_BUILD_HOST == "vm-image";
   no-unattended-reboot = !config.system.autoUpgrade.allowReboot;
+  disabled-upgrade-cleanup =
+    !disabledUpgrade.system.autoUpgrade.enable
+    && !(disabledUpgrade.systemd.services ? nixos-upgrade)
+    && !(disabledUpgrade.systemd.timers ? nixos-upgrade);
   boot-policy =
     config.boot.loader.systemd-boot.enable
     && config.boot.loader.systemd-boot.configurationLimit == 7

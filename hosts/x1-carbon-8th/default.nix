@@ -12,12 +12,7 @@
 # Last Modified: 2026-11-06 22:21:14
 ##
 
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ lib, pkgs, ... }:
 {
   imports = [
     ../../profiles/workstation.nix
@@ -35,10 +30,6 @@
     default = lib.mkDefault "http://127.0.0.1:7890";
     noProxy = lib.mkDefault "127.0.0.1,localhost,internal.domain";
   };
-
-  # Keep the explicit daemon configuration, but share one proxy source with
-  # login sessions so disabling or overriding networking.proxy also works here.
-  systemd.services.nix-daemon.environment = config.networking.proxy.envVars;
 
   # The shared profiles intentionally do not select or create personal accounts.
   workstation.users = [ "mingcheng" ];

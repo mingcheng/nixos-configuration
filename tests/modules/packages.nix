@@ -47,7 +47,12 @@ t.check "modules/packages" {
     && !config.programs.atuin.settings.auto_sync
     && !config.programs.atuin.settings.update_check;
   prompt = config.programs.starship.enable && config.programs.starship.interactiveOnly;
-  tmux-opt-in = !config.programs.tmux.enable && config.programs.tmux.keyMode == "vi";
+  tmux =
+    config.programs.tmux.enable
+    && config.programs.tmux.clock24
+    && config.programs.tmux.keyMode == "vi"
+    && config.programs.tmux.terminal == "tmux-256color"
+    && t.lib.hasInfix "set -g mouse on" config.programs.tmux.extraConfig;
   git-editor = git.core.editor == "nvim";
   git-pull-policy = git.pull.ff == "only";
   git-conflict-review =
