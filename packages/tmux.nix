@@ -9,13 +9,12 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-05 11:26:03
+# Last Modified: 2026-11-07 09:17:09
 ##
 
 {
   programs.tmux = {
-    enable = false;
-
+    enable = true;
     clock24 = true;
     keyMode = "vi";
     terminal = "tmux-256color";

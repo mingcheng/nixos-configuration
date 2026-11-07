@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-07 09:04:40
+# Last Modified: 2026-11-07 10:13:45
 ##
 
 {
@@ -25,9 +25,8 @@
 
   hosts = [
     "https://adaway.org/hosts.txt"
-    "https://raw.hellogithub.com/hosts"
-    "https://raw.githubusercontent.com/ineo6/hosts/master/hosts"
-    "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts"
+    # "https://raw.hellogithub.com/hosts"
+    # "https://raw.githubusercontent.com/ineo6/hosts/master/hosts"
     "https://raw.githubusercontent.com/maxiaof/github-hosts/master/hosts"
   ];
 
