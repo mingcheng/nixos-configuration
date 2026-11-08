@@ -98,7 +98,7 @@ t.check "hosts/x1-carbon-8th" {
     && !(t.hasPackages config.environment.systemPackages [ "cursor" ])
     && !(t.hasPackages config.environment.systemPackages [ "fastfetch" ])
     && !(t.hasPackages config.environment.systemPackages [ "konsole" ]);
-  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.18";
+ai  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.12";
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
   systemd-boot =
     config.boot.loader.systemd-boot.enable

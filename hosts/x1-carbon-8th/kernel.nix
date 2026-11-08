@@ -14,9 +14,9 @@
 
 { pkgs, ... }: {
   boot = {
-    # 6.18 is the newest upstream LTS branch (November 2026).
-    # Follow its fixes from the stable channel, not linuxPackages_latest.
-    kernelPackages = pkgs.linuxPackages_6_18;
+    # 6.12 is the second-newest upstream LTS branch (November 2026).
+    # Keep Comet Lake-U on this mature branch while following stable-channel fixes.
+    kernelPackages = pkgs.linuxPackages_6_12;
 
     initrd = {
       systemd.enable = true;
