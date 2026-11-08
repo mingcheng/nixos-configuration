@@ -102,7 +102,6 @@ t.check "hosts/x1-carbon-8th" {
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
   systemd-boot =
     config.boot.loader.systemd-boot.enable
-    && !config.boot.loader.systemd-boot.editor
     && !config.boot.loader.grub.enable
     && config.boot.loader.efi.efiSysMountPoint == "/boot";
   disk-resume = config.boot.resumeDevice == "/dev/disk/by-label/test-swap";

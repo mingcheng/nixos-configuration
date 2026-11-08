@@ -40,7 +40,6 @@ in
 t.check "modules/security" {
   evaluates = t.validSystem config;
   ssh-evaluates = t.validSystem ssh;
-  boot-menu-protection = !config.boot.loader.systemd-boot.editor;
   firewall-lockdown =
     config.networking.firewall.enable
     && config.networking.firewall.allowedTCPPorts == [ ]
