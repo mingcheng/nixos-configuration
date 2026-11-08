@@ -98,10 +98,11 @@ t.check "hosts/x1-carbon-8th" {
     && !(t.hasPackages config.environment.systemPackages [ "cursor" ])
     && !(t.hasPackages config.environment.systemPackages [ "fastfetch" ])
     && !(t.hasPackages config.environment.systemPackages [ "konsole" ]);
-ai  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.12";
+  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.12";
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
   systemd-boot =
     config.boot.loader.systemd-boot.enable
+    && !config.boot.loader.systemd-boot.editor
     && !config.boot.loader.grub.enable
     && config.boot.loader.efi.efiSysMountPoint == "/boot";
   disk-resume = config.boot.resumeDevice == "/dev/disk/by-label/test-swap";
@@ -139,6 +140,12 @@ ai  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.versi
     && config.networking.firewall.allowedTCPPorts == [ ]
     && config.networking.firewall.allowedUDPPorts == [ ]
     && config.networking.firewall.trustedInterfaces == [ "lo" ];
+  kernel-security =
+    config.boot.kernel.sysctl."kernel.kexec_load_disabled" == 1
+    && config.boot.kernel.sysctl."kernel.kptr_restrict" == 2
+    && config.boot.kernel.sysctl."fs.suid_dumpable" == 0
+    && !config.security.protectKernelImage
+    && !(builtins.elem "nohibernate" config.boot.kernelParams);
   trusted-users =
     config.nix.settings.trusted-users == [
       "root"

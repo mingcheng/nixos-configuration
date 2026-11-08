@@ -15,6 +15,7 @@
 { lib, ... }: {
   services.openssh = {
     enable = true;
+    openFirewall = lib.mkDefault false;
 
     settings = {
       PubkeyAuthentication = true;
@@ -22,12 +23,16 @@
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
+      X11Forwarding = lib.mkDefault false;
 
       AllowAgentForwarding = lib.mkDefault true;
       AllowTcpForwarding = lib.mkDefault "yes";
       UseDns = lib.mkDefault false;
 
+      LogLevel = lib.mkDefault "VERBOSE";
       LoginGraceTime = lib.mkDefault 60;
+      MaxAuthTries = lib.mkDefault 3;
+      MaxStartups = lib.mkDefault "10:30:30";
       ClientAliveInterval = lib.mkDefault 60;
       ClientAliveCountMax = lib.mkDefault 5;
     };

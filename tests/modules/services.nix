@@ -21,6 +21,7 @@ let
     ../../services/fstrim.nix
     ../../services/qbittorrent.nix
     ../../services/samba.nix
+    ../../services/sshd.nix
     {
       services.fstrim.enable = false;
       services.qbittorrent = {
@@ -30,6 +31,14 @@ let
         webuiPort = 9090;
       };
       services.samba.settings.global.interfaces = "enp1s0";
+      services.openssh = {
+        openFirewall = true;
+        settings = {
+          MaxAuthTries = 5;
+          MaxStartups = "20:30:60";
+          LogLevel = "INFO";
+        };
+      };
     }
   ];
   ssh = config.services.openssh.settings;
@@ -82,11 +91,21 @@ t.check "modules/services" {
     && config.services.samba.settings.global."server min protocol" == "SMB2";
   samba-interface-overridable = changed.services.samba.settings.global.interfaces == "enp1s0";
   ssh-public-key-only =
-    ssh.PubkeyAuthentication
+    !config.services.openssh.openFirewall
+    && ssh.PubkeyAuthentication
     && ssh.AuthenticationMethods == "publickey"
     && !ssh.PasswordAuthentication
     && !ssh.KbdInteractiveAuthentication
-    && ssh.PermitRootLogin == "no";
+    && ssh.PermitRootLogin == "no"
+    && !ssh.X11Forwarding
+    && ssh.MaxAuthTries == 3
+    && ssh.MaxStartups == "10:30:30"
+    && ssh.LogLevel == "VERBOSE";
+  ssh-limits-overridable =
+    changed.services.openssh.openFirewall
+    && changed.services.openssh.settings.MaxAuthTries == 5
+    && changed.services.openssh.settings.MaxStartups == "20:30:60"
+    && changed.services.openssh.settings.LogLevel == "INFO";
   time-sync =
     !config.services.ntp.enable
     && config.services.timesyncd.enable

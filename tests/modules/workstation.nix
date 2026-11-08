@@ -113,7 +113,9 @@ t.check "modules/workstation" {
     && workstation.networking.firewall.allowedTCPPorts == [ ]
     && !workstation.networking.firewall.allowPing
     && workstation.nix.settings.sandbox
+    && workstation.boot.kernel.sysctl."kernel.kexec_load_disabled" == 1
     && workstation.boot.kernel.sysctl."kernel.kptr_restrict" == 2
+    && workstation.boot.kernel.sysctl."fs.suid_dumpable" == 0
     && workstation.systemd.coredump.settings.Coredump.Storage == "none"
     && workstation.virtualisation.docker.daemon.settings.ip == "127.0.0.1";
   host-policy-isolation = noHostPolicy desktop && noHostPolicy workstation;
