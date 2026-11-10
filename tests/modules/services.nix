@@ -61,7 +61,7 @@ let
       services.mihomo = {
         configFile = "/srv/mihomo/config.yaml";
         tunMode = false;
-        processesInfo = false;
+        processesInfo = true;
         webui = null;
       };
       systemd.user.services.syncthing = {
@@ -137,12 +137,12 @@ t.check "modules/services" {
     && changed.networking.networkmanager.insertNameservers == [ "127.0.0.1" ];
   mihomo-system-service =
     let
-      defaultFile = config.systemd.tmpfiles.settings.mihomo."/etc/mihomo/config.yaml".f;
+      defaultFile = config.systemd.tmpfiles.settings.mihomo."/etc/mihomo.yaml".f;
     in
     mihomo.enable
-    && mihomo.configFile == "/etc/mihomo/config.yaml"
+    && mihomo.configFile == "/etc/mihomo.yaml"
     && mihomo.tunMode
-    && mihomo.processesInfo
+    && !mihomo.processesInfo
     && mihomo.webui == t.pkgs.metacubexd
     && config.networking.proxy.default == "http://127.0.0.1:7890"
     && config.networking.proxy.noProxy == "127.0.0.1,localhost,internal.domain"
@@ -155,8 +155,6 @@ t.check "modules/services" {
     &&
       config.systemd.services.mihomo.serviceConfig.AmbientCapabilities == [
         "CAP_NET_ADMIN"
-        "CAP_DAC_READ_SEARCH"
-        "CAP_SYS_PTRACE"
       ];
   mihomo-overridable =
     changed.services.mihomo.configFile == "/srv/mihomo/config.yaml"
@@ -164,9 +162,13 @@ t.check "modules/services" {
     && changed.networking.proxy.default == "http://127.0.0.1:1080"
     && changed.networking.proxy.noProxy == "localhost"
     && !changed.services.mihomo.tunMode
-    && !changed.services.mihomo.processesInfo
+    && changed.services.mihomo.processesInfo
     && changed.services.mihomo.webui == null
-    && changed.systemd.services.mihomo.serviceConfig.AmbientCapabilities == [ ];
+    &&
+      changed.systemd.services.mihomo.serviceConfig.AmbientCapabilities == [
+        "CAP_DAC_READ_SEARCH"
+        "CAP_SYS_PTRACE"
+      ];
   syncthing-user-service =
     config.users.users.mingcheng.linger == false
     && t.hasPackages config.users.users.mingcheng.packages [ "syncthing" ]
