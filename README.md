@@ -6,13 +6,13 @@
 
 ## 选择主机
 
-| `NIX_BUILD_HOST`                                       | 适用场景                                                                                    |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)       | ThinkPad X1 Carbon Gen 8：`laptop` + `develop`、Plasma Wayland、PipeWire、Fcitx5/Rime   |
-| [`surface-laptop-3`](hosts/surface-laptop-3/default.nix) | Surface Laptop 3 (i5-1035G7 / 8G / 256G)：`laptop` 办公套件、主线 6.12 SAM 驱动、禁用触控屏 |
+| `NIX_BUILD_HOST`                                         | 适用场景                                                                                          |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)       | ThinkPad X1 Carbon Gen 8：`laptop` + `develop`、Plasma Wayland、PipeWire、Fcitx5/Rime             |
+| [`surface-laptop-3`](hosts/surface-laptop-3/default.nix) | Surface Laptop 3 (i5-1035G7 / 8G / 256G)：`laptop` 办公套件、主线 6.12 SAM 驱动、禁用触控屏       |
 | [`ryzen-4750g`](hosts/ryzen-4750g/default.nix)           | Ryzen 7 PRO 4750G + Radeon Pro WX 4100 台式工作站：`workstation` + `develop`、AMDGPU、KVM/Libvirt |
-| [`vm-image`](hosts/vm-image/default.nix)               | QEMU 客户机基础配置，非可直接启动的磁盘镜像                                                 |
-| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix)   | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具                                  |
+| [`vm-image`](hosts/vm-image/default.nix)                 | QEMU 客户机基础配置，非可直接启动的磁盘镜像                                                       |
+| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix)     | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具                                        |
 
 构建时必须通过 `NIX_BUILD_HOST` 指定其中一项；系统主机名默认与之相同，可用 `networking.hostName` 覆盖。
 
@@ -90,6 +90,16 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 
 挂载布局须与硬件配置一致：桌面/笔记本主机使用 `/boot`，USB 使用 `/efi`；VM 需另行配置引导器。安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
 
+### Surface Laptop 3 USB 启动备忘
+
+Surface Laptop 3 使用 Microsoft 定制 UEFI 界面，通过 USB 安装盘或维护盘启动时请按以下步骤操作：
+
+1. **进入 UEFI 设置**：完全关机后，**按住 `F4`（或音量+）不放**，点按电源键开机，待屏幕出现 Surface 徽标后松开按键即可进入 Surface UEFI。
+2. **调整安全启动（Secure Boot）**：进入 **Security → Secure Boot → Change configuration**，选择 **None**（禁用安全启动，安装 NixOS 标准引导器时使用）或 **Microsoft & 3rd party CA**。若原 Windows 分区开启了 BitLocker，修改前请务必先挂起/解密或备份恢复密钥。
+3. **配置引导顺序**：进入 **Boot configuration**，勾选启用 **Enable boot from USB devices**，并将 **USB Storage** 拖动到引导列表顶部（也可直接在该列表中向左滑动 **USB Storage** 立即从当前 U 盘启动）。
+4. **使用快捷键直接从 USB 启动**：已开启 USB 启动且调优顺序后，关机状态下插好 U 盘，**按住 `F3`（或音量-）不放**，点按电源键开机，出现 Surface 徽标后松开，即可直接引导进入 USB 启动盘。
+5. **外接键鼠提醒**：若使用的通用安装镜像未在 initrd 中内置 Surface Aggregator (`surface_aggregator` / `surface_hid`) 驱动，安装阶段内置键盘与触控板可能无法响应，建议准备外接 USB 键盘（或带 USB Hub）完成首次安装。
+
 ## 更新与回退
 
 | 操作         | 命令                                                                    |
@@ -102,14 +112,14 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 
 ## 个性化配置
 
-| 调整内容                     | 位置                                                               |
-| ---------------------------- | ------------------------------------------------------------------ |
-| 账户、SSH 公钥、代理、主机名 | 本机 `configuration.nix`                                           |
-| 磁盘、swap、EFI 挂载点       | 本机 `hardware-configuration.nix`                                  |
-| 主机硬件策略与软件组合       | [hosts/](hosts/)                                                   |
-| 分层共用策略                 | [profiles/](profiles/)（`base`、`desktop`、`laptop`、`develop`、`workstation`） |
-| 系统设置、可选服务、程序配置 | [system/](system/)、[services/](services/)、[packages/](packages/) |
-| 通道地址、二进制缓存、在线 hosts | [sources.nix](sources.nix)                                     |
+| 调整内容                         | 位置                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| 账户、SSH 公钥、代理、主机名     | 本机 `configuration.nix`                                                        |
+| 磁盘、swap、EFI 挂载点           | 本机 `hardware-configuration.nix`                                               |
+| 主机硬件策略与软件组合           | [hosts/](hosts/)                                                                |
+| 分层共用策略                     | [profiles/](profiles/)（`base`、`desktop`、`laptop`、`develop`、`workstation`） |
+| 系统设置、可选服务、程序配置     | [system/](system/)、[services/](services/)、[packages/](packages/)              |
+| 通道地址、二进制缓存、在线 hosts | [sources.nix](sources.nix)                                                      |
 
 模块通过 `imports` 按需启用，文件存在不代表服务已开启；可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口与数据目录。修改通道地址后需重新执行 `nix-channel --add`。
 
