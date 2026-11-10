@@ -2,15 +2,17 @@
 
 ![Screenshot of X1 Carbon 8th Gen](screenshot.png)
 
-适用于 ThinkPad X1 Carbon Gen 8、QEMU 客户机与 USB 启动盘的个人配置。基于 **NixOS 26.05 / x86_64-linux**，使用传统 channel 管理，不依赖 flakes。
+适用于 ThinkPad X1 Carbon Gen 8、Surface Laptop 3、Ryzen 7 PRO 4750G 台式主机、QEMU 客户机与 USB 启动盘的个人配置。基于 **NixOS 26.05 / x86_64-linux**，使用传统 channel 管理，不依赖 flakes。
 
 ## 选择主机
 
-| `NIX_BUILD_HOST`                                     | 适用场景                                                               |
-| ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)   | ThinkPad X1 Carbon Gen 8：Plasma Wayland、PipeWire、Fcitx5/Rime 输入法 |
-| [`vm-image`](hosts/vm-image/default.nix)             | QEMU 客户机基础配置，非可直接启动的磁盘镜像                            |
-| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix) | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具             |
+| `NIX_BUILD_HOST`                                       | 适用场景                                                                                    |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)       | ThinkPad X1 Carbon Gen 8：`laptop` + `develop`、Plasma Wayland、PipeWire、Fcitx5/Rime   |
+| [`surface-laptop-3`](hosts/surface-laptop-3/default.nix) | Surface Laptop 3 (i5-1035G7 / 8G / 256G)：`laptop` 办公套件、主线 6.12 SAM 驱动、禁用触控屏 |
+| [`ryzen-4750g`](hosts/ryzen-4750g/default.nix)           | Ryzen 7 PRO 4750G + Radeon Pro WX 4100 台式工作站：`workstation` + `develop`、AMDGPU、KVM/Libvirt |
+| [`vm-image`](hosts/vm-image/default.nix)               | QEMU 客户机基础配置，非可直接启动的磁盘镜像                                                 |
+| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix)   | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具                                  |
 
 构建时必须通过 `NIX_BUILD_HOST` 指定其中一项；系统主机名默认与之相同，可用 `networking.hostName` 覆盖。
 
@@ -105,7 +107,7 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 | 账户、SSH 公钥、代理、主机名 | 本机 `configuration.nix`                                           |
 | 磁盘、swap、EFI 挂载点       | 本机 `hardware-configuration.nix`                                  |
 | 主机硬件策略与软件组合       | [hosts/](hosts/)                                                   |
-| 分层共用策略                 | [profiles/](profiles/)（`base`、`desktop`、`workstation`）         |
+| 分层共用策略                 | [profiles/](profiles/)（`base`、`desktop`、`laptop`、`develop`、`workstation`） |
 | 系统设置、可选服务、程序配置 | [system/](system/)、[services/](services/)、[packages/](packages/) |
 | 通道地址、二进制缓存、在线 hosts | [sources.nix](sources.nix)                                     |
 

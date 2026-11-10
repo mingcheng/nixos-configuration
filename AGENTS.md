@@ -4,7 +4,7 @@ Personal NixOS 26.05 (x86_64-linux) config, channel-based — there is **no** `f
 
 ## Commands
 
-- `NIX_BUILD_HOST` (`x1-carbon-8th` | `vm-image` | `usb-boot-stick`, discovered from `hosts/*/default.nix`) is mandatory — `main.nix` throws without it. `sudo` strips env vars, so use `sudo env NIX_BUILD_HOST=<host> nixos-rebuild switch` (same for `build`, `nixos-install`, and `make check-local`).
+- `NIX_BUILD_HOST` (`x1-carbon-8th` | `surface-laptop-3` | `ryzen-4750g` | `vm-image` | `usb-boot-stick`, discovered from `hosts/*/default.nix`) is mandatory — `main.nix` throws without it. `sudo` strips env vars, so use `sudo env NIX_BUILD_HOST=<host> nixos-rebuild switch` (same for `build`, `nixos-install`, and `make check-local`).
 - `make` alone runs `make check` (= `check-syntax` → `check-modules` → `check-hosts` → `check-scripts`). `make check-syntax` combines `check-nix-syntax` (Nix parsing, no channels) and `check-shell-syntax` (Bash parsing, no Nix).
 - Full `make check` takes minutes (14+ separate Nix evaluations). Iterate with auto-discovered focused targets instead: `make check-module-<name>`, `make check-host-<name>`, `make check-script-<name>`, where `<name>` is the filename stem under `tests/{modules,hosts,scripts}/`.
 - `make check-local` evaluates the machine-local config; set `NIX_BUILD_HOST`, plus `LOCAL_CONFIG=/etc/nixos/configuration.nix` when not using the repo's `configuration.nix`.
@@ -14,7 +14,7 @@ Personal NixOS 26.05 (x86_64-linux) config, channel-based — there is **no** `f
 ## Architecture
 
 - `main.nix` is the sole entrypoint: imports `hosts/<host>/default.nix`, sets `networking.hostName` via `mkDefault` and `environment.variables.NIX_BUILD_HOST`, which `system/autoupgrade.nix` forwards into the `nixos-upgrade` service.
-- Profiles layer `base.nix` → `desktop.nix` → `workstation.nix`. Only X1 imports `workstation`; `vm-image` and `usb-boot-stick` import `base`. Keep accounts, proxy, `trusted-users`, kernel and hardware policy in `hosts/<host>/`, never in reusable profiles.
+- Profiles layer `base.nix` → `desktop.nix` → `workstation.nix` → `laptop.nix`, with `develop.nix` providing the reusable development toolchain (`nix-ld`, `direnv`, compilers, Nix/CLI dev tools). `surface-laptop-3` imports `laptop`; `x1-carbon-8th` imports `laptop` + `develop`; `ryzen-4750g` imports `workstation` + `develop`; `vm-image` and `usb-boot-stick` import `base`. Keep accounts, proxy, `trusted-users`, kernel and hardware policy in `hosts/<host>/`, and keep software package selections in `profiles/` and `packages/`.
 - `workstation.users` / `workstation.userPackages` are custom options from `packages/user-packages.nix`: shared apps are assigned to named users, not `environment.systemPackages`. `packages/gui.nix` and `packages/vscode.nix` gate GUI/VS Code packages on `workstation.users` and `hasGui`.
 - `sources.nix` is the single source for channel URLs, substituters, Flathub and dev mirrors — imported by Nix modules and evaluated by `scripts/channel.sh` / `nixconfig.sh`. Changing a channel URL also requires re-running `nix-channel --add` on the machine.
 - `<unstable>` may only be imported lazily by `packages/vscode.nix`. Headless checks pass `-I unstable=tests/fixtures/no-unstable.nix` (a `throw`) via the `Makefile`'s hardcoded `HEADLESS_CHECKS` list, so headless hosts must not require it.
