@@ -9,7 +9,7 @@
 # File Created: 2026-11-09 18:26:43
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-09 18:26:43
+# Last Modified: 2026-11-10 17:26:41
 ##
 
 { lib, pkgs, ... }:
@@ -25,11 +25,6 @@
     ./kernel.nix
     ./tuning.nix
   ];
-
-  networking.proxy = {
-    default = lib.mkDefault "http://127.0.0.1:7890";
-    noProxy = lib.mkDefault "127.0.0.1,localhost,internal.domain";
-  };
 
   # The shared profiles intentionally do not select or create personal accounts.
   workstation.users = [ "mingcheng" ];

@@ -6,6 +6,7 @@
     ../services/timesyncd.nix
     ../services/docker.nix
     ../services/adguard.nix
+    ../services/mihomo.nix
     ../services/syncthing.nix
     ../packages/workstation.nix
     ./desktop.nix
