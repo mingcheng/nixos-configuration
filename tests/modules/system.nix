@@ -77,7 +77,7 @@ t.check "modules/system" {
     && config.systemd.sleep.settings.Sleep.HibernateDelaySec == "2h";
   nix-ld =
     config.programs.nix-ld.enable
-    && config.environment.variables.MISE_NODE_COMPILE == "false"
+    && config.environment.variables.MISE_ALL_COMPILE == "false"
     && t.hasPackages config.programs.nix-ld.libraries [
       "openssl"
       "sqlite"

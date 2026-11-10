@@ -20,7 +20,7 @@
 }:
 {
   # mise defaults to source builds on NixOS, even when nix-ld is available.
-  environment.variables.MISE_NODE_COMPILE = "false";
+  environment.variables.MISE_ALL_COMPILE = "false";
 
   programs.nix-ld = {
     enable = true;
@@ -60,7 +60,7 @@
         ]);
       runScript = "bash";
       profile = ''
-        export MISE_NODE_COMPILE=${lib.escapeShellArg config.environment.variables.MISE_NODE_COMPILE}
+        export MISE_ALL_COMPILE=${lib.escapeShellArg config.environment.variables.MISE_ALL_COMPILE}
       '';
     })
   ];
