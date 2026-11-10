@@ -55,5 +55,9 @@ t.check "modules/gui" {
     && wayland.xdg.portal.config.common.default == "gtk"
     && t.hasPackages wayland.xdg.portal.extraPortals [ "xdg-desktop-portal-gtk" ];
   flatpak-opt-out =
-    !disabledFlatpak.services.flatpak.enable && !(disabledFlatpak.systemd.services ? flatpak-flathub);
+    !disabledFlatpak.services.flatpak.enable
+    && !(disabledFlatpak.systemd.services ? flatpak-flathub)
+    && !(disabledFlatpak.systemd.services ? flatpak-update)
+    && !(disabledFlatpak.systemd.timers ? flatpak-update)
+    && !(disabledFlatpak.systemd.user.services ? flatpak-flathub);
 }

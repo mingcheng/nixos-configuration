@@ -124,14 +124,8 @@ Surface Laptop 3 使用 Microsoft 定制 UEFI 界面，通过 USB 安装盘或�
 模块通过 `imports` 按需启用，文件存在不代表服务已开启；可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口与数据目录。修改通道地址后需重新执行 `nix-channel --add`。
 
 - **SSH**：导入 [services/sshd.nix](services/sshd.nix)（`ryzen-4750g` 已默认启用），仅允许公钥认证并禁止 root 登录，请先为账户配置公钥。
-- **代理**：桌面与笔记本主机默认使用 `http://127.0.0.1:7890`。不使用本地代理时，在本机配置中覆盖：
+- **Flatpak**：图形环境默认启用 [services/flatpak.nix](services/flatpak.nix)，自动为系统级（`--system`）与用户级（`--user`）配置 [sources.nix](sources.nix) 中的 Flathub 镜像，并在系统级预装 `Firefox`、`VLC`、`LibreOffice` 及按周自动更新；可通过 `services.flatpak.packages` 或 `services.flatpak.update` 调整。
 
-```nix
-networking.proxy = {
-  default = null;
-  noProxy = "";
-};
-```
 
 ### 自定义 hosts
 
