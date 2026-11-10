@@ -15,11 +15,10 @@
 { lib, pkgs, ... }:
 {
   imports = [
-    ../../profiles/workstation.nix
+    ../../profiles/laptop.nix
+    ../../profiles/develop.nix
 
     ../../system/boot.nix
-    ../../system/power.nix
-    ../../system/swap.nix
     ../../services/fprintd.nix
 
     ./kernel.nix

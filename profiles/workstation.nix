@@ -1,7 +1,6 @@
 {
   imports = [
     ../system/kernel.nix
-    ../system/ld.nix
     ../system/security.nix
     ../services/fstrim.nix
     ../services/timesyncd.nix

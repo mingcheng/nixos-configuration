@@ -26,7 +26,6 @@
   ];
 
   programs = {
-    direnv.enable = true;
     mtr.enable = true;
   };
 
@@ -63,17 +62,8 @@
   # Preserve CLI-first collision precedence when combining user applications.
   workstation.userPackages =
     with pkgs;
-    lib.mkBefore [
-      # Nix and development tools.
-      gnumake
-      manix
-      nix-du
-      nix-index
-      nixfmt
-      nixpkgs-lint
-      nixpkgs-pytools
-      nixpkgs-review
-      shfmt
+    lib.mkOrder 600 [
+      # Dotfiles and credential utilities.
       stow
       gnupg
 
@@ -87,35 +77,17 @@
       fzf
       zoxide
 
-      # Optional monitoring and benchmarking.
+      # System monitoring.
       fastfetch
       htop
       btop
-      stress
 
-      # Files, text and terminals.
+      # Files, archives and structured text.
       jq
       lz4
       p7zip
       tree
       unzip
       yq
-
-      # Additional interactive shells; the login shell remains unchanged.
-      nushell
-      powershell
-
-      # Development tools and utilities.
-      mise
-      gcc
-      cmake
-      ninja
-      pkg-config
-      python3
-
-      # ai agent
-      opencode
-      # claude-code
-      # codex
     ];
 }
