@@ -80,7 +80,7 @@ sudo swapon /dev/disk/by-label/swap
 sudo nixos-generate-config --root /mnt
 ```
 
-[mount.sh](scripts/mount.sh) 按 X1 的 `/boot` 布局挂载，USB 配置需改为将 EFI 挂载到 `/mnt/efi`。脚本详情见 [scripts/README.md](scripts/README.md)。
+[mount.sh](scripts/mount.sh) 按桌面/笔记本主机的 `/boot` 布局挂载，USB 配置需改为将 EFI 挂载到 `/mnt/efi`。脚本详情见 [scripts/README.md](scripts/README.md)。
 
 3. 将仓库放入 `/mnt/etc/nixos`，保留生成的本机配置，按上文添加 `imports`、配置通道并设置账户与登录凭据，然后安装：
 
@@ -88,7 +88,7 @@ sudo nixos-generate-config --root /mnt
 sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 ```
 
-挂载布局须与硬件配置一致：X1 使用 `/boot`，USB 使用 `/efi`；VM 需另行配置引导器。安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
+挂载布局须与硬件配置一致：桌面/笔记本主机使用 `/boot`，USB 使用 `/efi`；VM 需另行配置引导器。安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
 
 ## 更新与回退
 
@@ -113,8 +113,8 @@ sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
 
 模块通过 `imports` 按需启用，文件存在不代表服务已开启；可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口与数据目录。修改通道地址后需重新执行 `nix-channel --add`。
 
-- **SSH**：导入 [services/sshd.nix](services/sshd.nix)，仅允许公钥认证并禁止 root 登录，请先为账户配置公钥。
-- **代理**：X1 默认使用 `http://127.0.0.1:7890`。不使用本地代理时，在本机配置中覆盖：
+- **SSH**：导入 [services/sshd.nix](services/sshd.nix)（`ryzen-4750g` 已默认启用），仅允许公钥认证并禁止 root 登录，请先为账户配置公钥。
+- **代理**：桌面与笔记本主机默认使用 `http://127.0.0.1:7890`。不使用本地代理时，在本机配置中覆盖：
 
 ```nix
 networking.proxy = {
@@ -164,8 +164,8 @@ NIX_BUILD_HOST=x1-carbon-8th make check-local LOCAL_CONFIG=/etc/nixos/configurat
 
 ## 使用提醒
 
-- **休眠**：X1 的硬件配置须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代，固件需选择 Linux/S3 睡眠模式。
-- **权限**：`wheel` 组可免密码 sudo；共享配置的 Nix `trusted-users` 为 `root` 与 `@wheel`，X1 收紧为 `root` 与 `mingcheng`，仅应授予可信账户。
+- **休眠**：笔记本配置（`x1-carbon-8th`、`surface-laptop-3`，导入 `profiles/laptop.nix`）的硬件配置须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代。X1 固件需选择 Linux/S3 睡眠模式，Surface Laptop 3 使用 S0ix 现代待机配合 `suspend-then-hibernate`。
+- **权限**：`wheel` 组可免密码 sudo；共享配置的 Nix `trusted-users` 为 `root` 与 `@wheel`，各物理主机（`x1-carbon-8th`、`surface-laptop-3`、`ryzen-4750g`）收紧为 `root` 与 `mingcheng`，仅应授予可信账户。
 - **秘密信息**：不要把密码、令牌写入 Nix 表达式，它们可能进入其他用户可读的 Nix store。
 
 ## 参考

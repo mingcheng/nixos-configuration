@@ -24,8 +24,9 @@
     # we explicitly disable on this host.
     kernelPackages = pkgs.linuxPackages_6_12;
 
-    # Surface Laptop 3 keyboards and touchpads attach behind SAM over UART/SPI;
-    # include SAM modules in initrd so early boot prompts and recovery work.
+    # Surface Laptop 3 keyboards and touchpads attach behind SAM over UART/SPI
+    # (surface_hid on SL3+, unlike surface_kbd on SL1/2); include SAM and LPSS
+    # modules in initrd so early boot prompts and recovery work.
     initrd = {
       systemd.enable = true;
       availableKernelModules = [
@@ -39,7 +40,6 @@
         "surface_aggregator_registry"
         "surface_hid"
         "surface_hid_core"
-        "surface_kbd"
       ];
       kernelModules = [
         "i915"
@@ -50,27 +50,28 @@
     kernelModules = [
       "f2fs"
       "surface_acpi_notify"
+      "surface_aggregator_cdev"
       "surface_battery"
       "surface_charger"
       "surface_fan"
-      "surface_gpe"
       "surface_platform_profile"
       "surface_temp"
     ];
 
-    # Keep touchscreen kernel modules blacklisted even if present in initrd/rootfs.
+    # Keep touchscreen/stylus and spurious lid-wakeup (surface_gpe) modules
+    # blacklisted even if present in initrd/rootfs.
     blacklistedKernelModules = [
       "ipts"
       "ithc"
       "hid_multitouch"
+      "surface_gpe"
     ];
 
-    # Surface Laptop 3 (Ice Lake-U i5-1035G7 / Iris Plus G7): linux-surface
-    # uses mem_sleep_default=deep to properly enter S0ix Modern Standby,
-    # combined with suspend-then-hibernate from system/power.nix; disable PSR
-    # to prevent panel stutter on Ice Lake eDP.
+    # Surface Laptop 3 (Ice Lake-U i5-1035G7 / Iris Plus G7): firmware only
+    # exposes S0ix Modern Standby (s2idle), combined with suspend-then-hibernate
+    # from system/power.nix; disable PSR to prevent panel stutter on Ice Lake eDP.
     kernelParams = [
-      "mem_sleep_default=deep"
+      "mem_sleep_default=s2idle"
       "preempt=full"
       "intel_iommu=on"
       "i915.enable_psr=0"
@@ -96,11 +97,12 @@
     };
   };
 
-  # Ignore any touchscreen input devices exposed over generic HID.
+  # Ignore any touchscreen or stylus/pen input devices exposed over generic HID.
   services.udev = {
     packages = [ pkgs.surface-control ];
     extraRules = ''
       SUBSYSTEM=="input", ENV{ID_INPUT_TOUCHSCREEN}=="1", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+      SUBSYSTEM=="input", ENV{ID_INPUT_TABLET}=="1", ENV{LIBINPUT_IGNORE_DEVICE}="1"
     '';
   };
 

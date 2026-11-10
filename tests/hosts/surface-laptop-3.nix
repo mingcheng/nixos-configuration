@@ -120,7 +120,9 @@ t.check "hosts/surface-laptop-3" {
     && config.boot.kernelPatches == [ ]
     && config.boot.kernelPackages.kernel.drvPath == t.pkgs.linuxPackages_6_12.kernel.drvPath
     && builtins.elem "surface_aggregator" config.boot.initrd.availableKernelModules
-    && builtins.elem "surface_kbd" config.boot.initrd.availableKernelModules
+    && builtins.elem "surface_hid" config.boot.initrd.availableKernelModules
+    && !(builtins.elem "surface_kbd" config.boot.initrd.availableKernelModules)
+    && builtins.elem "surface_aggregator_cdev" config.boot.kernelModules
     && builtins.elem "surface_platform_profile" config.boot.kernelModules
     && t.hasPackages config.environment.systemPackages [ "surface-control" ];
   touchscreen-disabled =
@@ -129,7 +131,10 @@ t.check "hosts/surface-laptop-3" {
     && builtins.elem "ipts" config.boot.blacklistedKernelModules
     && builtins.elem "ithc" config.boot.blacklistedKernelModules
     && builtins.elem "hid_multitouch" config.boot.blacklistedKernelModules
+    && builtins.elem "surface_gpe" config.boot.blacklistedKernelModules
+    && !(builtins.elem "surface_gpe" config.boot.kernelModules)
     && lib.hasInfix "ID_INPUT_TOUCHSCREEN" config.services.udev.extraRules
+    && lib.hasInfix "ID_INPUT_TABLET" config.services.udev.extraRules
     && lib.hasInfix "LIBINPUT_IGNORE_DEVICE" config.services.udev.extraRules;
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
   systemd-boot =
@@ -138,7 +143,7 @@ t.check "hosts/surface-laptop-3" {
     && config.boot.loader.efi.efiSysMountPoint == "/boot";
   disk-resume =
     config.boot.resumeDevice == "/dev/disk/by-label/test-swap"
-    && builtins.elem "mem_sleep_default=deep" config.boot.kernelParams;
+    && builtins.elem "mem_sleep_default=s2idle" config.boot.kernelParams;
   compressed-swap =
     config.zramSwap.enable
     && config.zramSwap.algorithm == "zstd"
@@ -147,6 +152,8 @@ t.check "hosts/surface-laptop-3" {
   power-policy =
     config.services.power-profiles-daemon.enable
     && config.services.thermald.enable
+    && config.services.thermald.configFile != null
+    && !(lib.hasInfix "--adaptive" config.systemd.services.thermald.serviceConfig.ExecStart)
     && !config.services.tlp.enable
     && !config.services.fprintd.enable
     && !config.services.hardware.bolt.enable;

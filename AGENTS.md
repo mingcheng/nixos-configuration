@@ -26,7 +26,7 @@ Personal NixOS 26.05 (x86_64-linux) config, channel-based — there is **no** `f
 - `tests/hosts/*.nix` filenames must equal host directory names, since `make check-host-<name>` sets `NIX_BUILD_HOST=$*` from the target name.
 - `tests/scripts/*.sh` are standalone Bash scripts run directly without Nix; they stub `nix`, `nix-channel`, `lsblk`, etc. and never touch real channels or disks.
 - **Adding a host** needs `hosts/<name>/default.nix` and `tests/hosts/<name>.nix`; discovery and selection coverage are automatic. If it must not need `<unstable>`, also add its target to `HEADLESS_CHECKS` in the `Makefile`. New module/script tests need no Makefile change.
-- `system/swap.nix` throws unless X1 has exactly one `/dev/` swap device without random encryption; zram does not satisfy it.
+- `system/swap.nix` (imported by `profiles/laptop.nix`) throws unless laptop hosts (`x1-carbon-8th`, `surface-laptop-3`) have exactly one `/dev/` swap device without random encryption; zram does not satisfy it.
 
 ## Gotchas
 

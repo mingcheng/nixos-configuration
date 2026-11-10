@@ -16,8 +16,11 @@
 {
   # Surface Laptop 3 (13.5" Intel): i5-1035G7 (4C/8T, 15 W Ice Lake), 8 GiB LPDDR4x,
   # 256 GiB NVMe, Iris Plus G7, AX201 Wi-Fi 6.
-  # Keep thermald enabled for Ice Lake passive RAPL throttling and PPD for
-  # surface_platform_profile + intel_pstate HWP; keep TLP disabled per linux-surface.
+  # Surface firmware DPTF tables allow short turbo bursts that trigger PROCHOT
+  # throttling down to 0.2 GHz; supply an explicit RAPL passive trip-point config
+  # (disabling thermald's --adaptive flag per linux-surface wiki) alongside PPD
+  # for surface_platform_profile + intel_pstate HWP, and keep TLP disabled.
+  services.thermald.configFile = ./thermal-conf.xml;
   services.tlp.enable = lib.mkForce false;
 
   # On an 8 GiB system, allocate 50% (~4 GiB logical) zstd compressed RAM swap
