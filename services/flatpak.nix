@@ -70,8 +70,10 @@ in
       };
       script = ''
         set -eu
-        flatpak remote-add --system --if-not-exists --from flathub \
-          "$FLATHUB_REPO"
+        if ! flatpak remotes --system --columns=name | grep -qxF flathub; then
+          flatpak remote-add --system --if-not-exists --from flathub \
+            "$FLATHUB_REPO"
+        fi
         flatpak remote-modify --system --gpg-verify --no-follow-redirect \
           --url="$FLATHUB_URL" flathub
 
@@ -90,8 +92,17 @@ in
         fi
 
         ${lib.optionalString (desiredPackages != [ ]) ''
-          flatpak install --system --noninteractive --or-update flathub \
-            ${lib.escapeShellArgs desiredPackages}
+          missing_packages=""
+          for app in ${lib.escapeShellArgs desiredPackages}; do
+            if ! flatpak info --system "$app" >/dev/null 2>&1; then
+              missing_packages="$missing_packages $app"
+            fi
+          done
+
+          if [ -n "$missing_packages" ]; then
+            # shellcheck disable=SC2086
+            flatpak install --system --noninteractive --or-update flathub $missing_packages
+          fi
         ''}
         install -d -m 0755 /var/lib/flatpak
         printf '%s\n' "$desired_packages" > "$state_file"
@@ -141,8 +152,6 @@ in
     systemd.user.services.flatpak-flathub = {
       description = "Configure the user Flathub mirror";
       wantedBy = [ "default.target" ];
-      wants = [ "network-online.target" ];
-      after = [ "network-online.target" ];
       path = [ cfg.package ];
       environment = {
         FLATHUB_REPO = flathub.repository;
@@ -153,8 +162,10 @@ in
       };
       script = ''
         set -eu
-        flatpak remote-add --user --if-not-exists --from flathub \
-          "$FLATHUB_REPO"
+        if ! flatpak remotes --user --columns=name | grep -qxF flathub; then
+          flatpak remote-add --user --if-not-exists --from flathub \
+            "$FLATHUB_REPO"
+        fi
         flatpak remote-modify --user --gpg-verify --no-follow-redirect \
           --url="$FLATHUB_URL" flathub
       '';

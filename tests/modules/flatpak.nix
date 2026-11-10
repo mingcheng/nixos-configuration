@@ -44,14 +44,16 @@ t.check "modules/flatpak" {
     userService.environment.FLATHUB_REPO == flathub.repository
     && userService.environment.FLATHUB_URL == flathub.mirror
     && userService.unitConfig.ConditionUser == "!@system"
+    && !(builtins.elem "network-online.target" userService.wants)
+    && t.lib.hasInfix "flatpak remotes --user --columns=name | grep -qxF flathub" userService.script
     && t.lib.hasInfix "remote-add --user --if-not-exists" userService.script
     && t.lib.hasInfix "remote-modify --user --gpg-verify --no-follow-redirect" userService.script;
   network-ordering =
     builtins.elem "network-online.target" service.wants
-    && builtins.elem "network-online.target" service.after
-    && builtins.elem "network-online.target" userService.wants
-    && builtins.elem "network-online.target" userService.after;
-  idempotent-setup = t.lib.hasInfix "--if-not-exists" service.script;
+    && builtins.elem "network-online.target" service.after;
+  idempotent-setup =
+    t.lib.hasInfix "flatpak remotes --system --columns=name | grep -qxF flathub" service.script
+    && t.lib.hasInfix "--if-not-exists" service.script;
   verified-mirror = t.lib.hasInfix "--gpg-verify --no-follow-redirect" service.script;
   default-packages =
     config.services.flatpak.packages == [
