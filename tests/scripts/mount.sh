@@ -23,7 +23,21 @@ mkdir() {
 df() {
   printf 'df %s\n' "$*" >>"$TEST_LOG"
 }
-export -f mount mkdir df
+swapon() {
+  printf 'swapon %s\n' "$*" >>"$TEST_LOG"
+  if [[ ${FAIL_SWAPON:-0} == 1 ]]; then
+    printf '%s\n' 'simulated swapon failure' >&2
+    return 28
+  fi
+}
+test() {
+  if [[ "$*" == "-e /dev/disk/by-label/swap" ]]; then
+    [[ ${HAS_SWAP:-0} == 1 ]]
+    return
+  fi
+  builtin test "$@"
+}
+export -f mount mkdir df swapon test
 
 assert_calls() {
   local actual
@@ -53,6 +67,26 @@ assert_calls "$(printf '%s\n' \
   'mkdir -p /mnt/boot' \
   'mount /dev/disk/by-label/EFI /mnt/boot' \
   'df -lh /mnt /mnt/boot')"
+
+: >"$TEST_LOG"
+export HAS_SWAP=1
+bash "$repo_dir/scripts/mount.sh"
+assert_calls "$(printf '%s\n' \
+  'mount /dev/disk/by-label/nixos /mnt' \
+  'mkdir -p /mnt/boot' \
+  'mount /dev/disk/by-label/EFI /mnt/boot' \
+  'swapon /dev/disk/by-label/swap' \
+  'df -lh /mnt /mnt/boot')"
+
+: >"$TEST_LOG"
+export FAIL_SWAPON=1
+expect_failure 28
+assert_calls "$(printf '%s\n' \
+  'mount /dev/disk/by-label/nixos /mnt' \
+  'mkdir -p /mnt/boot' \
+  'mount /dev/disk/by-label/EFI /mnt/boot' \
+  'swapon /dev/disk/by-label/swap')"
+unset HAS_SWAP FAIL_SWAPON
 
 : >"$TEST_LOG"
 export FAIL_MOUNT=/mnt

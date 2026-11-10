@@ -11,13 +11,18 @@
 
 set -euo pipefail
 
-channel=${1-nixos}
-if (($# > 1)) || [[ "$channel" != nixos && "$channel" != unstable ]]; then
+if (($# == 0)); then
+	channels=(nixos unstable)
+elif (($# == 1)) && [[ "$1" == nixos || "$1" == unstable ]]; then
+	channels=("$1")
+else
 	printf 'Usage: %s [nixos|unstable]\n' "${0##*/}" >&2
 	exit 2
 fi
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-url=$(nix --extra-experimental-features nix-command eval --raw \
-	--file "$script_dir/../sources.nix" "channels.$channel")
-nix-channel --add "$url" "$channel"
+for channel in "${channels[@]}"; do
+	url=$(nix --extra-experimental-features nix-command eval --raw \
+		--file "$script_dir/../sources.nix" "channels.$channel")
+	nix-channel --add "$url" "$channel"
+done

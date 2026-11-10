@@ -13,4 +13,15 @@ set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 bash "$script_dir/channel.sh" "$@"
-nix-channel --update "${1-nixos}"
+
+substituters=$(nix --extra-experimental-features nix-command eval --raw \
+	--file "$script_dir/../sources.nix" substituters \
+	--apply 'builtins.concatStringsSep " "')
+mkdir -p "$HOME/.config/nix"
+printf 'substituters = %s\n' "$substituters" >"$HOME/.config/nix/nix.conf"
+
+if (($# == 0)); then
+	nix-channel --update nixos unstable
+else
+	nix-channel --update "$1"
+fi

@@ -2,11 +2,11 @@
 
 | Script                       | Purpose                                                                                                               |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| [channel.sh](channel.sh)     | Register `nixos` (default) or `unstable` using the URL in [sources.nix](../sources.nix). Does not update the channel. |
-| [disk-init.sh](disk-init.sh) | Partition and format a disk for UEFI installation, with optional hibernation swap.                                    |
-| [iommu.sh](iommu.sh)         | List PCI devices by IOMMU group. Requires `lspci`.                                                                    |
-| [mount.sh](mount.sh)         | Mount the `nixos` filesystem at `/mnt` and `EFI` at `/mnt/boot`, then display disk usage.                             |
-| [nixconfig.sh](nixconfig.sh) | Register and update only the selected channel: `nixos` (default) or `unstable`. Leaves `nix.conf` unchanged.          |
+| [channel.sh](channel.sh)     | Register `nixos` and `unstable` (default) or a single specified channel using [sources.nix](../sources.nix). Leaves `nix.conf` unchanged and does not update channels. |
+| [disk-init.sh](disk-init.sh) | Partition and format a disk for UEFI installation, with optional hibernation swap.                                                                                     |
+| [iommu.sh](iommu.sh)         | List PCI devices by IOMMU group. Requires `lspci`.                                                                                                                     |
+| [mount.sh](mount.sh)         | Mount the `nixos` filesystem at `/mnt`, `EFI` at `/mnt/boot`, activate `swap` if present, and display disk usage.                                                      |
+| [nixconfig.sh](nixconfig.sh) | Write `substituters` from [sources.nix](../sources.nix) to `~/.config/nix/nix.conf`, then register and update `nixos` and `unstable` (default) or a specified channel. |
 
 Use `sudo bash scripts/<script>.sh` for disk, mount, and system channel operations. Channel scripts work from any directory and manage the invoking user's channels.
 
@@ -30,6 +30,6 @@ sudo bash scripts/disk-init.sh --hibernate /dev/nvme0n1
 
 Swap sizing uses `/proc/meminfo` on the machine running the script. Requires `parted`, `util-linux`, `dosfstools`, `f2fs-tools`, `udevadm`, and `awk` for hibernation. Failures stop the script; completed changes are not rolled back.
 
-The script does not mount filesystems, activate swap, or install a bootloader. Use [mount.sh](mount.sh) for the `/boot` layout. USB configurations using `/efi` must mount EFI at `/mnt/efi` instead. Labels must be unique when mounting by label.
+The script does not mount filesystems, activate swap, or install a bootloader. Use [mount.sh](mount.sh) for the `/boot` layout (which also activates `/dev/disk/by-label/swap` when present). USB configurations using `/efi` must mount EFI at `/mnt/efi` instead. Labels must be unique when mounting by label.
 
-If swap was created, run `sudo swapon /dev/disk/by-label/swap` before `nixos-generate-config --root /mnt` so it is included in the generated hardware configuration. Hibernation also requires compatible hardware and a configured resume device.
+If mounting manually after creating swap, run `sudo swapon /dev/disk/by-label/swap` before `nixos-generate-config --root /mnt` so it is included in the generated hardware configuration. Hibernation also requires compatible hardware and a configured resume device.

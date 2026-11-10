@@ -5,6 +5,7 @@ repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 export SOURCE_FILE="$repo_dir/sources.nix"
 export STABLE_URL="https://channels.example.test/stable"
 export UNSTABLE_URL="https://channels.example.test/unstable"
+export SUBSTITUTERS="https://mirror1.example.test/store https://mirror2.example.test/store"
 
 work=$(mktemp -d)
 mkdir -p "$work/home/.config/nix"
@@ -22,14 +23,24 @@ nix() {
     printf '%s\n' 'simulated evaluation failure' >&2
     return 23
   fi
-  if [[ $# != 7 || $1 != --extra-experimental-features || $2 != nix-command ||
+  if [[ ($# != 7 && $# != 9) || $1 != --extra-experimental-features || $2 != nix-command ||
     $3 != eval || $4 != --raw || $5 != --file || ! $6 -ef "$SOURCE_FILE" ]]; then
     printf '%s\n' 'unexpected Nix evaluation arguments' >&2
     return 1
   fi
   case "$7" in
-  channels.nixos) printf '%s' "$STABLE_URL" ;;
-  channels.unstable) printf '%s' "$UNSTABLE_URL" ;;
+  channels.nixos)
+    [[ $# == 7 ]] || return 1
+    printf '%s' "$STABLE_URL"
+    ;;
+  channels.unstable)
+    [[ $# == 7 ]] || return 1
+    printf '%s' "$UNSTABLE_URL"
+    ;;
+  substituters)
+    [[ $# == 9 && $8 == --apply && $9 == 'builtins.concatStringsSep " "' ]] || return 1
+    printf '%s' "$SUBSTITUTERS"
+    ;;
   *) return 1 ;;
   esac
 }
@@ -47,14 +58,15 @@ nix-channel() {
 export -f nix nix-channel
 
 assert_calls() {
-  local actual
+  local actual expected_conf=${2:-keep-existing-config = true}
   actual=$(<"$TEST_LOG")
   if [[ $actual != "$1" ]]; then
     printf 'Unexpected channel calls:\n%s\nExpected:\n%s\n' "$actual" "$1" >&2
     exit 1
   fi
-  if [[ $(<"$HOME/.config/nix/nix.conf") != 'keep-existing-config = true' ]]; then
-    printf '%s\n' 'Existing user Nix configuration was overwritten' >&2
+  if [[ $(<"$HOME/.config/nix/nix.conf") != "$expected_conf" ]]; then
+    printf 'Unexpected nix.conf:\n%s\nExpected:\n%s\n' \
+      "$(<"$HOME/.config/nix/nix.conf")" "$expected_conf" >&2
     exit 1
   fi
 }
@@ -79,6 +91,10 @@ setup="$work/checkout with spaces/scripts/nixconfig.sh"
 
 : >"$TEST_LOG"
 bash "$channel"
+assert_calls "$(printf '%s\n' "--add $STABLE_URL nixos" "--add $UNSTABLE_URL unstable")"
+
+: >"$TEST_LOG"
+bash "$channel" nixos
 assert_calls "--add $STABLE_URL nixos"
 
 : >"$TEST_LOG"
@@ -86,13 +102,25 @@ bash "$channel" unstable
 assert_calls "--add $UNSTABLE_URL unstable"
 
 : >"$TEST_LOG"
+rm -f -- "$HOME/.config/nix/nix.conf"
+rmdir -- "$HOME/.config/nix"
 bash "$setup"
-assert_calls "$(printf '%s\n' "--add $STABLE_URL nixos" '--update nixos')"
+assert_calls "$(printf '%s\n' \
+  "--add $STABLE_URL nixos" \
+  "--add $UNSTABLE_URL unstable" \
+  '--update nixos unstable')" "substituters = $SUBSTITUTERS"
+
+: >"$TEST_LOG"
+bash "$setup" nixos
+assert_calls "$(printf '%s\n' "--add $STABLE_URL nixos" '--update nixos')" \
+  "substituters = $SUBSTITUTERS"
 
 : >"$TEST_LOG"
 bash "$setup" unstable
-assert_calls "$(printf '%s\n' "--add $UNSTABLE_URL unstable" '--update unstable')"
+assert_calls "$(printf '%s\n' "--add $UNSTABLE_URL unstable" '--update unstable')" \
+  "substituters = $SUBSTITUTERS"
 
+printf '%s\n' 'keep-existing-config = true' >"$HOME/.config/nix/nix.conf"
 for script in "$channel" "$setup"; do
   : >"$TEST_LOG"
   expect_failure 2 bash "$script" unsupported
@@ -119,6 +147,9 @@ assert_calls "--add $STABLE_URL nixos"
 export FAIL_UPDATE=1
 expect_failure 25 bash "$setup"
 unset FAIL_UPDATE
-assert_calls "$(printf '%s\n' "--add $STABLE_URL nixos" '--update nixos')"
+assert_calls "$(printf '%s\n' \
+  "--add $STABLE_URL nixos" \
+  "--add $UNSTABLE_URL unstable" \
+  '--update nixos unstable')" "substituters = $SUBSTITUTERS"
 
 printf '%s\n' 'scripts/channels: all checks passed'
