@@ -12,12 +12,30 @@
 # Last Modified: 2026-11-10 16:20:00
 ##
 
-{ lib, pkgs, ... }:
 {
-  users.users.mingcheng = {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  users = if config.workstation.users != [ ] then config.workstation.users else [ "mingcheng" ];
+  conditionUser =
+    if builtins.length users == 1 then builtins.head users else map (user: "|${user}") users;
+in
+{
+  imports = [
+    ../packages/user-packages.nix
+  ];
+
+  users.users = lib.genAttrs users (_: {
     linger = lib.mkDefault false;
-    packages = [ pkgs.syncthing ];
-  };
+    packages = lib.optionals (config.workstation.users == [ ]) [ pkgs.syncthing ];
+  });
+
+  workstation.userPackages = lib.mkIf (config.workstation.users != [ ]) [
+    pkgs.syncthing
+  ];
 
   systemd.user.services.syncthing = {
     description = "Syncthing continuous file synchronization";
@@ -31,7 +49,7 @@
     };
 
     unitConfig = {
-      ConditionUser = lib.mkDefault "mingcheng";
+      ConditionUser = lib.mkDefault conditionUser;
     };
 
     serviceConfig = {

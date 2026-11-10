@@ -9,7 +9,7 @@
 # File Created: 2026-11-10 16:20:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-10 17:27:42
+# Last Modified: 2026-11-10 18:01:17
 ##
 
 {
@@ -35,16 +35,11 @@ in
     webui = lib.mkDefault pkgs.metacubexd;
   };
 
-  systemd.tmpfiles.settings.mihomo = {
-    ${builtins.dirOf configPath}.d = {
-      mode = "0750";
-      user = "root";
-      group = "root";
-    };
-    ${configPath}.f = {
+  systemd = {
+    services.mihomo.after = [ "adguardhome.service" ];
+
+    tmpfiles.settings.mihomo.${configPath}.f = {
       mode = "0600";
-      user = "root";
-      group = "root";
       argument = lib.mkDefault ''
         mixed-port: 7890
         bind-address: 127.0.0.1

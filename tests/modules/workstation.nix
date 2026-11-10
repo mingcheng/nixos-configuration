@@ -67,8 +67,6 @@ let
       "intel_iommu=on"
       "i915.enable_psr=0"
     ]
-    && config.networking.proxy.default == null
-    && !(config.systemd.services.nix-daemon.environment ? http_proxy)
     &&
       lib.sort builtins.lessThan config.nix.settings.trusted-users == [
         "@wheel"
@@ -98,10 +96,17 @@ t.check "modules/workstation" {
   ];
   development-is-opt-in =
     !desktop.virtualisation.docker.enable
+    && !desktop.services.adguardhome.enable
+    && !desktop.services.mihomo.enable
+    && desktop.networking.proxy.default == null
+    && !(desktop.systemd.services.nix-daemon.environment ? http_proxy)
     && !desktop.programs.nix-ld.enable
     && !(t.hasPackages desktop.users.users.alice.packages [ "cmake" ]);
   laptop-services-and-packages =
     laptop.virtualisation.docker.enable
+    && laptop.services.adguardhome.enable
+    && laptop.services.mihomo.enable
+    && laptop.networking.proxy.default == "http://127.0.0.1:7890"
     && laptop.powerManagement.enable
     && laptop.services.power-profiles-daemon.enable
     && laptop.boot.resumeDevice == "/dev/disk/by-label/test-swap"
@@ -122,6 +127,7 @@ t.check "modules/workstation" {
       "zoxide"
       "jq"
       "aria2"
+      "syncthing"
     ]
     && lib.all (name: !(t.hasPackages laptop.users.users.carol.packages [ name ])) [
       "gnumake"
@@ -148,6 +154,9 @@ t.check "modules/workstation" {
     ];
   workstation-services =
     workstation.virtualisation.docker.enable
+    && workstation.services.adguardhome.enable
+    && workstation.services.mihomo.enable
+    && workstation.networking.proxy.default == "http://127.0.0.1:7890"
     && !workstation.programs.nix-ld.enable
     && !workstation.programs.direnv.enable
     && workstation.services.keyd.enable
@@ -164,6 +173,7 @@ t.check "modules/workstation" {
     "zoxide"
     "jq"
     "aria2"
+    "syncthing"
   ];
   workstation-develop-overlay =
     workstationDevelop.programs.nix-ld.enable

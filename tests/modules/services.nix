@@ -1,11 +1,13 @@
 let
   t = import ../lib.nix;
   config = t.eval [
+    ../../services/adguard.nix
     ../../services/apcupsd.nix
     ../../services/bluetooth.nix
     ../../services/fstrim.nix
     ../../services/keyd.nix
     ../../services/libvirtd.nix
+    ../../services/mihomo.nix
     ../../services/nfs.nix
     ../../services/pipewire.nix
     ../../services/postgresql.nix
@@ -14,15 +16,58 @@ let
     ../../services/resolved.nix
     ../../services/samba.nix
     ../../services/sshd.nix
+    ../../services/syncthing.nix
     ../../services/timesyncd.nix
     { users.users.mingcheng.isNormalUser = true; }
   ];
   changed = t.eval [
+    ../../services/adguard.nix
     ../../services/fstrim.nix
+    ../../services/mihomo.nix
     ../../services/qbittorrent.nix
     ../../services/samba.nix
     ../../services/sshd.nix
+    ../../services/syncthing.nix
     {
+      users.users.mingcheng = {
+        isNormalUser = true;
+        linger = true;
+      };
+      networking = {
+        nameservers = [ "9.9.9.9" ];
+        networkmanager.insertNameservers = [ "9.9.9.9" ];
+        proxy = {
+          default = "http://127.0.0.1:1080";
+          noProxy = "localhost";
+        };
+      };
+      services.adguardhome = {
+        allowDHCP = true;
+        openFirewall = true;
+        mutableSettings = false;
+        host = "0.0.0.0";
+        port = 3001;
+        settings = {
+          dhcp.enabled = true;
+          dns = {
+            bind_hosts = [ "0.0.0.0" ];
+            port = 5353;
+            bootstrap_dns = [ "1.1.1.1" ];
+            upstream_dns = [ "https://cloudflare-dns.com/dns-query" ];
+          };
+          filters = [ ];
+        };
+      };
+      services.mihomo = {
+        configFile = "/srv/mihomo/config.yaml";
+        tunMode = false;
+        processesInfo = false;
+        webui = null;
+      };
+      systemd.user.services.syncthing = {
+        unitConfig.ConditionUser = "custom";
+        serviceConfig.ExecStart = "/srv/syncthing/bin/syncthing --no-browser";
+      };
       services.fstrim.enable = false;
       services.qbittorrent = {
         user = "downloads";
@@ -42,9 +87,105 @@ let
     }
   ];
   ssh = config.services.openssh.settings;
+  adguard = config.services.adguardhome;
+  mihomo = config.services.mihomo;
+  syncthingSvc = config.systemd.user.services.syncthing;
 in
 t.check "modules/services" {
-  evaluates = t.validSystem config;
+  evaluates = t.validSystem config && t.validSystem changed;
+  adguard-system-service =
+    adguard.enable
+    && !adguard.allowDHCP
+    && !adguard.settings.dhcp.enabled
+    && !adguard.openFirewall
+    && adguard.mutableSettings
+    && adguard.host == "127.0.0.1"
+    && adguard.port == 9527
+    && adguard.settings.dns.bind_hosts == [ "127.0.0.1" ]
+    && adguard.settings.dns.port == 53
+    &&
+      map (f: f.name) adguard.settings.filters == [
+        "AdGuard DNS filter"
+        "AdAway Default Blocklist"
+        "Steven Black's List"
+        "CHN: anti-AD"
+        "CHN: AdRules DNS List"
+      ]
+    && t.lib.all (f: f.enabled) adguard.settings.filters
+    && config.networking.nameservers == [ "127.0.0.1" ]
+    && config.networking.networkmanager.insertNameservers == [ "127.0.0.1" ]
+    &&
+      config.systemd.services.adguardhome.serviceConfig.AmbientCapabilities == [
+        "CAP_NET_BIND_SERVICE"
+      ];
+  adguard-overridable =
+    !changed.services.adguardhome.allowDHCP
+    && !changed.services.adguardhome.settings.dhcp.enabled
+    && !changed.services.adguardhome.openFirewall
+    && changed.services.adguardhome.mutableSettings
+    && changed.services.adguardhome.host == "127.0.0.1"
+    && changed.services.adguardhome.port == 9527
+    && changed.services.adguardhome.settings.dns.bind_hosts == [ "127.0.0.1" ]
+    && changed.services.adguardhome.settings.dns.port == 53
+    && changed.services.adguardhome.settings.dns.bootstrap_dns == [ "1.1.1.1" ]
+    &&
+      changed.services.adguardhome.settings.dns.upstream_dns == [
+        "https://cloudflare-dns.com/dns-query"
+      ]
+    && changed.services.adguardhome.settings.filters == [ ]
+    && changed.networking.nameservers == [ "127.0.0.1" ]
+    && changed.networking.networkmanager.insertNameservers == [ "127.0.0.1" ];
+  mihomo-system-service =
+    let
+      defaultFile = config.systemd.tmpfiles.settings.mihomo."/etc/mihomo/config.yaml".f;
+    in
+    mihomo.enable
+    && mihomo.configFile == "/etc/mihomo/config.yaml"
+    && mihomo.tunMode
+    && mihomo.processesInfo
+    && mihomo.webui == t.pkgs.metacubexd
+    && config.networking.proxy.default == "http://127.0.0.1:7890"
+    && config.networking.proxy.noProxy == "127.0.0.1,localhost,internal.domain"
+    && defaultFile.mode == "0600"
+    && t.lib.hasInfix "mixed-port: 7890" defaultFile.argument
+    && t.lib.hasInfix "bind-address: 127.0.0.1" defaultFile.argument
+    && t.lib.hasInfix "mode: direct" defaultFile.argument
+    && t.lib.hasInfix "- MATCH,DIRECT" defaultFile.argument
+    && builtins.elem "adguardhome.service" config.systemd.services.mihomo.after
+    &&
+      config.systemd.services.mihomo.serviceConfig.AmbientCapabilities == [
+        "CAP_NET_ADMIN"
+        "CAP_DAC_READ_SEARCH"
+        "CAP_SYS_PTRACE"
+      ];
+  mihomo-overridable =
+    changed.services.mihomo.configFile == "/srv/mihomo/config.yaml"
+    && changed.systemd.tmpfiles.settings.mihomo."/srv/mihomo/config.yaml".f.mode == "0600"
+    && changed.networking.proxy.default == "http://127.0.0.1:1080"
+    && changed.networking.proxy.noProxy == "localhost"
+    && !changed.services.mihomo.tunMode
+    && !changed.services.mihomo.processesInfo
+    && changed.services.mihomo.webui == null
+    && changed.systemd.services.mihomo.serviceConfig.AmbientCapabilities == [ ];
+  syncthing-user-service =
+    config.users.users.mingcheng.linger == false
+    && t.hasPackages config.users.users.mingcheng.packages [ "syncthing" ]
+    && !(t.hasPackages config.environment.systemPackages [ "syncthing" ])
+    && syncthingSvc.wantedBy == [ "default.target" ]
+    && syncthingSvc.unitConfig.ConditionUser == "mingcheng"
+    && syncthingSvc.environment.STNORESTART == "yes"
+    && syncthingSvc.environment.STNOUPGRADE == "yes"
+    && t.lib.hasInfix "--no-browser" syncthingSvc.serviceConfig.ExecStart
+    && t.lib.hasInfix "--gui-address=127.0.0.1:8384" syncthingSvc.serviceConfig.ExecStart
+    && t.lib.hasInfix "--config=%h/Syncthing/config" syncthingSvc.serviceConfig.ExecStart
+    && t.lib.hasInfix "--data=%h/Syncthing/config" syncthingSvc.serviceConfig.ExecStart
+    && syncthingSvc.serviceConfig.Restart == "on-failure";
+  syncthing-overridable =
+    changed.users.users.mingcheng.linger == true
+    && changed.systemd.user.services.syncthing.unitConfig.ConditionUser == "custom"
+    &&
+      changed.systemd.user.services.syncthing.serviceConfig.ExecStart
+      == "/srv/syncthing/bin/syncthing --no-browser";
   ups =
     config.services.apcupsd.enable && t.lib.hasInfix "UPSTYPE usb" config.services.apcupsd.configText;
   bluetooth =
