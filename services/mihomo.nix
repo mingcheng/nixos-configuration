@@ -9,7 +9,7 @@
 # File Created: 2026-11-10 16:20:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-10 18:01:17
+# Last Modified: 2026-11-10 18:31:51
 ##
 
 {
@@ -29,9 +29,8 @@ in
 
   services.mihomo = {
     enable = true;
-    configFile = lib.mkDefault "/etc/mihomo/config.yaml";
+    configFile = lib.mkDefault "/etc/mihomo.yaml";
     tunMode = lib.mkDefault true;
-    processesInfo = lib.mkDefault true;
     webui = lib.mkDefault pkgs.metacubexd;
   };
 
