@@ -22,6 +22,7 @@ t.check "modules/keyd" {
   device-ids =
     keyboards."0001-0001".ids == [
       "0001:0001"
+      "045e:09ae"
       "1fc9:e8d8"
     ]
     &&

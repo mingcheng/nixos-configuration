@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-06 22:47:26
+# Last Modified: 2026-11-11 10:32:39
 ##
 
 { lib, ... }:
@@ -34,6 +34,7 @@ in
       "0001-0001" = {
         ids = [
           "0001:0001"
+          "045e:09ae" # Microsoft Natural Keyboard
           "1fc9:e8d8"
         ];
         settings = commonSettings;

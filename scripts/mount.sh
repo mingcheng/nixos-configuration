@@ -13,7 +13,7 @@ set -euo pipefail
 
 mount /dev/disk/by-label/nixos /mnt
 mkdir -p /mnt/boot
-mount /dev/disk/by-label/EFI /mnt/boot
+mount -o umask=0077 /dev/disk/by-label/EFI /mnt/boot
 if test -e /dev/disk/by-label/swap; then
 	swapon /dev/disk/by-label/swap
 fi

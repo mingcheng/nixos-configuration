@@ -31,6 +31,7 @@
       systemd.enable = true;
       availableKernelModules = [
         "8250_dw"
+        "hid_multitouch"
         "intel_lpss"
         "intel_lpss_pci"
         "pinctrl_icelake"
@@ -49,22 +50,23 @@
 
     kernelModules = [
       "f2fs"
+      "hid_multitouch"
       "surface_acpi_notify"
       "surface_aggregator_cdev"
       "surface_battery"
       "surface_charger"
       "surface_fan"
+      "surface_gpe"
       "surface_platform_profile"
       "surface_temp"
     ];
 
-    # Keep touchscreen/stylus and spurious lid-wakeup (surface_gpe) modules
-    # blacklisted even if present in initrd/rootfs.
+    # Keep touchscreen/stylus modules blacklisted even if present in initrd/rootfs.
+    # Do not blacklist hid_multitouch (required by the 045e:09af Precision Touchpad)
+    # or surface_gpe (required to arm the ACPI lid GPE for s2idle wakeup).
     blacklistedKernelModules = [
       "ipts"
       "ithc"
-      "hid_multitouch"
-      "surface_gpe"
     ];
 
     # Surface Laptop 3 (Ice Lake-U i5-1035G7 / Iris Plus G7): firmware only

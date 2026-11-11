@@ -8,8 +8,8 @@ trap 'rm -f -- "$TEST_LOG" "$TEST_LOG.stderr"' EXIT
 
 mount() {
   printf 'mount %s\n' "$*" >>"$TEST_LOG"
-  if [[ ${FAIL_MOUNT:-} == "$2" ]]; then
-    printf 'simulated mount failure: %s\n' "$2" >&2
+  if [[ ${FAIL_MOUNT:-} == "${@: -1}" ]]; then
+    printf 'simulated mount failure: %s\n' "${@: -1}" >&2
     return 26
   fi
 }
@@ -65,7 +65,7 @@ bash "$repo_dir/scripts/mount.sh"
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
   'mkdir -p /mnt/boot' \
-  'mount /dev/disk/by-label/EFI /mnt/boot' \
+  'mount -o umask=0077 /dev/disk/by-label/EFI /mnt/boot' \
   'df -lh /mnt /mnt/boot')"
 
 : >"$TEST_LOG"
@@ -74,7 +74,7 @@ bash "$repo_dir/scripts/mount.sh"
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
   'mkdir -p /mnt/boot' \
-  'mount /dev/disk/by-label/EFI /mnt/boot' \
+  'mount -o umask=0077 /dev/disk/by-label/EFI /mnt/boot' \
   'swapon /dev/disk/by-label/swap' \
   'df -lh /mnt /mnt/boot')"
 
@@ -84,7 +84,7 @@ expect_failure 28
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
   'mkdir -p /mnt/boot' \
-  'mount /dev/disk/by-label/EFI /mnt/boot' \
+  'mount -o umask=0077 /dev/disk/by-label/EFI /mnt/boot' \
   'swapon /dev/disk/by-label/swap')"
 unset HAS_SWAP FAIL_SWAPON
 
@@ -99,7 +99,7 @@ expect_failure
 assert_calls "$(printf '%s\n' \
   'mount /dev/disk/by-label/nixos /mnt' \
   'mkdir -p /mnt/boot' \
-  'mount /dev/disk/by-label/EFI /mnt/boot')"
+  'mount -o umask=0077 /dev/disk/by-label/EFI /mnt/boot')"
 
 : >"$TEST_LOG"
 unset FAIL_MOUNT

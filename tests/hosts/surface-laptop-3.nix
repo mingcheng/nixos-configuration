@@ -119,10 +119,13 @@ t.check "hosts/surface-laptop-3" {
     lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.12"
     && config.boot.kernelPatches == [ ]
     && config.boot.kernelPackages.kernel.drvPath == t.pkgs.linuxPackages_6_12.kernel.drvPath
+    && builtins.elem "hid_multitouch" config.boot.initrd.availableKernelModules
     && builtins.elem "surface_aggregator" config.boot.initrd.availableKernelModules
     && builtins.elem "surface_hid" config.boot.initrd.availableKernelModules
     && !(builtins.elem "surface_kbd" config.boot.initrd.availableKernelModules)
+    && builtins.elem "hid_multitouch" config.boot.kernelModules
     && builtins.elem "surface_aggregator_cdev" config.boot.kernelModules
+    && builtins.elem "surface_gpe" config.boot.kernelModules
     && builtins.elem "surface_platform_profile" config.boot.kernelModules
     && t.hasPackages config.environment.systemPackages [ "surface-control" ];
   touchscreen-disabled =
@@ -130,9 +133,8 @@ t.check "hosts/surface-laptop-3" {
     && !config.hardware.sensor.iio.enable
     && builtins.elem "ipts" config.boot.blacklistedKernelModules
     && builtins.elem "ithc" config.boot.blacklistedKernelModules
-    && builtins.elem "hid_multitouch" config.boot.blacklistedKernelModules
-    && builtins.elem "surface_gpe" config.boot.blacklistedKernelModules
-    && !(builtins.elem "surface_gpe" config.boot.kernelModules)
+    && !(builtins.elem "hid_multitouch" config.boot.blacklistedKernelModules)
+    && !(builtins.elem "surface_gpe" config.boot.blacklistedKernelModules)
     && lib.hasInfix "ID_INPUT_TOUCHSCREEN" config.services.udev.extraRules
     && lib.hasInfix "ID_INPUT_TABLET" config.services.udev.extraRules
     && lib.hasInfix "LIBINPUT_IGNORE_DEVICE" config.services.udev.extraRules;
