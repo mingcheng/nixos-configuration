@@ -16,7 +16,6 @@
 {
   imports = [
     ../../profiles/laptop.nix
-
     ../../system/boot.nix
 
     ./kernel.nix

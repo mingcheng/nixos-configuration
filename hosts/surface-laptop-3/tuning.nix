@@ -12,7 +12,11 @@
 # Last Modified: 2026-11-11 10:44:22
 ##
 
-{ lib, pkgs, ... }:
+{
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ../../system/ld.nix
@@ -58,6 +62,7 @@
     lib.mkBefore [
       mise
       python3
+      gnumake
       opencode
     ];
 }
