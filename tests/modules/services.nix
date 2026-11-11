@@ -25,6 +25,7 @@ let
     ../../services/fstrim.nix
     ../../services/mihomo.nix
     ../../services/qbittorrent.nix
+    ../../services/resolved.nix
     ../../services/samba.nix
     ../../services/sshd.nix
     ../../services/syncthing.nix
@@ -58,7 +59,13 @@ let
           filters = [ ];
         };
       };
-      services.resolved.settings.Resolve.DNS = [ "9.9.9.9" ];
+      services.resolved.settings.Resolve = {
+        DNS = [ "9.9.9.9" ];
+        FallbackDNS = [ "223.5.5.5" ];
+        Domains = [ "~example.test" ];
+        DNSOverTLS = "opportunistic";
+        DNSStubListener = "yes";
+      };
       services.mihomo = {
         configFile = "/srv/mihomo/config.yaml";
         tunMode = false;
@@ -229,7 +236,24 @@ t.check "modules/services" {
     && changed.services.qbittorrent.profileDir == "/srv/downloads"
     && changed.services.qbittorrent.webuiPort == 9090;
   resolver =
-    config.services.resolved.enable && config.services.resolved.settings.Resolve.DNSSEC == "false";
+    let
+      resolve = config.services.resolved.settings.Resolve;
+      changedResolve = changed.services.resolved.settings.Resolve;
+    in
+    config.services.resolved.enable
+    && resolve.DNSSEC == "false"
+    && resolve.DNS == [ "127.0.0.1" ]
+    && resolve.FallbackDNS == [ ]
+    && resolve.Domains == [ "~." ]
+    && resolve.DNSOverTLS == "false"
+    && resolve.DNSStubListener == "no"
+    && config.environment.etc."resolv.conf".source == "/run/systemd/resolve/resolv.conf"
+    && changedResolve.DNS == [ "127.0.0.1" ]
+    && changedResolve.FallbackDNS == [ "223.5.5.5" ]
+    && changedResolve.Domains == [ "~example.test" ]
+    && changedResolve.DNSOverTLS == "opportunistic"
+    && changedResolve.DNSStubListener == "yes"
+    && changed.environment.etc."resolv.conf".source == "/run/systemd/resolve/stub-resolv.conf";
   samba =
     config.services.samba.enable
     && !config.services.samba.nmbd.enable
