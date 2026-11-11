@@ -9,7 +9,7 @@
 # File Created: 1970-01-01 08:00:00
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-07 08:33:00
+# Last Modified: 2026-11-11 14:31:54
 ##
 
 { config, lib, ... }:
@@ -29,17 +29,17 @@
 
   networking = {
     networkmanager.enable = true;
-    nftables.enable = true;
+    nftables.enable = lib.mkDefault true;
     useDHCP = false;
     resolvconf.extraConfig = lib.optionalString (
       config.services.nscd.enable && config.services.nscd.enableNsncd
     ) "libc_restart=':'";
   };
 
-  programs.xwayland.enable = true;
+  programs.xwayland.enable = lib.mkDefault true;
 
   services = {
-    dbus.implementation = "broker";
+    dbus.implementation = lib.mkDefault "broker";
     desktopManager.plasma6.enable = true;
     displayManager = {
       defaultSession = "plasma";
@@ -47,13 +47,13 @@
         enable = true;
         wayland = {
           enable = true;
-          compositor = "kwin";
+          compositor = lib.mkDefault "kwin";
         };
       };
     };
 
     libinput.enable = true;
     printing.enable = true;
-    xserver.enable = false;
+    xserver.enable = lib.mkForce false;
   };
 }

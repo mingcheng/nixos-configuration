@@ -19,23 +19,24 @@
   ...
 }:
 let
-  configPath = toString config.services.mihomo.configFile;
+  cfg = config.services.mihomo;
+  configPath = toString cfg.configFile;
 in
 {
-  networking.proxy = {
+  networking.proxy = lib.mkIf cfg.enable {
     default = lib.mkDefault "http://127.0.0.1:7890";
     noProxy = lib.mkDefault "127.0.0.1,localhost,internal.domain";
   };
 
   services.mihomo = {
-    enable = true;
+    enable = lib.mkDefault true;
     configFile = lib.mkDefault "/etc/mihomo.yaml";
     tunMode = lib.mkDefault true;
     webui = lib.mkDefault pkgs.metacubexd;
   };
 
-  systemd = {
-    services.mihomo.after = [ "adguardhome.service" ];
+  systemd = lib.mkIf cfg.enable {
+    services.mihomo.after = lib.optional config.services.adguardhome.enable "adguardhome.service";
 
     tmpfiles.settings.mihomo.${configPath}.f = {
       mode = "0600";

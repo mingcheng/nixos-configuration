@@ -94,13 +94,22 @@ let
       };
     }
   ];
+  disabled = t.eval [
+    ../../services/adguard.nix
+    ../../services/mihomo.nix
+    ../../services/resolved.nix
+    {
+      services.adguardhome.enable = false;
+      services.mihomo.enable = false;
+    }
+  ];
   ssh = config.services.openssh.settings;
   adguard = config.services.adguardhome;
   mihomo = config.services.mihomo;
   syncthingSvc = config.systemd.user.services.syncthing;
 in
 t.check "modules/services" {
-  evaluates = t.validSystem config && t.validSystem changed;
+  evaluates = t.validSystem config && t.validSystem changed && t.validSystem disabled;
   adguard-system-service =
     adguard.enable
     && !adguard.allowDHCP
@@ -144,7 +153,12 @@ t.check "modules/services" {
     && changed.services.adguardhome.settings.filters == [ ]
     && changed.networking.nameservers == [ "127.0.0.1" ]
     && changed.networking.networkmanager.insertNameservers == [ "127.0.0.1" ]
-    && changed.services.resolved.settings.Resolve.DNS == [ "127.0.0.1" ];
+    && changed.services.resolved.settings.Resolve.DNS == [ "127.0.0.1" ]
+    && !disabled.services.adguardhome.enable
+    && disabled.networking.nameservers == [ ]
+    && disabled.networking.networkmanager.insertNameservers == [ ]
+    && disabled.services.resolved.settings.Resolve.DNS == [ ]
+    && disabled.environment.etc."resolv.conf".source == "/run/systemd/resolve/stub-resolv.conf";
   mihomo-system-service =
     let
       defaultFile = config.systemd.tmpfiles.settings.mihomo."/etc/mihomo.yaml".f;
@@ -178,7 +192,11 @@ t.check "modules/services" {
       changed.systemd.services.mihomo.serviceConfig.AmbientCapabilities == [
         "CAP_DAC_READ_SEARCH"
         "CAP_SYS_PTRACE"
-      ];
+      ]
+    && !disabled.services.mihomo.enable
+    && disabled.networking.proxy.default == null
+    && !(disabled.systemd.services ? mihomo)
+    && !(disabled.systemd.tmpfiles.settings ? mihomo);
   syncthing-user-service =
     config.users.users.mingcheng.linger == false
     && t.hasPackages config.users.users.mingcheng.packages [ "syncthing" ]

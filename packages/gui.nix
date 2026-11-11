@@ -51,12 +51,12 @@ in
   config = lib.mkMerge [
     (lib.mkIf hasGui {
       environment.sessionVariables = {
-        NIXOS_OZONE_WL = "1";
-        ELECTRON_OZONE_PLATFORM_HINT = "auto";
-        MOZ_ENABLE_WAYLAND = "1";
-        QT_QPA_PLATFORM = "wayland;xcb";
-        GDK_BACKEND = "wayland,x11";
-        SDL_VIDEODRIVER = "wayland";
+        NIXOS_OZONE_WL = lib.mkDefault "1";
+        ELECTRON_OZONE_PLATFORM_HINT = lib.mkDefault "auto";
+        MOZ_ENABLE_WAYLAND = lib.mkDefault "1";
+        QT_QPA_PLATFORM = lib.mkDefault "wayland;xcb";
+        GDK_BACKEND = lib.mkDefault "wayland,x11";
+        SDL_VIDEODRIVER = lib.mkDefault "wayland";
       };
 
       # programs.firefox.enable = lib.mkDefault true;
@@ -65,7 +65,7 @@ in
 
       xdg.portal = {
         enable = true;
-        xdgOpenUsePortal = true;
+        xdgOpenUsePortal = lib.mkDefault true;
         extraPortals = [
           pkgs.xdg-desktop-portal-gtk
         ]

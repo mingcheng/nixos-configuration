@@ -88,19 +88,20 @@ t.check "hosts/surface-laptop-3" {
     "zoxide"
     "jq"
     "aria2"
+    "mise"
+    "python3"
+    "opencode"
   ];
   no-development-toolchain =
-    !config.programs.nix-ld.enable
+    config.programs.nix-ld.enable
     && !config.programs.direnv.enable
-    && !(t.hasPackages config.environment.systemPackages [ "fhs" ])
+    && t.hasPackages config.environment.systemPackages [ "fhs" ]
     && lib.all (name: !(t.hasPackages config.users.users.mingcheng.packages [ name ])) [
       "gnumake"
       "gcc"
       "cmake"
       "ninja"
       "pkg-config"
-      "python3"
-      "mise"
       "nixfmt"
       "manix"
       "nix-du"
@@ -111,7 +112,6 @@ t.check "hosts/surface-laptop-3" {
       "shfmt"
       "nushell"
       "powershell"
-      "opencode"
     ];
   all-shared-applications-assigned = lib.all (
     package:

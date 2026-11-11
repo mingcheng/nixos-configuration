@@ -12,8 +12,12 @@
 # Last Modified: 2026-11-11 10:44:22
 ##
 
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
+  imports = [
+    ../../system/ld.nix
+  ];
+
   # Surface Laptop 3 (13.5" Intel): i5-1035G7 (4C/8T, 15 W Ice Lake), 8 GiB LPDDR4x,
   # 256 GiB NVMe, Iris Plus G7, AX201 Wi-Fi 6.
   # Surface firmware DPTF tables allow short turbo bursts that trigger PROCHOT
@@ -48,10 +52,6 @@
     max-jobs = lib.mkDefault 1;
     cores = lib.mkDefault 4;
   };
-
-  imports = [
-    ../system/ld.nix
-  ];
 
   workstation.userPackages =
     with pkgs;
