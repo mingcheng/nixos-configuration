@@ -6,19 +6,19 @@
 
 ## 选择主机
 
-| `NIX_BUILD_HOST`                                         | 适用场景                                                                                          |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)       | ThinkPad X1 Carbon Gen 8：`laptop` + `develop`、Plasma Wayland、PipeWire、Fcitx5/Rime             |
-| [`surface-laptop-3`](hosts/surface-laptop-3/default.nix) | Surface Laptop 3 (i5-1035G7 / 8G / 256G)：`laptop` 办公套件、主线 6.12 SAM 驱动、禁用触控屏       |
-| [`ryzen-4750g`](hosts/ryzen-4750g/default.nix)           | Ryzen 7 PRO 4750G + Radeon Pro WX 4100 台式工作站：`workstation` + `develop`、AMDGPU、KVM/Libvirt |
-| [`vm-image`](hosts/vm-image/default.nix)                 | QEMU 客户机基础配置，非可直接启动的磁盘镜像                                                       |
-| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix)     | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具                                        |
+| `NIX_BUILD_HOST`                                         | 适用场景                                                                                                                           |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)       | ThinkPad X1 Carbon Gen 8（[设备说明](hosts/x1-carbon-8th/README.md)）：`laptop` + `develop`、Plasma Wayland、PipeWire、Fcitx5/Rime |
+| [`surface-laptop-3`](hosts/surface-laptop-3/default.nix) | Surface Laptop 3 (i5-1035G7 / 8G / 256G)：`laptop` 办公套件、主线 6.12 SAM 驱动、禁用触控屏                                        |
+| [`ryzen-4750g`](hosts/ryzen-4750g/default.nix)           | Ryzen 7 PRO 4750G + Radeon Pro WX 4100 台式工作站：`workstation` + `develop`、AMDGPU、KVM/Libvirt                                  |
+| [`vm-image`](hosts/vm-image/default.nix)                 | QEMU 客户机基础配置，非可直接启动的磁盘镜像                                                                                        |
+| [`usb-boot-stick`](hosts/usb-boot-stick/default.nix)     | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具                                                                         |
 
 构建时必须通过 `NIX_BUILD_HOST` 指定其中一项；系统主机名默认与之相同，可用 `networking.hostName` 覆盖。
 
 ## 快速开始
 
-以下以已安装 NixOS、仓库位于 `/etc/nixos` 的 X1 为例；使用其他主机时替换命令中的 `x1-carbon-8th`。
+以下假设已安装 NixOS 且仓库位于 `/etc/nixos`，执行命令时请将 `<host>` 替换为上表中的目标主机名（例如 `x1-carbon-8th`）。
 
 ### 1. 接入本机配置
 
@@ -54,8 +54,8 @@ sudo bash /etc/nixos/scripts/nixconfig.sh
 ### 3. 构建并应用
 
 ```bash
-sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild build
-sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild switch
+sudo env NIX_BUILD_HOST=<host> nixos-rebuild build
+sudo env NIX_BUILD_HOST=<host> nixos-rebuild switch
 ```
 
 `build` 仅生成配置、不切换系统；`switch` 会立即应用并可能重启服务。内核等变更需重启生效，首次切换后请检查网络、桌面、输入法与睡眠恢复。
@@ -83,7 +83,7 @@ sudo nixos-generate-config --root /mnt
 3. 将仓库放入 `/mnt/etc/nixos`，保留生成的本机配置，按上文添加 `imports`、配置通道并设置账户与登录凭据，然后安装：
 
 ```bash
-sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-install --root /mnt
+sudo env NIX_BUILD_HOST=<host> nixos-install --root /mnt
 ```
 
 挂载布局须与硬件配置一致：桌面/笔记本主机使用 `/boot`，USB 使用 `/efi`；VM 需另行配置引导器。安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
@@ -100,11 +100,11 @@ Surface Laptop 3 使用 Microsoft 定制 UEFI 界面，通过 USB 安装盘或�
 
 ## 更新与回退
 
-| 操作         | 命令                                                                    |
-| ------------ | ----------------------------------------------------------------------- |
-| 更新软件     | `sudo nix-channel --update` 后重新执行 `nixos-rebuild switch`           |
-| 回退一代     | `sudo env NIX_BUILD_HOST=x1-carbon-8th nixos-rebuild switch --rollback` |
-| 无法正常启动 | 在启动菜单中选择保留的上一代配置                                        |
+| 操作         | 命令                                                             |
+| ------------ | ---------------------------------------------------------------- |
+| 更新软件     | `sudo nix-channel --update` 后重新执行 `nixos-rebuild switch`    |
+| 回退一代     | `sudo env NIX_BUILD_HOST=<host> nixos-rebuild switch --rollback` |
+| 无法正常启动 | 在启动菜单中选择保留的上一代配置                                 |
 
 系统回退不能撤销数据库迁移等应用数据变更，重要数据请单独备份。
 
@@ -158,15 +158,15 @@ make fmt
 本机配置需单独检查：
 
 ```bash
-NIX_BUILD_HOST=x1-carbon-8th make check-local
-NIX_BUILD_HOST=x1-carbon-8th make check-local LOCAL_CONFIG=/etc/nixos/configuration.nix
+NIX_BUILD_HOST=<host> make check-local
+NIX_BUILD_HOST=<host> make check-local LOCAL_CONFIG=/etc/nixos/configuration.nix
 ```
 
 [VS Code 任务](.vscode/tasks.json) 提供常用检查与本地构建入口。这些是求值与脚本回归测试，不能替代实际构建、启动及硬件验证。
 
 ## 使用提醒
 
-- **休眠**：笔记本配置（`x1-carbon-8th`、`surface-laptop-3`，导入 `profiles/laptop.nix`）的硬件配置须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代。X1 固件需选择 Linux/S3 睡眠模式，Surface Laptop 3 使用 S0ix 现代待机配合 `suspend-then-hibernate`。
+- **休眠**：笔记本配置（`x1-carbon-8th`、`surface-laptop-3`，导入 `profiles/laptop.nix`）的硬件配置须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代。ThinkPad X1 固件与睡眠配置详见 [hosts/x1-carbon-8th/README.md](hosts/x1-carbon-8th/README.md)，Surface Laptop 3 使用 S0ix 现代待机配合 `suspend-then-hibernate`。
 - **权限**：`wheel` 组可免密码 sudo；共享配置的 Nix `trusted-users` 为 `root` 与 `@wheel`，各物理主机（`x1-carbon-8th`、`surface-laptop-3`、`ryzen-4750g`）收紧为 `root` 与 `mingcheng`，仅应授予可信账户。
 - **秘密信息**：不要把密码、令牌写入 Nix 表达式，它们可能进入其他用户可读的 Nix store。
 
