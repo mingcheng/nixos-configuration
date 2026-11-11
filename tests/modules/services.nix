@@ -58,6 +58,7 @@ let
           filters = [ ];
         };
       };
+      services.resolved.settings.Resolve.DNS = [ "9.9.9.9" ];
       services.mihomo = {
         configFile = "/srv/mihomo/config.yaml";
         tunMode = false;
@@ -114,6 +115,7 @@ t.check "modules/services" {
     && t.lib.all (f: f.enabled) adguard.settings.filters
     && config.networking.nameservers == [ "127.0.0.1" ]
     && config.networking.networkmanager.insertNameservers == [ "127.0.0.1" ]
+    && config.services.resolved.settings.Resolve.DNS == [ "127.0.0.1" ]
     &&
       config.systemd.services.adguardhome.serviceConfig.AmbientCapabilities == [
         "CAP_NET_BIND_SERVICE"
@@ -134,7 +136,8 @@ t.check "modules/services" {
       ]
     && changed.services.adguardhome.settings.filters == [ ]
     && changed.networking.nameservers == [ "127.0.0.1" ]
-    && changed.networking.networkmanager.insertNameservers == [ "127.0.0.1" ];
+    && changed.networking.networkmanager.insertNameservers == [ "127.0.0.1" ]
+    && changed.services.resolved.settings.Resolve.DNS == [ "127.0.0.1" ];
   mihomo-system-service =
     let
       defaultFile = config.systemd.tmpfiles.settings.mihomo."/etc/mihomo.yaml".f;

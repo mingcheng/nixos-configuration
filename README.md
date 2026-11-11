@@ -43,14 +43,13 @@ sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-u
 sudo nix-channel --update
 ```
 
-也可使用脚本登记并更新指定通道，地址同样取自 `sources.nix`：
+也可使用脚本配置二进制缓存（写入 `~/.config/nix/nix.conf`）并登记、更新通道，地址均取自 `sources.nix`：
 
 ```bash
 sudo bash /etc/nixos/scripts/nixconfig.sh
-sudo bash /etc/nixos/scripts/nixconfig.sh unstable
 ```
 
-不带参数处理 `nixos`，传入 `unstable` 则处理该通道；[channel.sh](scripts/channel.sh) 参数相同，但只登记不更新。上述命令操作 root 的通道，与普通用户通道相互独立。
+不带参数默认同时处理 `nixos` 与 `unstable`（也可传入 `nixos` 或 `unstable` 仅处理指定通道）；[channel.sh](scripts/channel.sh) 参数相同，但只登记通道，不修改 `nix.conf` 也不更新通道。上述命令操作 root 的配置与通道，与普通用户相互独立。
 
 ### 3. 构建并应用
 
@@ -72,15 +71,14 @@ sudo bash scripts/disk-init.sh --hibernate /dev/nvme0n1
 
 默认创建 GPT、1 GiB FAT32 EFI 与 F2FS 根分区；`--hibernate` 额外预留不少于内存 1.2 倍的休眠 swap。
 
-2. 挂载分区并生成硬件配置；未创建 swap 时跳过 `swapon`：
+2. 挂载分区并生成硬件配置：
 
 ```bash
 sudo bash scripts/mount.sh
-sudo swapon /dev/disk/by-label/swap
 sudo nixos-generate-config --root /mnt
 ```
 
-[mount.sh](scripts/mount.sh) 按桌面/笔记本主机的 `/boot` 布局挂载，USB 配置需改为将 EFI 挂载到 `/mnt/efi`。脚本详情见 [scripts/README.md](scripts/README.md)。
+[mount.sh](scripts/mount.sh) 按桌面/笔记本主机的 `/boot` 布局挂载，并在检测到 `/dev/disk/by-label/swap` 时自动执行 `swapon`；USB 配置需改为将 EFI 挂载到 `/mnt/efi`。脚本详情见 [scripts/README.md](scripts/README.md)。
 
 3. 将仓库放入 `/mnt/etc/nixos`，保留生成的本机配置，按上文添加 `imports`、配置通道并设置账户与登录凭据，然后安装：
 

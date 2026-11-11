@@ -12,24 +12,33 @@
 # Last Modified: 2026-11-10 17:03:12
 ##
 
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  cfg = config.services.adguardhome;
+  localAddress = "127.0.0.1";
+  dnsServers = cfg.settings.dns.bind_hosts;
+in
 {
-  networking = {
-    nameservers = lib.mkForce [ "127.0.0.1" ];
-    networkmanager.insertNameservers = lib.mkForce [ "127.0.0.1" ];
+  networking = lib.mkIf cfg.enable {
+    nameservers = lib.mkForce dnsServers;
+    networkmanager.insertNameservers = lib.mkForce dnsServers;
+  };
+
+  services.resolved.settings.Resolve = lib.mkIf cfg.enable {
+    DNS = lib.mkForce dnsServers;
   };
 
   services.adguardhome = {
-    enable = true;
+    enable = lib.mkDefault true;
     allowDHCP = lib.mkForce false;
     openFirewall = lib.mkForce false;
     mutableSettings = lib.mkForce true;
-    host = lib.mkForce "127.0.0.1";
+    host = lib.mkForce localAddress;
     port = lib.mkForce 9527;
     settings = {
       dhcp.enabled = lib.mkForce false;
       dns = {
-        bind_hosts = lib.mkForce [ "127.0.0.1" ];
+        bind_hosts = lib.mkForce [ localAddress ];
         port = lib.mkForce 53;
         bootstrap_dns = lib.mkDefault [
           "223.5.5.5"
