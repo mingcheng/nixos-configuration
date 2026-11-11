@@ -41,7 +41,8 @@ t.check "modules/security" {
   evaluates = t.validSystem config;
   ssh-evaluates = t.validSystem ssh;
   firewall-lockdown =
-    config.networking.firewall.enable
+    config.networking.nftables.enable
+    && config.networking.firewall.enable
     && config.networking.firewall.allowedTCPPorts == [ ]
     && config.networking.firewall.allowedUDPPorts == [ ]
     && config.networking.firewall.allowedTCPPortRanges == [ ]

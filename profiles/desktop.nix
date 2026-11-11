@@ -29,23 +29,31 @@
 
   networking = {
     networkmanager.enable = true;
+    nftables.enable = true;
     useDHCP = false;
     resolvconf.extraConfig = lib.optionalString (
       config.services.nscd.enable && config.services.nscd.enableNsncd
     ) "libc_restart=':'";
   };
 
+  programs.xwayland.enable = true;
+
   services = {
+    dbus.implementation = "broker";
     desktopManager.plasma6.enable = true;
     displayManager = {
       defaultSession = "plasma";
       sddm = {
         enable = true;
-        wayland.enable = true;
+        wayland = {
+          enable = true;
+          compositor = "kwin";
+        };
       };
     };
 
     libinput.enable = true;
     printing.enable = true;
+    xserver.enable = false;
   };
 }

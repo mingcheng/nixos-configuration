@@ -50,7 +50,14 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf hasGui {
-      environment.sessionVariables.NIXOS_OZONE_WL = "1";
+      environment.sessionVariables = {
+        NIXOS_OZONE_WL = "1";
+        ELECTRON_OZONE_PLATFORM_HINT = "auto";
+        MOZ_ENABLE_WAYLAND = "1";
+        QT_QPA_PLATFORM = "wayland;xcb";
+        GDK_BACKEND = "wayland,x11";
+        SDL_VIDEODRIVER = "wayland";
+      };
 
       # programs.firefox.enable = lib.mkDefault true;
       programs.git.enable = lib.mkDefault true;
@@ -58,7 +65,16 @@ in
 
       xdg.portal = {
         enable = true;
-        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+        xdgOpenUsePortal = true;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+        ]
+        ++ lib.optionals config.services.desktopManager.plasma6.enable [
+          pkgs.kdePackages.xdg-desktop-portal-kde
+        ];
+        configPackages = lib.mkIf config.services.desktopManager.plasma6.enable (
+          lib.mkDefault [ pkgs.kdePackages.plasma-workspace ]
+        );
         # A generic portals.conf would override KDE's screen-sharing backend.
         config.common.default = lib.mkIf (config.xdg.portal.configPackages == [ ]) (
           lib.mkDefault [ "gtk" ]

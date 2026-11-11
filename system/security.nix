@@ -1,14 +1,17 @@
 { lib, ... }:
 {
-  networking.firewall = {
-    enable = true;
-    allowedTCPPorts = lib.mkForce [ ];
-    allowedUDPPorts = lib.mkForce [ ];
-    allowedTCPPortRanges = lib.mkForce [ ];
-    allowedUDPPortRanges = lib.mkForce [ ];
-    trustedInterfaces = lib.mkForce [ "lo" ];
-    allowPing = false;
-    checkReversePath = "loose";
+  networking = {
+    nftables.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = lib.mkForce [ ];
+      allowedUDPPorts = lib.mkForce [ ];
+      allowedTCPPortRanges = lib.mkForce [ ];
+      allowedUDPPortRanges = lib.mkForce [ ];
+      trustedInterfaces = lib.mkForce [ "lo" ];
+      allowPing = false;
+      checkReversePath = "loose";
+    };
   };
 
   security.sudo = {

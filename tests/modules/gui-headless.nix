@@ -16,9 +16,25 @@ t.check "modules/gui-headless" {
     && !(config.systemd.services ? flatpak-update)
     && !(config.systemd.timers ? flatpak-update)
     && !(config.systemd.user.services ? flatpak-flathub);
-  no-portals = !config.xdg.portal.enable;
-  no-wayland-flags = !(config.environment.sessionVariables ? NIXOS_OZONE_WL);
+  no-portals = !config.xdg.portal.enable && !config.xdg.portal.xdgOpenUsePortal;
+  no-wayland-flags = t.lib.all (name: !(builtins.hasAttr name config.environment.sessionVariables)) [
+    "NIXOS_OZONE_WL"
+    "ELECTRON_OZONE_PLATFORM_HINT"
+    "MOZ_ENABLE_WAYLAND"
+    "QT_QPA_PLATFORM"
+    "GDK_BACKEND"
+    "SDL_VIDEODRIVER"
+  ];
   no-user-desktop-evaluates = t.validSystem noUserDesktop;
+  no-user-desktop-portals =
+    noUserDesktop.xdg.portal.enable
+    && noUserDesktop.xdg.portal.xdgOpenUsePortal
+    && !(noUserDesktop.xdg.portal.config.common ? default)
+    && t.hasPackages noUserDesktop.xdg.portal.configPackages [ "plasma-workspace" ]
+    && t.hasPackages noUserDesktop.xdg.portal.extraPortals [
+      "xdg-desktop-portal-kde"
+      "xdg-desktop-portal-gtk"
+    ];
   no-user-desktop-keeps-applications = t.hasPackages noUserDesktop.environment.systemPackages [
     "konsole"
     "dolphin"

@@ -35,6 +35,13 @@ t.check "modules/gui" {
   wayland-evaluates = t.validSystem wayland;
   xorg-detection =
     xorg.services.flatpak.enable && xorg.environment.sessionVariables.NIXOS_OZONE_WL == "1";
+  wayland-environment =
+    wayland.environment.sessionVariables.NIXOS_OZONE_WL == "1"
+    && wayland.environment.sessionVariables.ELECTRON_OZONE_PLATFORM_HINT == "auto"
+    && wayland.environment.sessionVariables.MOZ_ENABLE_WAYLAND == "1"
+    && wayland.environment.sessionVariables.QT_QPA_PLATFORM == "wayland;xcb"
+    && wayland.environment.sessionVariables.GDK_BACKEND == "wayland,x11"
+    && wayland.environment.sessionVariables.SDL_VIDEODRIVER == "wayland";
   session-detection =
     !wayland.services.xserver.enable
     && !wayland.services.displayManager.enable
@@ -52,6 +59,8 @@ t.check "modules/gui" {
   stable-unfree-remains-disabled = !(builtins.tryEval stable.vscode.drvPath).success;
   gtk-portals =
     wayland.xdg.portal.enable
+    && wayland.xdg.portal.xdgOpenUsePortal
+    && wayland.environment.sessionVariables.NIXOS_XDG_OPEN_USE_PORTAL == "1"
     && wayland.xdg.portal.config.common.default == "gtk"
     && t.hasPackages wayland.xdg.portal.extraPortals [ "xdg-desktop-portal-gtk" ];
   flatpak-opt-out =

@@ -81,13 +81,19 @@ t.check "modules/workstation" {
   workstation-develop-evaluates = t.validSystem workstationDevelop;
   desktop-composition =
     desktop.nix.gc.automatic
+    && !desktop.services.xserver.enable
+    && desktop.programs.xwayland.enable
+    && desktop.services.dbus.implementation == "broker"
     && desktop.services.desktopManager.plasma6.enable
     && desktop.services.displayManager.sddm.wayland.enable
+    && desktop.services.displayManager.sddm.wayland.compositor == "kwin"
+    && desktop.xdg.portal.xdgOpenUsePortal
     && desktop.services.pipewire.enable
     && desktop.services.printing.enable
     && desktop.services.keyd.enable
     && desktop.i18n.inputMethod.enable
     && desktop.networking.networkmanager.enable
+    && desktop.networking.nftables.enable
     && !desktop.networking.useDHCP;
   desktop-user-applications = t.hasPackages desktop.users.users.alice.packages [
     "vscode"
@@ -213,7 +219,8 @@ t.check "modules/workstation" {
     "file"
   ];
   shared-security =
-    workstation.networking.firewall.enable
+    workstation.networking.nftables.enable
+    && workstation.networking.firewall.enable
     && workstation.networking.firewall.allowedTCPPorts == [ ]
     && !workstation.networking.firewall.allowPing
     && workstation.nix.settings.sandbox

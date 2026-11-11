@@ -59,11 +59,21 @@ t.check "hosts/surface-laptop-3" {
   ) sources.hosts;
   selected-user = config.workstation.users == [ "mingcheng" ];
   wayland-desktop =
-    config.services.desktopManager.plasma6.enable
+    !config.services.xserver.enable
+    && config.programs.xwayland.enable
+    && config.services.dbus.implementation == "broker"
+    && config.services.desktopManager.plasma6.enable
     && config.services.displayManager.sddm.wayland.enable
+    && config.services.displayManager.sddm.wayland.compositor == "kwin"
     && config.services.displayManager.defaultSession == "plasma";
   plasma-portals =
-    !(config.xdg.portal.config.common ? default) && config.xdg.portal.configPackages != [ ];
+    config.xdg.portal.xdgOpenUsePortal
+    && !(config.xdg.portal.config.common ? default)
+    && config.xdg.portal.configPackages != [ ]
+    && t.hasPackages config.xdg.portal.extraPortals [
+      "xdg-desktop-portal-kde"
+      "xdg-desktop-portal-gtk"
+    ];
   user-applications = t.hasPackages config.users.users.mingcheng.packages [
     "vscode"
 
@@ -180,7 +190,8 @@ t.check "hosts/surface-laptop-3" {
   no-protocol-fallback = !(protocolProxy.systemd.services.nix-daemon.environment ? all_proxy);
   nsncd-no-dns-restarts = config.networking.resolvconf.extraConfig == "libc_restart=':'";
   firewall =
-    config.networking.firewall.enable
+    config.networking.nftables.enable
+    && config.networking.firewall.enable
     && config.networking.firewall.allowedTCPPorts == [ ]
     && config.networking.firewall.allowedUDPPorts == [ ]
     && config.networking.firewall.trustedInterfaces == [ "lo" ];
