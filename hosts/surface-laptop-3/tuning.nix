@@ -9,7 +9,7 @@
 # File Created: 2026-11-10 11:40:39
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-10 11:40:39
+# Last Modified: 2026-11-11 10:44:22
 ##
 
 { lib, ... }:
@@ -48,4 +48,16 @@
     max-jobs = lib.mkDefault 1;
     cores = lib.mkDefault 4;
   };
+
+  imports = [
+    ../system/ld.nix
+  ];
+
+  workstation.userPackages =
+    with pkgs;
+    lib.mkBefore [
+      mise
+      python3
+      opencode
+    ];
 }
