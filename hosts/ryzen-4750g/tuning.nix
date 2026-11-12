@@ -12,7 +12,11 @@
 # Last Modified: 2026-11-09 18:26:43
 ##
 
-{ lib, ... }:
+{
+  lib,
+  pkgs,
+  ...
+}:
 {
   # Ryzen 7 PRO 4750G (8C/16T, 65 W Renoir APU) + Radeon Pro WX 4100 (4 GiB GDDR5).
   # PPD drives amd-pstate-epp energy performance preference on Zen 2; thermald is
@@ -53,4 +57,15 @@
     max-jobs = lib.mkDefault 4;
     cores = lib.mkDefault 8;
   };
+
+  workstation.userPackages =
+    with pkgs;
+    lib.mkOrder 600 [
+      amdgpu_top
+      glmark2
+      memtest_vulkan
+      s-tui
+      stress-ng
+      vkmark
+    ];
 }

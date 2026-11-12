@@ -94,6 +94,13 @@ t.check "hosts/ryzen-4750g" {
     "aria2"
     "powershell"
     "opencode"
+
+    "amdgpu_top"
+    "glmark2"
+    "memtest_vulkan"
+    "s-tui"
+    "stress-ng"
+    "vkmark"
   ];
   all-shared-applications-assigned = lib.all (
     package:
@@ -106,7 +113,10 @@ t.check "hosts/ryzen-4750g" {
     !(t.hasPackages config.environment.systemPackages [ "vscode" ])
     && !(t.hasPackages config.environment.systemPackages [ "cursor" ])
     && !(t.hasPackages config.environment.systemPackages [ "fastfetch" ])
-    && !(t.hasPackages config.environment.systemPackages [ "konsole" ]);
+    && !(t.hasPackages config.environment.systemPackages [ "konsole" ])
+    && !(t.hasPackages config.environment.systemPackages [ "amdgpu_top" ])
+    && !(t.hasPackages config.environment.systemPackages [ "glmark2" ])
+    && !(t.hasPackages config.environment.systemPackages [ "memtest_vulkan" ]);
   lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.12";
   amd-platform =
     config.hardware.cpu.amd.updateMicrocode
@@ -114,7 +124,13 @@ t.check "hosts/ryzen-4750g" {
     && builtins.elem "kvm-amd" config.boot.kernelModules
     && builtins.elem "amd_pstate=active" config.boot.kernelParams
     && builtins.elem "amd_iommu=on" config.boot.kernelParams
-    && builtins.elem "iommu=pt" config.boot.kernelParams;
+    && builtins.elem "iommu=pt" config.boot.kernelParams
+    && builtins.elem "amdgpu.aspm=0" config.boot.kernelParams
+    && builtins.elem "amdgpu.runpm=0" config.boot.kernelParams
+    && builtins.elem "amdgpu.bapm=0" config.boot.kernelParams
+    && builtins.elem "amdgpu.dcdebugmask=0x2" config.boot.kernelParams
+    && builtins.elem "amdgpu.ppfeaturemask=0xfff5baf3" config.boot.kernelParams
+    && builtins.elem "amdgpu.lockup_timeout=60000,60000,10000,10000" config.boot.kernelParams;
   early-graphics =
     builtins.elem "amdgpu" config.boot.initrd.kernelModules
     && !(builtins.elem "i915" config.boot.initrd.kernelModules)

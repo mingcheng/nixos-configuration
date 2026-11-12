@@ -32,16 +32,30 @@
       "f2fs"
     ];
 
-    # Ryzen 7 PRO 4750G (Renoir APU) + Radeon Pro WX 4100 (Polaris 11):
+    # ASUS ROG STRIX B450-I GAMING + Ryzen 7 PRO 4750G (Renoir APU) +
+    # Radeon Pro WX 4100 (Polaris 11):
     # amd_pstate=active enables CPPC autonomous frequency scaling with EPP
     # hints driven by power-profiles-daemon; full preemption suits the Plasma
     # Wayland + PipeWire desktop; AMD-Vi with passthrough avoids host DMA
     # translation overhead while keeping IOMMU groups ready for libvirt/KVM.
+    # Harden Polaris 11 on the Renoir x8 PCIe bridge against GFX ring/SMU
+    # hangs and BadTLP/BadDLLP link glitches under sustained 3D load by
+    # disabling ASPM, BACO runtime PM, BAPM, DCE DMIF stutter mode, and
+    # SMU7 PCIe DPM / SCLK deep sleep / ULV / clock stretching / stutter bits,
+    # and raise GFX ring lockup_timeout to 60 s (matching Compute ring) so
+    # long Vulkan compute dispatches on RADV Queue Family 0 (e.g. extended
+    # memtest_vulkan passes) do not trip false 10 s TDR resets on non-preemptible GFX8.
     kernelParams = [
       "amd_pstate=active"
       "preempt=full"
       "amd_iommu=on"
       "iommu=pt"
+      "amdgpu.aspm=0"
+      "amdgpu.runpm=0"
+      "amdgpu.bapm=0"
+      "amdgpu.dcdebugmask=0x2"
+      "amdgpu.ppfeaturemask=0xfff5baf3"
+      "amdgpu.lockup_timeout=60000,60000,10000,10000"
       #"fsck.mode=force"
       #"fsck.fix=yes"
       #"fsck.repair=yes"
