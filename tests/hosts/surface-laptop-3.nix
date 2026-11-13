@@ -90,6 +90,7 @@ t.check "hosts/surface-laptop-3" {
     "aria2"
     "mise"
     "python3"
+    "gnumake"
     "opencode"
   ];
   no-development-toolchain =
@@ -97,7 +98,6 @@ t.check "hosts/surface-laptop-3" {
     && !config.programs.direnv.enable
     && t.hasPackages config.environment.systemPackages [ "fhs" ]
     && lib.all (name: !(t.hasPackages config.users.users.mingcheng.packages [ name ])) [
-      "gnumake"
       "gcc"
       "cmake"
       "ninja"

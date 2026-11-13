@@ -122,9 +122,15 @@ t.check "hosts/ryzen-4750g" {
     config.hardware.cpu.amd.updateMicrocode
     && !config.hardware.cpu.intel.updateMicrocode
     && builtins.elem "kvm-amd" config.boot.kernelModules
+    && builtins.elem "k10temp" config.boot.kernelModules
+    && builtins.elem "asus_wmi_sensors" config.boot.kernelModules
+    && builtins.elem "eeepc_wmi" config.boot.blacklistedKernelModules
+    && builtins.elem "asus_wmi" config.boot.blacklistedKernelModules
     && builtins.elem "amd_pstate=active" config.boot.kernelParams
-    && builtins.elem "amd_iommu=on" config.boot.kernelParams
+    && !(builtins.elem "amd_iommu=on" config.boot.kernelParams)
     && builtins.elem "iommu=pt" config.boot.kernelParams
+    && builtins.elem "pcie_aspm=off" config.boot.kernelParams
+    && builtins.elem "nvme_core.default_ps_max_latency_us=20000" config.boot.kernelParams
     && builtins.elem "amdgpu.aspm=0" config.boot.kernelParams
     && builtins.elem "amdgpu.runpm=0" config.boot.kernelParams
     && builtins.elem "amdgpu.bapm=0" config.boot.kernelParams

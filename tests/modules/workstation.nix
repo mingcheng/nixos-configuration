@@ -90,6 +90,7 @@ t.check "modules/workstation" {
     && desktop.xdg.portal.xdgOpenUsePortal
     && desktop.services.pipewire.enable
     && desktop.services.printing.enable
+    && desktop.services.printing.listenAddresses == [ "127.0.0.1:631" ]
     && desktop.services.keyd.enable
     && desktop.i18n.inputMethod.enable
     && desktop.networking.networkmanager.enable

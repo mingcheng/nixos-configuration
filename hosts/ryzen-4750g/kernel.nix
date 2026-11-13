@@ -29,27 +29,40 @@
 
     kernelModules = [
       "kvm-amd"
+      "k10temp"
+      "asus_wmi_sensors"
       "f2fs"
     ];
 
+    # ROG STRIX B450-I GAMING exposes the generic ASUS WMI GUID, which otherwise
+    # auto-loads the legacy Eee PC laptop hotkey stack (eeepc_wmi -> asus_wmi,
+    # battery, i8042) with SFUN=0x0. The desktop board sensor driver
+    # asus_wmi_sensors only depends on wmi and works independently.
+    blacklistedKernelModules = [
+      "eeepc_wmi"
+      "asus_wmi"
+    ];
+
     # ASUS ROG STRIX B450-I GAMING + Ryzen 7 PRO 4750G (Renoir APU) +
-    # Radeon Pro WX 4100 (Polaris 11):
+    # Radeon Pro WX 4100 (Polaris 11) + WD PC SN810 NVMe:
     # amd_pstate=active enables CPPC autonomous frequency scaling with EPP
     # hints driven by power-profiles-daemon; full preemption suits the Plasma
-    # Wayland + PipeWire desktop; AMD-Vi with passthrough avoids host DMA
-    # translation overhead while keeping IOMMU groups ready for libvirt/KVM.
-    # Harden Polaris 11 on the Renoir x8 PCIe bridge against GFX ring/SMU
-    # hangs and BadTLP/BadDLLP link glitches under sustained 3D load by
-    # disabling ASPM, BACO runtime PM, BAPM, DCE DMIF stutter mode, and
-    # SMU7 PCIe DPM / SCLK deep sleep / ULV / clock stretching / stutter bits,
-    # and raise GFX ring lockup_timeout to 60 s (matching Compute ring) so
-    # long Vulkan compute dispatches on RADV Queue Family 0 (e.g. extended
-    # memtest_vulkan passes) do not trip false 10 s TDR resets on non-preemptible GFX8.
+    # Wayland + PipeWire desktop; AMD-Vi initializes automatically from ACPI
+    # IVRS (amd_iommu=on is not a valid kernel option) and iommu=pt avoids host
+    # DMA translation overhead while keeping IOMMU groups ready for libvirt/KVM.
+    # Disable PCIe ASPM globally across Renoir root ports and the B450 chipset,
+    # cap NVMe APST latency at 20 ms on the WD PC SN810 (keeping 25 mW PS3 idle
+    # while skipping the 49.6 ms PS4 state that triggers Replay Timer Timeouts
+    # on 00:02.2), harden Polaris 11 against GFX ring/SMU hangs and BadTLP/BadDLLP
+    # link glitches under sustained 3D load, and raise GFX ring lockup_timeout
+    # to 60 s (matching Compute ring) so long Vulkan compute dispatches on RADV
+    # Queue Family 0 do not trip false 10 s TDR resets on non-preemptible GFX8.
     kernelParams = [
       "amd_pstate=active"
       "preempt=full"
-      "amd_iommu=on"
       "iommu=pt"
+      "pcie_aspm=off"
+      "nvme_core.default_ps_max_latency_us=20000"
       "amdgpu.aspm=0"
       "amdgpu.runpm=0"
       "amdgpu.bapm=0"

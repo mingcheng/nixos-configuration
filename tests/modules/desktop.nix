@@ -40,7 +40,8 @@ let
       "QT_IM_MODULE"
       "XMODIFIERS"
       "SDL_IM_MODULE"
-    ];
+    ]
+    && (cfg.environment.variables.XMODIFIERS or null) != "@im=fcitx";
 in
 t.check "modules/desktop" {
   evaluates = t.validSystem config;
@@ -54,7 +55,8 @@ t.check "modules/desktop" {
   toolkit-integration =
     config.environment.sessionVariables.GTK_IM_MODULE == "fcitx"
     && config.environment.sessionVariables.QT_IM_MODULE == "fcitx"
-    && config.environment.sessionVariables.XMODIFIERS == "@im=fcitx"
+    && !(config.environment.sessionVariables ? XMODIFIERS)
+    && config.environment.variables.XMODIFIERS == "@im=fcitx"
     && config.environment.sessionVariables.SDL_IM_MODULE == "fcitx";
   kwin-launcher =
     plasma.environment.etc."xdg/kwinrc".text == ''
