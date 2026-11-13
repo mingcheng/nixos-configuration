@@ -8,13 +8,13 @@
 
 | 类别               | 默认策略与组件                                                                                                                                                 |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 镜像格式           | `qcow2`（`image.format = "qcow2"`），磁盘容量默认按闭包自适应（`virtualisation.diskSize = "auto"`）                                                            |
-| 引导与分区         | 默认 UEFI `systemd-boot`（ESP `/boot` + `ext4` `/` 自动扩容 `boot.growPartition`）；支持切换为 Legacy BIOS GRUB                                                |
+| 镜像格式           | `qcow2`（`image.format = "qcow2"`），磁盘容量默认按闭包自适应（`virtualisation.diskSize = "auto"`），精简 HTML/Info 文档以缩减镜像体积                         |
+| 引导与分区         | 默认 UEFI `systemd-boot`（ESP `/boot` `0700` 权限挂载 + `ext4` `/` 自动扩容 `boot.growPartition`，保留最近 5 个生成项）；支持切换为带串口菜单的 Legacy GRUB    |
 | 主机名策略         | 默认留空静态主机名，首次启动由 `vm-random-hostname.service` 生成形如 `vm-<8位十六进制>` 的随机主机名并持久化至 `/etc/hostname`                                 |
-| 虚拟化与容器       | 预加载 `virtio_*` 驱动并启用 `services.qemuGuest.enable`；默认启用 [services/docker.nix](../../services/docker.nix) 与 `docker-compose`                        |
+| 虚拟化与容器       | 预加载 `virtio_*` 驱动并启用 `services.qemuGuest.enable`、`fstrim`；默认启用 [services/docker.nix](../../services/docker.nix) 与 `docker-compose`              |
 | 软件源与非自由软件 | 允许非自由软件（`nixpkgs.config.allowUnfree = true`），默认配置中国大陆二进制缓存（TUNA/USTC/SJTU/CERNET）、TUNA 默认通道及 Go/npm/PyPI/uv/Cargo/Rustup 镜像源 |
-| 控制台与网络       | 启用串口控制台（`console=ttyS0,115200n8`，支持 `-nographic` / `virsh console`），启用 IPv4 DHCP                                                                |
-| 远程与工具         | 默认启用 [services/sshd.nix](../../services/sshd.nix)（仅公钥登录，严禁 root 与空密码 SSH 登录），预装 `git`、`neovim`、`inetutils`                            |
+| 控制台与网络       | 同时启用图形与串口控制台（`console=tty0`、`console=ttyS0,115200n8`），启用 BBR 拥塞控制、大陆 NTP 授时与快速 IPv4 DHCP（`noarp`，忽略容器虚拟网卡）            |
+| 远程与工具         | 默认启用 [services/sshd.nix](../../services/sshd.nix)（仅公钥登录，严禁 root 与空密码 SSH 登录），预装 `git`、`neovim`、`inetutils` 及常用 Shell 别名          |
 | 账户与权限         | `root` 初始密码为空（仅限本地/串口控制台登录）；预置 `mingcheng` 普通账户（`wheel`、`docker` 组），严禁安装任何 GUI 软件                                       |
 
 ## 本地自定义配置（`local.nix`）

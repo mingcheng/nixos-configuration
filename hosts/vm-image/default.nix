@@ -28,9 +28,13 @@ in
     (modulesPath + "/virtualisation/disk-image.nix")
 
     ../../profiles/base.nix
+    ../../system/kernel.nix
     ../../system/networking.nix
+    ../../system/shell_alias.nix
     ../../services/docker.nix
+    ../../services/fstrim.nix
     ../../services/sshd.nix
+    ../../services/timesyncd.nix
 
     ../../packages/git.nix
     ../../packages/nvim.nix
@@ -48,54 +52,96 @@ in
     efiSupport = lib.mkDefault true;
   };
 
+  fileSystems."/boot" = lib.mkIf config.image.efiSupport {
+    options = [
+      "fmask=0077"
+      "dmask=0077"
+    ];
+  };
+
   boot = {
     kernelParams = [
+      "console=tty0"
       "console=ttyS0,115200n8"
     ];
     loader = {
       timeout = lib.mkDefault 3;
-      grub.enable = lib.mkIf (!config.image.efiSupport) (lib.mkOverride 900 true);
+      systemd-boot.configurationLimit = lib.mkDefault 5;
+      grub = {
+        enable = lib.mkIf (!config.image.efiSupport) (lib.mkOverride 900 true);
+        configurationLimit = lib.mkDefault 5;
+        splashImage = null;
+        extraConfig = lib.mkDefault ''
+          serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
+          terminal_input serial console
+          terminal_output serial console
+        '';
+      };
     };
   };
 
-  # Leave static hostName empty by default so each VM instance generates a
-  # random hostname on first boot unless overridden in local.nix.
-  networking.hostName = lib.mkOverride 900 "";
-
-  systemd.services = lib.mkIf (config.networking.hostName == "") {
-    "systemd-hostnamed".environment.SYSTEMD_ETC_HOSTNAME = lib.mkForce "/etc/hostname";
-    vm-random-hostname = {
-      description = "Generate and apply a random VM hostname";
-      wantedBy = [
-        "sysinit.target"
-        "multi-user.target"
+  networking = {
+    # Leave static hostName empty by default so each VM instance generates a
+    # random hostname on first boot unless overridden in local.nix.
+    hostName = lib.mkOverride 900 "";
+    dhcpcd = {
+      extraConfig = lib.mkDefault "noarp";
+      denyInterfaces = [
+        "veth*"
+        "docker*"
+        "br-*"
       ];
-      after = [ "local-fs.target" ];
-      before = [
-        "network-pre.target"
-        "network.target"
-        "dhcpcd.service"
-        "systemd-hostnamed.service"
-      ];
-      unitConfig.DefaultDependencies = false;
-      path = [
-        pkgs.coreutils
-        pkgs.nettools
-      ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-      script = ''
-        if [ -s /etc/hostname ]; then
-          name=$(tr -d ' \t\r\n' < /etc/hostname)
-        else
-          name="vm-$(head -c 4 /dev/urandom | od -An -tx1 | tr -d ' \n')"
-          printf '%s\n' "$name" > /etc/hostname
-        fi
-        hostname "$name"
-      '';
     };
+    resolvconf.extraConfig = lib.optionalString (
+      config.services.nscd.enable && config.services.nscd.enableNsncd
+    ) "libc_restart=':'";
+  };
+
+  systemd = {
+    oomd.enable = lib.mkDefault false;
+    services = lib.mkIf (config.networking.hostName == "") {
+      "systemd-hostnamed".environment.SYSTEMD_ETC_HOSTNAME = lib.mkForce "/etc/hostname";
+      vm-random-hostname = {
+        description = "Generate and apply a random VM hostname";
+        wantedBy = [
+          "sysinit.target"
+          "multi-user.target"
+        ];
+        after = [ "local-fs.target" ];
+        before = [
+          "network-pre.target"
+          "network.target"
+          "dhcpcd.service"
+          "systemd-hostnamed.service"
+        ];
+        unitConfig.DefaultDependencies = false;
+        path = [
+          pkgs.coreutils
+          pkgs.nettools
+        ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          name=""
+          if [ -r /etc/hostname ]; then
+            name=$(tr -d ' \t\r\n' < /etc/hostname)
+          fi
+          if [ -z "$name" ]; then
+            name="vm-$(head -c 4 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+            printf '%s\n' "$name" > /etc/hostname
+          fi
+          hostname "$name"
+        '';
+      };
+    };
+  };
+
+  documentation = {
+    doc.enable = lib.mkDefault false;
+    info.enable = lib.mkDefault false;
+    nixos.enable = lib.mkDefault false;
   };
 
   services = {

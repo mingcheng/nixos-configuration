@@ -6,11 +6,12 @@
 #
 # http://www.opensource.org/licenses/MIT
 
+{ lib, ... }:
 {
-  services.ntp.enable = false;
+  services.ntp.enable = lib.mkDefault false;
   services.timesyncd = {
-    enable = true;
-    servers = [
+    enable = lib.mkDefault true;
+    servers = lib.mkDefault [
       "cn.pool.ntp.org"
       "ntp.aliyun.com"
     ];

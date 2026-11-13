@@ -48,7 +48,14 @@ t.check "hosts/vm-image" {
     && lib.hasInfix sources.development.cargoRegistry config.environment.etc."cargo/mainland.toml".text
     && config.environment.sessionVariables.RUSTUP_DIST_SERVER == sources.development.rustupDistServer
     && config.environment.sessionVariables.RUSTUP_UPDATE_ROOT == sources.development.rustupUpdateRoot;
-  shared-profile = config.nix.gc.automatic && config.time.timeZone == "Asia/Shanghai";
+  shared-profile =
+    config.nix.gc.automatic
+    && config.time.timeZone == "Asia/Shanghai"
+    && config.services.fstrim.enable
+    && config.services.timesyncd.enable
+    && builtins.elem "ntp.aliyun.com" config.services.timesyncd.servers
+    && config.boot.kernel.sysctl."net.ipv4.tcp_congestion_control" == "bbr"
+    && config.environment.shellAliases.ll == "ls -l";
   qcow2-image =
     config.image.format == "qcow2"
     && config.image.extension == "qcow2"
@@ -58,22 +65,29 @@ t.check "hosts/vm-image" {
     && builtins.isString config.system.build.image.drvPath;
   disk-layout =
     config.boot.loader.systemd-boot.enable
+    && config.boot.loader.systemd-boot.configurationLimit == 5
     && !config.boot.loader.grub.enable
     && config.boot.growPartition
     && config.fileSystems."/".device == "/dev/disk/by-label/nixos"
     && config.fileSystems."/".fsType == "ext4"
     && config.fileSystems."/".autoResize
     && config.fileSystems."/boot".device == "/dev/disk/by-label/ESP"
-    && config.fileSystems."/boot".fsType == "vfat";
+    && config.fileSystems."/boot".fsType == "vfat"
+    && builtins.elem "fmask=0077" config.fileSystems."/boot".options
+    && builtins.elem "dmask=0077" config.fileSystems."/boot".options;
   legacy-boot-override =
     !legacy.image.efiSupport
     && !legacy.boot.loader.systemd-boot.enable
     && legacy.boot.loader.grub.enable
+    && legacy.boot.loader.grub.configurationLimit == 5
+    && legacy.boot.loader.grub.splashImage == null
+    && lib.hasInfix "terminal_output serial console" legacy.boot.loader.grub.extraConfig
     && legacy.boot.loader.grub.devices == [ "/dev/vda" ]
     && builtins.isString legacy.system.build.image.drvPath;
   disk-size-override = changed.virtualisation.diskSize == 16384 && !changed.services.qemuGuest.enable;
   qemu-guest =
     config.services.qemuGuest.enable
+    && builtins.elem "console=tty0" config.boot.kernelParams
     && builtins.elem "console=ttyS0,115200n8" config.boot.kernelParams
     && lib.all (name: builtins.elem name config.boot.initrd.availableKernelModules) [
       "virtio_pci"
@@ -118,13 +132,27 @@ t.check "hosts/vm-image" {
         "root"
         "mingcheng"
       ];
-  dhcp = config.networking.useDHCP && !config.networking.enableIPv6;
+  dhcp =
+    config.networking.useDHCP
+    && !config.networking.enableIPv6
+    && config.networking.dhcpcd.extraConfig == "noarp"
+    && lib.all (iface: builtins.elem iface config.networking.dhcpcd.denyInterfaces) [
+      "veth*"
+      "docker*"
+      "br-*"
+    ]
+    && lib.hasInfix "libc_restart=':'" config.networking.resolvconf.extraConfig;
   headless =
     !config.services.xserver.enable
     && !config.services.displayManager.enable
     && !config.services.flatpak.enable
     && !config.programs.xwayland.enable
     && !config.xdg.portal.enable
+    && !config.systemd.oomd.enable
+    && !config.documentation.doc.enable
+    && !config.documentation.info.enable
+    && !config.documentation.nixos.enable
+    && config.documentation.man.enable
     && !(config ? workstation)
     && config.users.users.mingcheng.packages == [ ];
   no-desktop-policy = !config.zramSwap.enable && !config.services.fprintd.enable;
