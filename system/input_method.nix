@@ -54,7 +54,6 @@ in
   environment.sessionVariables = lib.mkIf fcitxEnabled {
     GTK_IM_MODULE = "fcitx";
     QT_IM_MODULE = "fcitx";
-    XMODIFIERS = "@im=fcitx";
     SDL_IM_MODULE = "fcitx";
   };
 
