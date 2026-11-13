@@ -27,6 +27,9 @@ _testmain.go
 profile.cov
 coverage.html
 /results
+/result
+/result-*
+/*.qcow2
 
 # Emacs backup files
 *~
@@ -35,3 +38,4 @@ coverage.html
 /.vscode/*.log
 /hardware-configuration.nix
 /configuration.nix
+/hosts/vm-image/local.nix

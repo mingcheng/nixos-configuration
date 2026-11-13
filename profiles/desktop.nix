@@ -55,7 +55,7 @@
     libinput.enable = true;
 
     # Disable printing by default
-    printing.enable = false;
+    printing.enable = lib.mkDefault false;
 
     # Disable X server by default
     xserver.enable = lib.mkForce false;

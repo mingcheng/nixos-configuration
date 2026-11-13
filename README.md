@@ -11,7 +11,7 @@
 | [`x1-carbon-8th`](hosts/x1-carbon-8th/default.nix)       | ThinkPad X1 Carbon Gen 8（[设备说明](hosts/x1-carbon-8th/README.md)）：`laptop` + `develop`、Plasma Wayland、PipeWire、Fcitx5/Rime           |
 | [`surface-laptop-3`](hosts/surface-laptop-3/default.nix) | Surface Laptop 3 (i5-1035G7 / 8G / 256G)：`laptop` 办公套件、主线 6.12 SAM 驱动、禁用触控屏                                                  |
 | [`ryzen-4750g`](hosts/ryzen-4750g/default.nix)           | Ryzen 7 PRO 4750G + Radeon Pro WX 4100 台式工作站（[设备说明](hosts/ryzen-4750g/README.md)）：`workstation` + `develop`、AMDGPU、KVM/Libvirt |
-| [`vm-image`](hosts/vm-image/default.nix)                 | QEMU 客户机基础配置，非可直接启动的磁盘镜像                                                                                                  |
+| [`vm-image`](hosts/vm-image/default.nix)                 | QEMU/KVM 无头客户机镜像（[镜像说明](hosts/vm-image/README.md)）：随机主机名、Docker、国内镜像源与 SSH，可编译为 `qcow2` 磁盘镜像             |
 | [`usb-boot-stick`](hosts/usb-boot-stick/default.nix)     | USB 启动盘：通用硬件支持、可移动 UEFI 引导、命令行维护工具                                                                                   |
 
 构建时必须通过 `NIX_BUILD_HOST` 指定其中一项；系统主机名默认与之相同，可用 `networking.hostName` 覆盖。
@@ -86,7 +86,7 @@ sudo nixos-generate-config --root /mnt
 sudo env NIX_BUILD_HOST=<host> nixos-install --root /mnt
 ```
 
-挂载布局须与硬件配置一致：桌面/笔记本主机使用 `/boot`，USB 使用 `/efi`；VM 需另行配置引导器。安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
+挂载布局须与硬件配置一致：桌面/笔记本主机使用 `/boot`，USB 使用 `/efi`；`vm-image` 通过 `disk-image.nix` 自动生成分区与引导器（详见 [hosts/vm-image/README.md](hosts/vm-image/README.md)）。安装细节请参阅 [NixOS 手册](https://nixos.org/manual/nixos/stable/#sec-installation)。
 
 ### Surface Laptop 3 USB 启动备忘
 
@@ -167,7 +167,7 @@ NIX_BUILD_HOST=<host> make check-local LOCAL_CONFIG=/etc/nixos/configuration.nix
 ## 使用提醒
 
 - **休眠与硬件调优**：笔记本配置（`x1-carbon-8th`、`surface-laptop-3`，导入 `profiles/laptop.nix`）的硬件配置须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代。ThinkPad X1 固件与睡眠配置详见 [hosts/x1-carbon-8th/README.md](hosts/x1-carbon-8th/README.md)，Surface Laptop 3 使用 S0ix 现代待机配合 `suspend-then-hibernate`；Ryzen 4750G + WX 4100 台式工作站的 ROG STRIX B450-I GAMING 主板 BIOS 设置与 AMDGPU 稳定性调优详见 [hosts/ryzen-4750g/README.md](hosts/ryzen-4750g/README.md)。
-- **权限**：`wheel` 组可免密码 sudo；共享配置的 Nix `trusted-users` 为 `root` 与 `@wheel`，各物理主机（`x1-carbon-8th`、`surface-laptop-3`、`ryzen-4750g`）收紧为 `root` 与 `mingcheng`，仅应授予可信账户。
+- **权限**：`wheel` 组可免密码 sudo；共享配置的 Nix `trusted-users` 为 `root` 与 `@wheel`，各物理主机（`x1-carbon-8th`、`surface-laptop-3`、`ryzen-4750g`）及 `vm-image` 收紧为 `root` 与 `mingcheng`，仅应授予可信账户。
 - **秘密信息**：不要把密码、令牌写入 Nix 表达式，它们可能进入其他用户可读的 Nix store。
 
 ## 参考

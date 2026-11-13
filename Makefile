@@ -28,14 +28,14 @@ HEADLESS_CHECKS := check-module-gui-headless check-host-vm-image check-host-usb-
 	check-docker-config check-git-config check-gui-packages check-x1-carbon-8th
 
 fmt:
-	@nix-shell -p nixfmt --run "find $(NIX_SOURCES) -type f -name '*.nix' -exec nixfmt {} +"
+	@nix-shell -p nixfmt --run "find $(NIX_SOURCES) -type f -name '*.nix' ! -path 'hosts/vm-image/local.nix' -exec nixfmt {} +"
 
 check: check-syntax check-modules check-hosts check-scripts
 
 check-syntax: check-nix-syntax check-shell-syntax
 
 check-nix-syntax:
-	@find $(NIX_SOURCES) -type f -name '*.nix' -print0 | xargs -0 -n1 nix-instantiate --parse > /dev/null
+	@find $(NIX_SOURCES) -type f -name '*.nix' ! -path 'hosts/vm-image/local.nix' -print0 | xargs -0 -n1 nix-instantiate --parse > /dev/null
 
 check-shell-syntax:
 	@for script in scripts/*.sh tests/scripts/*.sh; do bash -n "$$script" || exit; done
