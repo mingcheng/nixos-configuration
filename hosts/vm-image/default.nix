@@ -63,16 +63,21 @@ in
   networking.hostName = lib.mkOverride 900 "";
 
   systemd.services = lib.mkIf (config.networking.hostName == "") {
+    "systemd-hostnamed".environment.SYSTEMD_ETC_HOSTNAME = lib.mkForce "/etc/hostname";
     vm-random-hostname = {
       description = "Generate and apply a random VM hostname";
       wantedBy = [
-        "network-pre.target"
+        "sysinit.target"
         "multi-user.target"
       ];
+      after = [ "local-fs.target" ];
       before = [
         "network-pre.target"
         "network.target"
+        "dhcpcd.service"
+        "systemd-hostnamed.service"
       ];
+      unitConfig.DefaultDependencies = false;
       path = [
         pkgs.coreutils
         pkgs.nettools

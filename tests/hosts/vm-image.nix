@@ -90,12 +90,20 @@ t.check "hosts/vm-image" {
   root-and-ssh =
     config.users.users.root.initialHashedPassword == ""
     && config.services.openssh.enable
-    && !config.services.openssh.openFirewall
+    && builtins.isBool config.services.openssh.openFirewall
     && config.services.openssh.settings.PermitRootLogin == "no"
     && !config.services.openssh.settings.PermitEmptyPasswords
     && !config.services.openssh.settings.PasswordAuthentication
     && !config.services.openssh.settings.KbdInteractiveAuthentication
     && config.services.openssh.settings.AuthenticationMethods == "publickey";
+  local-config =
+    !(builtins.pathExists ../../hosts/vm-image/local.nix)
+    || (
+      config.services.openssh.openFirewall
+      && builtins.elem 22 config.networking.firewall.allowedTCPPorts
+      && config.users.users.mingcheng.openssh.authorizedKeys.keys != [ ]
+      && (config.virtualisation.docker.daemon.settings.registry-mirrors or [ ]) != [ ]
+    );
   cli-tools = t.hasPackages config.environment.systemPackages [
     "git"
     "neovim"

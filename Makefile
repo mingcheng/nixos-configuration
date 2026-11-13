@@ -35,7 +35,7 @@ check: check-syntax check-modules check-hosts check-scripts
 check-syntax: check-nix-syntax check-shell-syntax
 
 check-nix-syntax:
-	@find $(NIX_SOURCES) -type f -name '*.nix' ! -path 'hosts/vm-image/local.nix' -print0 | xargs -0 -n1 nix-instantiate --parse > /dev/null
+	@find $(NIX_SOURCES) -type f -name '*.nix' -print0 | xargs -0 -n1 nix-instantiate --parse > /dev/null
 
 check-shell-syntax:
 	@for script in scripts/*.sh tests/scripts/*.sh; do bash -n "$$script" || exit; done
