@@ -1,6 +1,6 @@
 # QEMU 虚拟机镜像 (`vm-image`)
 
-面向 **QEMU / KVM / Libvirt** 虚拟化环境的无头（Headless）客户机配置（`NIX_BUILD_HOST=vm-image`）。基于 [profiles/base.nix](../../profiles/base.nix) 与 NixOS 官方 `qemu-guest.nix`、`disk-image.nix` 模块，可直接通过 [scripts/build-qcow2.sh](../../scripts/build-qcow2.sh) 编译为可引导的 `.qcow2` 磁盘镜像。
+面向 **QEMU / KVM / Libvirt** 虚拟化环境的无头（Headless）客户机配置（`NIX_BUILD_HOST=vm-image`）。基于 [profiles/network.nix](../../profiles/network.nix) 与 NixOS 官方 `qemu-guest.nix`、`disk-image.nix` 模块，可直接通过 [scripts/build-qcow2.sh](../../scripts/build-qcow2.sh) 编译为可引导的 `.qcow2` 磁盘镜像。
 
 通用仓库结构、通道说明与自定义选项请参阅根目录 [README.md](../../README.md)。
 
@@ -14,7 +14,7 @@
 | 虚拟化与容器       | 预加载 `virtio_*` 驱动并启用 `services.qemuGuest.enable`、`fstrim`；默认启用 [services/docker.nix](../../services/docker.nix) 与 `docker-compose`              |
 | 软件源与非自由软件 | 允许非自由软件（`nixpkgs.config.allowUnfree = true`），默认配置中国大陆二进制缓存（TUNA/USTC/SJTU/CERNET）、TUNA 默认通道及 Go/npm/PyPI/uv/Cargo/Rustup 镜像源 |
 | 控制台与网络       | 同时启用图形与串口控制台（`console=tty0`、`console=ttyS0,115200n8`），启用 BBR 拥塞控制、大陆 NTP 授时与快速 IPv4 DHCP（`noarp`，忽略容器虚拟网卡）            |
-| 远程与工具         | 默认启用 [services/sshd.nix](../../services/sshd.nix)（仅公钥登录，严禁 root 与空密码 SSH 登录），预装 `git`、`neovim`、`inetutils` 及常用 Shell 别名          |
+| 远程与工具         | 默认启用 [services/sshd.nix](../../services/sshd.nix)（仅公钥登录，严禁 root 与空密码 SSH 登录），预装 `git`、`neovim`、`tmux`、`bat`、网络调试工具集（`mtr`、`tcpdump`、`nmap`、`iperf3`、`socat`、`ethtool`、`dig`、`nc` 等）与系统诊断工具集（`htop`、`btop`、`lsof`、`sysstat`、`jq`、`yq`、`ripgrep`、`fd`、`pciutils` 等） |
 | 账户与权限         | `root` 初始密码为空（仅限本地/串口控制台登录）；预置 `mingcheng` 普通账户（`wheel`、`docker` 组），严禁安装任何 GUI 软件                                       |
 
 ## 本地自定义配置（`local.nix`）
@@ -114,17 +114,20 @@ ssh -p 2222 mingcheng@127.0.0.1
 
 ### 2. 导入 Libvirt / Virt-Manager
 
-在已启用 [services/libvirtd.nix](../../services/libvirtd.nix) 的宿主机上，可将导出的可写 `.qcow2` 镜像放入 `/var/lib/libvirt/images/`，并在 `virt-manager` 中选择 **Import existing disk image**（芯片组选 `Q35`，固件选 `UEFI x86_64`；若为 `--legacy` 镜像则选 `BIOS`），或使用 `virt-install`：
+在宿主机（NixOS 启用 [services/libvirtd.nix](../../services/libvirtd.nix)，或 Debian/Ubuntu 安装 `qemu-system-x86 libvirt-daemon-system virtinst ovmf`）上，可将导出的可写 `.qcow2` 镜像放入 `/var/lib/libvirt/images/`，并在 `virt-manager` 中选择 **Import existing disk image**（芯片组选 `Q35`，固件选非 Secure Boot 的 `UEFI x86_64`；若为 `--legacy` 镜像则选 `BIOS`），或使用 `virt-install`（显式关闭 `secure-boot` 以引导未签名的 `systemd-boot`）：
 
 ```bash
 virt-install \
   --name nixos-vm \
   --memory 2048 \
   --vcpus 2 \
+  --cpu host-passthrough \
   --os-variant nixos-unstable \
-  --boot uefi \
-  --disk path=./nixos-vm.qcow2,format=qcow2,bus=virtio \
-  --network network=default,model=virtio \
+  --boot uefi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no \
+  --disk path=/var/lib/libvirt/images/nixos-vm.qcow2,format=qcow2,bus=virtio,discard=unmap \
+  --network bridge=br0,model=virtio \
+  --graphics none \
+  --console pty,target_type=serial \
   --import \
   --noautoconsole
 ```

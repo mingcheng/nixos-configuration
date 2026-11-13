@@ -10,6 +10,7 @@ let
     ../../packages/netutils.nix
     ../../packages/nvim.nix
     ../../packages/starship.nix
+    ../../packages/sysutils.nix
     ../../packages/tmux.nix
   ];
   vim = t.eval [ ../../packages/vim.nix ];
@@ -18,20 +19,45 @@ in
 t.check "modules/packages" {
   evaluates = t.validSystem config;
   vim-evaluates = t.validSystem vim;
-  command-line-tools = t.hasPackages config.environment.systemPackages [
-    "git"
-    "gitflow"
-    "gh"
-    "lazygit"
-    "gnumake"
-    "go"
-    "kubectl"
-    "k9s"
-    "cri-tools"
-    "kubernetes-helm"
-    "inetutils"
-    "netcat-gnu"
-  ];
+  command-line-tools =
+    config.programs.mtr.enable
+    && t.hasPackages config.environment.systemPackages [
+      "git"
+      "gitflow"
+      "gh"
+      "lazygit"
+      "gnumake"
+      "go"
+      "kubectl"
+      "k9s"
+      "cri-tools"
+      "kubernetes-helm"
+      "bind"
+      "curl"
+      "ethtool"
+      "inetutils"
+      "iperf"
+      "iproute2"
+      "netcat-gnu"
+      "nmap"
+      "socat"
+      "tcpdump"
+      "wget"
+      "btop"
+      "fd"
+      "file"
+      "htop"
+      "jq"
+      "psmisc"
+      "lsof"
+      "pciutils"
+      "ripgrep"
+      "sysstat"
+      "tree"
+      "unzip"
+      "usbutils"
+      "yq"
+    ];
   neovim =
     config.programs.neovim.enable
     && config.programs.neovim.defaultEditor

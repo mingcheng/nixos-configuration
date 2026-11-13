@@ -10,6 +10,13 @@ let
       swapDevices = lib.mkForce [ ];
     }
   ];
+  network = t.eval [
+    ../../profiles/network.nix
+    {
+      networking.hostName = "network-test";
+      swapDevices = lib.mkForce [ ];
+    }
+  ];
   laptop = t.eval [
     ../../profiles/laptop.nix
     {
@@ -75,10 +82,54 @@ let
 in
 t.check "modules/workstation" {
   desktop-evaluates = t.validSystem desktop;
+  network-evaluates = t.validSystem network;
   laptop-evaluates = t.validSystem laptop;
   laptop-develop-evaluates = t.validSystem laptopDevelop;
   workstation-evaluates = t.validSystem workstation;
   workstation-develop-evaluates = t.validSystem workstationDevelop;
+  network-profile =
+    network.nix.gc.automatic
+    && network.boot.kernel.sysctl."net.ipv4.tcp_congestion_control" == "bbr"
+    && network.networking.useDHCP
+    && !network.networking.enableIPv6
+    && network.services.fstrim.enable
+    && network.services.openssh.enable
+    && network.services.timesyncd.enable
+    && network.programs.mtr.enable
+    && network.programs.bat.enable
+    && network.programs.tmux.enable
+    && network.programs.neovim.enable
+    && network.environment.shellAliases.ll == "ls -l"
+    && !network.services.displayManager.enable
+    && !(network ? workstation)
+    && t.hasPackages network.environment.systemPackages [
+      "git"
+      "bind"
+      "curl"
+      "ethtool"
+      "inetutils"
+      "iperf"
+      "iproute2"
+      "netcat-gnu"
+      "nmap"
+      "socat"
+      "tcpdump"
+      "wget"
+      "btop"
+      "fd"
+      "file"
+      "htop"
+      "jq"
+      "psmisc"
+      "lsof"
+      "pciutils"
+      "ripgrep"
+      "sysstat"
+      "tree"
+      "unzip"
+      "usbutils"
+      "yq"
+    ];
   desktop-composition =
     desktop.nix.gc.automatic
     && !desktop.services.xserver.enable
@@ -233,6 +284,8 @@ t.check "modules/workstation" {
     noHostPolicy desktop
     && desktop.boot.resumeDevice == ""
     && !desktop.services.thermald.enable
+    && noHostPolicy network
+    && !network.services.thermald.enable
     && noHostPolicy laptop
     && noHostPolicy laptopDevelop
     && noHostPolicy workstation

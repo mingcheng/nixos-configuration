@@ -27,18 +27,8 @@ in
     (modulesPath + "/profiles/qemu-guest.nix")
     (modulesPath + "/virtualisation/disk-image.nix")
 
-    ../../profiles/base.nix
-    ../../system/kernel.nix
-    ../../system/networking.nix
-    ../../system/shell_alias.nix
+    ../../profiles/network.nix
     ../../services/docker.nix
-    ../../services/fstrim.nix
-    ../../services/sshd.nix
-    ../../services/timesyncd.nix
-
-    ../../packages/git.nix
-    ../../packages/nvim.nix
-    ../../packages/netutils.nix
   ]
   ++ lib.optional (builtins.pathExists ./local.nix) ./local.nix;
 

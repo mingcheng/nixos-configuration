@@ -6,10 +6,21 @@
 #
 # http://www.opensource.org/licenses/MIT
 
-{ pkgs, ... }: {
+{ lib, pkgs, ... }:
+{
+  programs.mtr.enable = lib.mkDefault true;
+
   environment.systemPackages = with pkgs; [
     bind
+    curl
+    ethtool
     inetutils
+    iperf
+    iproute2
     netcat-gnu
+    nmap
+    socat
+    tcpdump
+    wget
   ];
 }

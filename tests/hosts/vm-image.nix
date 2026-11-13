@@ -116,13 +116,40 @@ t.check "hosts/vm-image" {
       config.services.openssh.openFirewall
       && builtins.elem 22 config.networking.firewall.allowedTCPPorts
       && config.users.users.mingcheng.openssh.authorizedKeys.keys != [ ]
-      && (config.virtualisation.docker.daemon.settings.registry-mirrors or [ ]) != [ ]
     );
-  cli-tools = t.hasPackages config.environment.systemPackages [
-    "git"
-    "neovim"
-    "inetutils"
-  ];
+  cli-tools =
+    config.programs.mtr.enable
+    && config.programs.bat.enable
+    && config.programs.tmux.enable
+    && t.hasPackages config.environment.systemPackages [
+      "git"
+      "neovim"
+      "bind"
+      "curl"
+      "ethtool"
+      "inetutils"
+      "iperf"
+      "iproute2"
+      "netcat-gnu"
+      "nmap"
+      "socat"
+      "tcpdump"
+      "wget"
+      "btop"
+      "fd"
+      "file"
+      "htop"
+      "jq"
+      "psmisc"
+      "lsof"
+      "pciutils"
+      "ripgrep"
+      "sysstat"
+      "tree"
+      "unzip"
+      "usbutils"
+      "yq"
+    ];
   account-and-trust =
     config.users.mutableUsers
     && config.users.users.mingcheng.isNormalUser

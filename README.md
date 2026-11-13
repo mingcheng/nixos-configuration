@@ -115,7 +115,7 @@ Surface Laptop 3 使用 Microsoft 定制 UEFI 界面，通过 USB 安装盘或�
 | 账户、SSH 公钥、代理、主机名     | 本机 `configuration.nix`                                                        |
 | 磁盘、swap、EFI 挂载点           | 本机 `hardware-configuration.nix`                                               |
 | 主机硬件策略与软件组合           | [hosts/](hosts/)                                                                |
-| 分层共用策略                     | [profiles/](profiles/)（`base`、`desktop`、`laptop`、`develop`、`workstation`） |
+| 分层共用策略                     | [profiles/](profiles/)（`base`、`network`、`desktop`、`laptop`、`develop`、`workstation`） |
 | 系统设置、可选服务、程序配置     | [system/](system/)、[services/](services/)、[packages/](packages/)              |
 | 通道地址、二进制缓存、在线 hosts | [sources.nix](sources.nix)                                                      |
 
