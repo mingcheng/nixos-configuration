@@ -47,7 +47,8 @@ t.check "modules/system" {
     config.boot.loader.systemd-boot.enable
     && config.boot.loader.systemd-boot.configurationLimit == 7
     && config.boot.loader.timeout == 3
-    && !config.boot.plymouth.enable;
+    && !config.boot.plymouth.enable
+    && config.boot.tmp.cleanOnBoot;
   removable-grub =
     grub.boot.loader.grub.efiInstallAsRemovable && grub.boot.loader.grub.devices == [ "nodev" ];
   root-filesystem =

@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 2026 mingcheng
+# Copyright (c) 1970-2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,13 +9,13 @@
 # File Created: Sunday, August 14th 2022, 11:17:23 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-04 15:19:54
+# Last Modified: 2026-11-14 06:25:35
 ##
 
 { lib, ... }: {
   services.openssh = {
     enable = true;
-    openFirewall = lib.mkDefault false;
+    openFirewall = lib.mkDefault true;
 
     settings = {
       PubkeyAuthentication = true;

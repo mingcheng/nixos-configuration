@@ -21,7 +21,6 @@
   # Ryzen 7 PRO 4750G (8C/16T, 65 W Renoir APU) + Radeon Pro WX 4100 (4 GiB GDDR5).
   # PPD drives amd-pstate-epp energy performance preference on Zen 2; thermald is
   # Intel-only and must stay disabled on AMD platforms.
-  powerManagement.enable = true;
   services = {
     power-profiles-daemon.enable = true;
     thermald.enable = lib.mkForce false;
@@ -37,7 +36,6 @@
   # Compressed RAM swap allocated on demand; avoids disk swap wear and latency.
   zramSwap = {
     enable = true;
-    algorithm = "zstd";
     memoryPercent = 25;
     priority = 100;
   };

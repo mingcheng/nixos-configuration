@@ -117,7 +117,7 @@ t.check "hosts/ryzen-4750g" {
     && !(t.hasPackages config.environment.systemPackages [ "amdgpu_top" ])
     && !(t.hasPackages config.environment.systemPackages [ "glmark2" ])
     && !(t.hasPackages config.environment.systemPackages [ "memtest_vulkan" ]);
-  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.12";
+  lts-kernel = lib.versions.majorMinor config.boot.kernelPackages.kernel.version == "6.18";
   amd-platform =
     config.hardware.cpu.amd.updateMicrocode
     && !config.hardware.cpu.intel.updateMicrocode
@@ -133,15 +133,30 @@ t.check "hosts/ryzen-4750g" {
     && builtins.elem "nvme_core.default_ps_max_latency_us=20000" config.boot.kernelParams
     && builtins.elem "amdgpu.aspm=0" config.boot.kernelParams
     && builtins.elem "amdgpu.runpm=0" config.boot.kernelParams
-    && builtins.elem "amdgpu.bapm=0" config.boot.kernelParams
     && builtins.elem "amdgpu.dcdebugmask=0x2" config.boot.kernelParams
-    && builtins.elem "amdgpu.ppfeaturemask=0xfff5baf3" config.boot.kernelParams
+    && builtins.elem "amdgpu.debug_mask=0x4" config.boot.kernelParams
+    && builtins.elem "amdgpu.reset_method=0" config.boot.kernelParams
     && builtins.elem "amdgpu.lockup_timeout=60000,60000,10000,10000" config.boot.kernelParams;
+  gpu-clock-gating =
+    lib.filter (lib.hasPrefix "amdgpu.ppfeaturemask=") config.boot.kernelParams == [
+      "amdgpu.ppfeaturemask=0xfff5baf3"
+    ]
+    && lib.all (
+      param: !(lib.hasPrefix "amdgpu.cg_mask=" param) && !(lib.hasPrefix "amdgpu.pg_mask=" param)
+    ) config.boot.kernelParams;
   early-graphics =
     builtins.elem "amdgpu" config.boot.initrd.kernelModules
     && !(builtins.elem "i915" config.boot.initrd.kernelModules)
     && config.hardware.graphics.enable
     && config.hardware.graphics.enable32Bit;
+  filesystem-loading =
+    builtins.elem "f2fs" config.boot.initrd.kernelModules
+    && !(builtins.elem "f2fs" config.boot.kernelModules);
+  no-unused-kernel-parameters =
+    lib.all (
+      param: !(lib.hasPrefix "amdgpu.bapm=" param) && !(lib.hasPrefix "selinux=" param)
+    ) config.boot.kernelParams
+    && !(builtins.elem "selinux" config.security.lsm);
   systemd-boot =
     config.boot.loader.systemd-boot.enable
     && !config.boot.loader.grub.enable

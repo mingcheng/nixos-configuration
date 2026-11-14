@@ -4,12 +4,12 @@
     nftables.enable = lib.mkDefault true;
     firewall = {
       enable = true;
-      allowedTCPPorts = lib.mkForce [ ];
+      allowedTCPPorts = lib.mkForce [ 22 ];
       allowedUDPPorts = lib.mkForce [ ];
       allowedTCPPortRanges = lib.mkForce [ ];
       allowedUDPPortRanges = lib.mkForce [ ];
       trustedInterfaces = lib.mkForce [ "lo" ];
-      allowPing = false;
+      allowPing = true;
       checkReversePath = "loose";
     };
   };
