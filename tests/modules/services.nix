@@ -14,6 +14,7 @@ let
     ../../services/prometheus.nix
     ../../services/qbittorrent.nix
     ../../services/resolved.nix
+    ../../services/samba-client.nix
     ../../services/samba.nix
     ../../services/sshd.nix
     ../../services/syncthing.nix
@@ -26,6 +27,7 @@ let
     ../../services/mihomo.nix
     ../../services/qbittorrent.nix
     ../../services/resolved.nix
+    ../../services/samba-client.nix
     ../../services/samba.nix
     ../../services/sshd.nix
     ../../services/syncthing.nix
@@ -83,7 +85,11 @@ let
         profileDir = "/srv/downloads";
         webuiPort = 9090;
       };
-      services.samba.settings.global.interfaces = "enp1s0";
+      services.samba.settings.global = {
+        interfaces = "enp1s0";
+        workgroup = "HOMELAB";
+        "client min protocol" = "SMB3";
+      };
       services.openssh = {
         openFirewall = true;
         settings = {
@@ -98,6 +104,7 @@ let
     ../../services/adguard.nix
     ../../services/mihomo.nix
     ../../services/resolved.nix
+    ../../services/samba-client.nix
     {
       services.adguardhome.enable = false;
       services.mihomo.enable = false;
@@ -277,7 +284,23 @@ t.check "modules/services" {
     && !config.services.samba.nmbd.enable
     && !config.services.samba.winbindd.enable
     && config.services.samba.settings.global."server min protocol" == "SMB2";
-  samba-interface-overridable = changed.services.samba.settings.global.interfaces == "enp1s0";
+  samba-client =
+    !disabled.services.samba.enable
+    && !(disabled.systemd.services ? samba-smbd)
+    && disabled.boot.supportedFilesystems.cifs
+    && disabled.environment.etc ? "samba/smb.conf"
+    && disabled.security.wrappers."mount.cifs".setuid
+    && disabled.services.samba.settings.global.workgroup == "WORKGROUP"
+    && disabled.services.samba.settings.global."client min protocol" == "SMB2"
+    && disabled.services.samba.settings.global."client max protocol" == "SMB3"
+    && t.hasPackages disabled.environment.systemPackages [
+      "samba"
+      "cifs-utils"
+    ];
+  samba-interface-overridable =
+    changed.services.samba.settings.global.interfaces == "enp1s0"
+    && changed.services.samba.settings.global.workgroup == "HOMELAB"
+    && changed.services.samba.settings.global."client min protocol" == "SMB3";
   ssh-public-key-only =
     !config.services.openssh.openFirewall
     && ssh.PubkeyAuthentication

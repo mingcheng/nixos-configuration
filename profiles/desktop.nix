@@ -25,6 +25,7 @@
 
     ../services/pipewire.nix
     ../services/keyd.nix
+    ../services/samba-client.nix
   ];
 
   networking = {

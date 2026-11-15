@@ -145,7 +145,17 @@ t.check "modules/workstation" {
     && desktop.i18n.inputMethod.enable
     && desktop.networking.networkmanager.enable
     && desktop.networking.nftables.enable
-    && !desktop.networking.useDHCP;
+    && !desktop.networking.useDHCP
+    && desktop.boot.supportedFilesystems.cifs
+    && !desktop.services.samba.enable
+    && desktop.environment.etc ? "samba/smb.conf"
+    && desktop.security.wrappers."mount.cifs".setuid
+    && t.hasPackages desktop.environment.systemPackages [
+      "samba"
+      "cifs-utils"
+      "kio-extras"
+      "kio-fuse"
+    ];
   desktop-user-applications = t.hasPackages desktop.users.users.alice.packages [
     "vscode"
     "konsole"
