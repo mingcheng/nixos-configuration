@@ -9,7 +9,7 @@
 # File Created: Friday, August 26th 2022, 2:54:00 pm
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-13 13:13:29
+# Last Modified: 2026-11-14 18:35:54
 ##
 
 {
@@ -29,6 +29,8 @@ in
 
     ../../profiles/network.nix
     ../../services/docker.nix
+
+    ../../packages/qemu-headless.nix
   ]
   ++ lib.optional (builtins.pathExists ./local.nix) ./local.nix;
 
