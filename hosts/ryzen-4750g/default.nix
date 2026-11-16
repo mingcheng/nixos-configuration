@@ -23,6 +23,7 @@
     ../../services/sshd.nix
 
     ./kernel.nix
+    ./storage.nix
     ./tuning.nix
   ];
 

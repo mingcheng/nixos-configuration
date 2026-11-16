@@ -1,5 +1,5 @@
 #!#
-# Copyright (c) 1970-2026 mingcheng, all rights reserved.
+# Copyright (c) 2026 mingcheng, all rights reserved.
 #
 # This source code is licensed under the MIT License,
 # which is located in the LICENSE file in the source tree's root directory.
@@ -9,7 +9,7 @@
 # File Created: 2026-11-09 18:26:43
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-14 08:14:05
+# Last Modified: 2026-11-16 21:48:35
 ##
 
 { pkgs, ... }:
@@ -48,11 +48,13 @@
       "amdgpu.aspm=0"
       "amdgpu.runpm=0"
       "amdgpu.dcdebugmask=0x2"
-      # Bit 9 (0x200) lets SMU7 control clock gating; preserve the other bits.
+      # Keep MGCG/CGCG clock gating (0x1b6a05) for low idle power while disabling
+      # all *_LS/*_CGLS SRAM light-sleep bits that lock up CP/RLC/SDMA/SMU7.
+      "amdgpu.cg_mask=0x1b6a05"
       "amdgpu.ppfeaturemask=0xfff5baf3"
-      # Bypass soft recovery and select PCI CONFIG reset instead of BACO.
+      # Bypass soft recovery livelocks; leave reset_method at default BACO so
+      # runtime resets do not trigger a Renoir Data Fabric Sync Flood.
       "amdgpu.debug_mask=0x4"
-      "amdgpu.reset_method=0"
       # Allow long compute dispatches on Polaris' non-preemptible GFX ring.
       "amdgpu.lockup_timeout=60000,60000,10000,10000"
     ];

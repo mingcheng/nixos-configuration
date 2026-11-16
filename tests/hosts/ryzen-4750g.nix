@@ -102,7 +102,7 @@ t.check "hosts/ryzen-4750g" {
     "rustup"
     "clang-wrapper"
     "lldb"
-    "cargo-binstall"
+    "cargo"
 
     "amdgpu_top"
     "glmark2"
@@ -144,15 +144,17 @@ t.check "hosts/ryzen-4750g" {
     && builtins.elem "amdgpu.runpm=0" config.boot.kernelParams
     && builtins.elem "amdgpu.dcdebugmask=0x2" config.boot.kernelParams
     && builtins.elem "amdgpu.debug_mask=0x4" config.boot.kernelParams
-    && builtins.elem "amdgpu.reset_method=0" config.boot.kernelParams
+    && !(lib.any (lib.hasPrefix "amdgpu.reset_method=") config.boot.kernelParams)
     && builtins.elem "amdgpu.lockup_timeout=60000,60000,10000,10000" config.boot.kernelParams;
   gpu-clock-gating =
     lib.filter (lib.hasPrefix "amdgpu.ppfeaturemask=") config.boot.kernelParams == [
       "amdgpu.ppfeaturemask=0xfff5baf3"
     ]
-    && lib.all (
-      param: !(lib.hasPrefix "amdgpu.cg_mask=" param) && !(lib.hasPrefix "amdgpu.pg_mask=" param)
-    ) config.boot.kernelParams;
+    &&
+      lib.filter (lib.hasPrefix "amdgpu.cg_mask=") config.boot.kernelParams == [
+        "amdgpu.cg_mask=0x1b6a05"
+      ]
+    && !(lib.any (lib.hasPrefix "amdgpu.pg_mask=") config.boot.kernelParams);
   early-graphics =
     builtins.elem "amdgpu" config.boot.initrd.kernelModules
     && !(builtins.elem "i915" config.boot.initrd.kernelModules)
@@ -160,7 +162,56 @@ t.check "hosts/ryzen-4750g" {
     && config.hardware.graphics.enable32Bit;
   filesystem-loading =
     builtins.elem "f2fs" config.boot.initrd.kernelModules
-    && !(builtins.elem "f2fs" config.boot.kernelModules);
+    && !(builtins.elem "f2fs" config.boot.kernelModules)
+    && !(builtins.elem "btrfs" config.boot.initrd.kernelModules);
+  home-btrfs =
+    let
+      home = config.fileSystems."/home";
+    in
+    home.fsType == "btrfs"
+    && !home.neededForBoot
+    && lib.all (opt: builtins.elem opt home.options) [
+      "subvol=@home"
+      "noatime"
+      "compress=zstd:1"
+      "discard=async"
+    ]
+    && lib.filter (lib.hasPrefix "compress") home.options == [ "compress=zstd:1" ];
+  backup-disk =
+    let
+      backup = config.fileSystems."/mnt/backup";
+    in
+    backup.fsType == "btrfs" && builtins.elem "nofail" backup.options && !backup.neededForBoot;
+  home-snapper =
+    let
+      home = config.services.snapper.configs.home;
+    in
+    home.SUBVOLUME == "/home"
+    && home.TIMELINE_CREATE
+    && home.TIMELINE_CLEANUP
+    && home.ALLOW_USERS == [ "mingcheng" ]
+    && config.services.snapper.persistentTimer
+    && builtins.elem "snapper-timeline.service" config.systemd.services.home-snapshot-dirs.requiredBy;
+  home-btrbk =
+    let
+      instance = config.services.btrbk.instances.home;
+      service = config.systemd.services.btrbk-home;
+    in
+    instance.settings.backend == "btrfs-progs"
+    && instance.settings.subvolume."/home".target == "/mnt/backup/btrbk"
+    && instance.onCalendar == "daily"
+    && service.serviceConfig.User == "root"
+    && builtins.elem "/mnt/backup" service.unitConfig.RequiresMountsFor
+    && config.security.sudo.execWheelOnly;
+  btrfs-scrub =
+    config.services.btrfs.autoScrub.enable
+    &&
+      config.services.btrfs.autoScrub.fileSystems == [
+        "/home"
+        "/mnt/backup"
+      ]
+    && builtins.elem "/mnt/backup" config.systemd.services.btrfs-scrub-mnt-backup.unitConfig.RequiresMountsFor
+    && config.services.fstrim.enable;
   no-unused-kernel-parameters =
     lib.all (
       param: !(lib.hasPrefix "amdgpu.bapm=" param) && !(lib.hasPrefix "selinux=" param)

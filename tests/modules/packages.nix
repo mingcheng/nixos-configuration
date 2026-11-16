@@ -118,7 +118,7 @@ t.check "modules/packages" {
       "rustup"
       "clang-wrapper"
       "lldb"
-      "cargo-binstall"
+      "cargo"
     ]
     && !(t.hasPackages rustup.environment.systemPackages [ "rustup" ])
     && rustup.environment.sessionVariables.RUSTC_VERSION == "stable"

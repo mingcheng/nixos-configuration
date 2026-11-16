@@ -4,7 +4,7 @@
 
 通用仓库结构、通道说明与自定义选项请参阅根目录 [README.md](../../README.md)。
 
-[kernel.nix](kernel.nix) 使用稳定通道的 `linuxPackages_6_18`；AMDGPU 参数保留当前稳定性测试基线（包括时钟门控特性掩码、PCI CONFIG 重置及长任务超时），仅作用于此主机，不改变笔记本内核。仍只启用 S3 挂起而不启用磁盘休眠；重启后需在本机验证显卡负载与唤醒，配置求值不能证明硬件稳定性。
+[kernel.nix](kernel.nix) 使用稳定通道的 `linuxPackages_6_18`；AMDGPU 参数保留当前稳定性测试基线（包括屏蔽 SRAM 浅睡眠位的 `cg_mask` 时钟门控、默认 BACO 重置、跳过软恢复及长任务超时），仅作用于此主机，不改变笔记本内核。仍只启用 S3 挂起而不启用磁盘休眠；重启后需在本机验证显卡负载与唤醒，配置求值不能证明硬件稳定性。
 
 - [硬件概览](#硬件概览)
 - [BIOS / UEFI 设置清单](#bios--uefi-设置清单)
@@ -13,6 +13,7 @@
   - [构建、更新与回退](#构建更新与回退)
 - [常用工具与使用说明](#常用工具与使用说明)
   - [硬件监控与压力测试](#硬件监控与压力测试)
+  - [家目录快照与备份](#家目录快照与备份)
   - [状态快速自检](#状态快速自检)
   - [使用注意事项](#使用注意事项)
 
@@ -24,6 +25,8 @@
 | 处理器     | AMD Ryzen 7 PRO 4750G（8C/16T，65 W）              | 启用 `amd-pstate-epp` 自动调频，支持在 KDE 电源面板直接切换能效档位  |
 | 内存       | 32 GiB DDR4                                        | 启用 25% `zstd` `zramSwap`（约 7.8 GiB），支持 S3 内存睡眠，无休眠盘 |
 | 存储       | WD PC SN810 1 TB NVMe SSD                          | 1 GiB FAT32 EFI（`/boot`）+ F2FS 根分区，默认开启定期 `fstrim`       |
+| 家目录盘   | Micron 2200 512 GB NVMe SSD                        | 整盘 Btrfs `@home` 子卷挂载 `/home`，Snapper 每小时快照              |
+| 备份盘     | 1 TB 2.5" HDD（`sda`）                             | 整盘 Btrfs（卷标 `backup`），btrbk 每日增量备份 `/home`              |
 | 独立显卡   | AMD Radeon Pro WX 4100（4 GiB GDDR5）              | `amdgpu` 早期 KMS 驱动，针对 4K Wayland 与长时 Vulkan/3D 负载调优    |
 | 网络与蓝牙 | Intel I211 千兆有线 + Intel Wi-Fi 6E AX210（蓝牙） | 由 NetworkManager 统一管理有线、无线与蓝牙连接                       |
 | 虚拟化     | AMD-V + AMD-Vi IOMMU                               | 预装 KVM/QEMU + Libvirt（`virt-manager`）与 Docker                   |
@@ -111,6 +114,42 @@ stress-ng --cpu 16 --cpu-method matrixprod --vm 4 --vm-bytes 75% --timeout 10m -
 systemd-inhibit --what=idle:sleep --why="glmark2" glmark2-wayland --run-forever --fullscreen
 vkmark
 memtest_vulkan
+```
+
+### 家目录快照与备份
+
+[storage.nix](storage.nix) 为 `/home` 提供双重保护：
+
+| 层级     | 服务          | 位置                             | 频率与保留策略                                     | 防护范围         |
+| -------- | ------------- | -------------------------------- | -------------------------------------------------- | ---------------- |
+| 本地快照 | Snapper       | `/home/.snapshots`（同盘）       | 每小时；保留 12 时 / 7 天 / 4 周 / 6 月            | 误删、误改、回滚 |
+| 异盘备份 | btrbk         | `/mnt/backup/btrbk`（`sda` HDD） | 每日增量 `send/receive`；保留 14 天 / 8 周 / 12 月 | 家目录盘损坏     |
+| 完整性   | `btrfs scrub` | `/home` 与 `/mnt/backup`         | 每月                                               | 静默数据损坏     |
+
+`/home` 挂载参数由仓库统一管理（`compress=zstd:1`、`noatime`、`discard=async`、`space_cache=v2`），设备 UUID 仍来自本机 `hardware-configuration.nix`。首次切换前需为备份盘设置卷标（备份盘缺失时不会阻塞开机，但 btrbk 会报错退出）：
+
+```bash
+sudo btrfs filesystem label /dev/sda backup
+sudo env NIX_BUILD_HOST=ryzen-4750g nixos-rebuild switch
+
+# 立即执行一次首个（全量）备份并检查结果
+sudo systemctl start btrbk-home.service
+sudo btrbk -c /etc/btrbk/home.conf list all
+```
+
+日常使用：
+
+```bash
+# 查看与对比本地快照，恢复单个文件
+snapper -c home list
+snapper -c home status 10..11
+snapper -c home undochange 10..11 ~/path/to/file
+
+# 手动创建快照（例如大改动前）
+snapper -c home create --description "before refactor"
+
+# 从 HDD 备份恢复：备份为只读子卷，直接复制所需文件即可
+ls /mnt/backup/btrbk/
 ```
 
 ### 状态快速自检

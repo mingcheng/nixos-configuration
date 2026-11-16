@@ -118,7 +118,7 @@ t.check "hosts/surface-laptop-3" {
       "golangci-lint"
       "gotools"
       "rustup"
-      "cargo-binstall"
+      "cargo"
     ];
   all-shared-applications-assigned = lib.all (
     package:

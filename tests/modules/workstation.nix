@@ -211,7 +211,7 @@ t.check "modules/workstation" {
       "golangci-lint"
       "gotools"
       "rustup"
-      "cargo-binstall"
+      "cargo"
     ];
   laptop-develop-overlay =
     laptopDevelop.programs.nix-ld.enable
@@ -236,7 +236,7 @@ t.check "modules/workstation" {
       "rustup"
       "clang-wrapper"
       "lldb"
-      "cargo-binstall"
+      "cargo"
     ];
   workstation-services =
     workstation.virtualisation.docker.enable
@@ -286,7 +286,7 @@ t.check "modules/workstation" {
       "rustup"
       "clang-wrapper"
       "lldb"
-      "cargo-binstall"
+      "cargo"
     ];
   cursor-remains-disabled =
     !(t.hasPackages desktop.users.users.alice.packages [ "cursor" ])

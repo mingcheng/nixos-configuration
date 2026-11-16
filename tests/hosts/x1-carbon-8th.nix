@@ -102,7 +102,7 @@ t.check "hosts/x1-carbon-8th" {
     "rustup"
     "clang-wrapper"
     "lldb"
-    "cargo-binstall"
+    "cargo"
   ];
   all-shared-applications-assigned = lib.all (
     package:
