@@ -1,11 +1,11 @@
 let
   t = import ../lib.nix;
+  sources = import ../../sources.nix;
   config = t.eval [
     ../../packages/atuin.nix
     ../../packages/bat.nix
     ../../packages/fish.nix
     ../../packages/git.nix
-    ../../packages/golang.nix
     ../../packages/kubectl.nix
     ../../packages/netutils.nix
     ../../packages/nvim.nix
@@ -14,11 +14,46 @@ let
     ../../packages/tmux.nix
   ];
   vim = t.eval [ ../../packages/vim.nix ];
+  golang = t.eval [
+    ../../packages/golang.nix
+    {
+      workstation.users = [ "alice" ];
+      users.users.alice.isNormalUser = true;
+    }
+  ];
+  golangChanged = t.eval [
+    ../../packages/golang.nix
+    {
+      workstation.users = [ "alice" ];
+      users.users.alice.isNormalUser = true;
+      environment.sessionVariables = {
+        GOPROXY = "https://proxy.golang.org,direct";
+        GOSUMDB = "sum.golang.org";
+      };
+    }
+  ];
+  rustup = t.eval [
+    ../../packages/rustup.nix
+    {
+      workstation.users = [ "alice" ];
+      users.users.alice.isNormalUser = true;
+    }
+  ];
+  rustupChanged = t.eval [
+    ../../packages/rustup.nix
+    {
+      workstation.users = [ "alice" ];
+      users.users.alice.isNormalUser = true;
+      environment.sessionVariables.RUSTC_VERSION = "nightly";
+    }
+  ];
   git = t.lib.foldl' t.lib.recursiveUpdate { } config.programs.git.config;
 in
 t.check "modules/packages" {
   evaluates = t.validSystem config;
   vim-evaluates = t.validSystem vim;
+  golang-evaluates = t.validSystem golang && t.validSystem golangChanged;
+  rustup-evaluates = t.validSystem rustup && t.validSystem rustupChanged;
   command-line-tools =
     config.programs.mtr.enable
     && t.hasPackages config.environment.systemPackages [
@@ -26,8 +61,6 @@ t.check "modules/packages" {
       "gitflow"
       "gh"
       "lazygit"
-      "gnumake"
-      "go"
       "kubectl"
       "k9s"
       "cri-tools"
@@ -65,6 +98,44 @@ t.check "modules/packages" {
     && config.programs.neovim.vimAlias;
   optional-vim =
     vim.environment.variables.EDITOR == "vim" && t.hasPackages vim.environment.systemPackages [ "vim" ];
+  golang-toolchain =
+    t.hasPackages golang.users.users.alice.packages [
+      "go"
+      "gopls"
+      "delve"
+      "golangci-lint"
+      "gotools"
+    ]
+    && !(t.hasPackages golang.environment.systemPackages [ "go" ])
+    && golang.environment.sessionVariables.GO111MODULE == "on"
+    && golang.environment.sessionVariables.GOPROXY == sources.development.goProxy
+    && golang.environment.sessionVariables.GOSUMDB == sources.development.goSumdb
+    && t.lib.hasInfix "$HOME/go}/bin" golang.environment.extraInit
+    && golangChanged.environment.sessionVariables.GOPROXY == "https://proxy.golang.org,direct"
+    && golangChanged.environment.sessionVariables.GOSUMDB == "sum.golang.org";
+  rustup-toolchain =
+    t.hasPackages rustup.users.users.alice.packages [
+      "rustup"
+      "clang-wrapper"
+      "lldb"
+      "cargo-binstall"
+    ]
+    && !(t.hasPackages rustup.environment.systemPackages [ "rustup" ])
+    && rustup.environment.sessionVariables.RUSTC_VERSION == "stable"
+    && rustup.environment.sessionVariables.RUSTUP_DIST_SERVER == sources.development.rustupDistServer
+    && rustup.environment.sessionVariables.RUSTUP_UPDATE_ROOT == sources.development.rustupUpdateRoot
+    && rustup.environment.sessionVariables.CARGO_REGISTRIES_CRATES_IO_PROTOCOL == "sparse"
+    && rustup.environment.sessionVariables.CARGO_SOURCE_CRATES_IO_REPLACE_WITH == "mainland"
+    &&
+      rustup.environment.sessionVariables.CARGO_SOURCE_MAINLAND_REGISTRY
+      == sources.development.cargoRegistry
+    && rustup.environment.sessionVariables.LIBCLANG_PATH == "${t.pkgs.llvmPackages.libclang.lib}/lib"
+    &&
+      rustup.environment.sessionVariables.BINDGEN_EXTRA_CLANG_ARGS
+      == "-isystem ${t.pkgs.llvmPackages.libclang.lib}/lib/clang/${t.lib.versions.major t.pkgs.llvmPackages.libclang.version}/include -isystem ${t.pkgs.glibc.dev}/include"
+    && t.lib.hasInfix "$HOME/.cargo}/bin" rustup.environment.extraInit
+    && t.lib.hasInfix "$HOME/.rustup}/toolchains/" rustup.environment.extraInit
+    && rustupChanged.environment.sessionVariables.RUSTC_VERSION == "nightly";
   fish = config.programs.fish.enable;
   bat-theme = config.programs.bat.enable && config.programs.bat.settings.theme == [ "ansi" ];
   local-history =

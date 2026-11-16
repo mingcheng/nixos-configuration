@@ -9,13 +9,15 @@
 # File Created: 2026-11-10 12:01:55
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-10 12:01:55
+# Last Modified: 2026-11-16 11:48:46
 ##
 
 { lib, pkgs, ... }:
 {
   imports = [
     ./user-packages.nix
+    ./golang.nix
+    ./rustup.nix
   ];
 
   programs = {

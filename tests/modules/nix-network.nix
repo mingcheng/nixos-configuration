@@ -7,9 +7,11 @@ let
     ../../profiles/base.nix
     {
       environment.sessionVariables = {
+        GOSUMDB = "sum.golang.org";
         NPM_CONFIG_GLOBALCONFIG = "/etc/custom-npmrc";
         RUSTUP_DIST_SERVER = "https://rust.example.test";
         RUSTUP_UPDATE_ROOT = "https://rust.example.test/rustup";
+        CARGO_SOURCE_MAINLAND_REGISTRY = "sparse+https://crates.example.test/index/";
       };
     }
   ];
@@ -40,6 +42,7 @@ t.check "modules/nix-network" {
   go-proxy =
     config.nix.envVars.GOPROXY == sources.development.goProxy
     && config.environment.sessionVariables.GOPROXY == sources.development.goProxy
+    && config.environment.sessionVariables.GOSUMDB == sources.development.goSumdb
     && config.systemd.services.nix-daemon.environment.GOPROXY == sources.development.goProxy;
   no-implicit-http-proxy = !(config.systemd.services.nix-daemon.environment ? http_proxy);
   npm-registry =
@@ -49,12 +52,21 @@ t.check "modules/nix-network" {
   uv-index = lib.hasInfix sources.development.pypiIndex config.environment.etc."uv/uv.toml".text;
   cargo-registry =
     lib.hasInfix sources.development.cargoRegistry config.environment.etc."cargo/mainland.toml".text
+    && config.environment.sessionVariables.CARGO_REGISTRIES_CRATES_IO_PROTOCOL == "sparse"
+    && config.environment.sessionVariables.CARGO_SOURCE_CRATES_IO_REPLACE_WITH == "mainland"
+    &&
+      config.environment.sessionVariables.CARGO_SOURCE_MAINLAND_REGISTRY
+      == sources.development.cargoRegistry
     && !(config.environment.sessionVariables ? CARGO_HOME);
   rustup-mirrors =
     config.environment.sessionVariables.RUSTUP_DIST_SERVER == sources.development.rustupDistServer
     && config.environment.sessionVariables.RUSTUP_UPDATE_ROOT == sources.development.rustupUpdateRoot;
   mirrors-overridable =
-    changed.environment.sessionVariables.NPM_CONFIG_GLOBALCONFIG == "/etc/custom-npmrc"
+    changed.environment.sessionVariables.GOSUMDB == "sum.golang.org"
+    && changed.environment.sessionVariables.NPM_CONFIG_GLOBALCONFIG == "/etc/custom-npmrc"
     && changed.environment.sessionVariables.RUSTUP_DIST_SERVER == "https://rust.example.test"
-    && changed.environment.sessionVariables.RUSTUP_UPDATE_ROOT == "https://rust.example.test/rustup";
+    && changed.environment.sessionVariables.RUSTUP_UPDATE_ROOT == "https://rust.example.test/rustup"
+    &&
+      changed.environment.sessionVariables.CARGO_SOURCE_MAINLAND_REGISTRY
+      == "sparse+https://crates.example.test/index/";
 }

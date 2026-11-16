@@ -205,10 +205,20 @@ t.check "modules/workstation" {
       "nixfmt"
       "powershell"
       "opencode"
+      "go"
+      "gopls"
+      "delve"
+      "golangci-lint"
+      "gotools"
+      "rustup"
+      "cargo-binstall"
     ];
   laptop-develop-overlay =
     laptopDevelop.programs.nix-ld.enable
     && laptopDevelop.programs.direnv.enable
+    && laptopDevelop.environment.sessionVariables.GO111MODULE == "on"
+    && laptopDevelop.environment.sessionVariables.RUSTC_VERSION == "stable"
+    && laptopDevelop.environment.sessionVariables ? LIBCLANG_PATH
     && t.hasPackages laptopDevelop.users.users.dave.packages [
       "vscode"
       "konsole"
@@ -218,6 +228,15 @@ t.check "modules/workstation" {
       "mise"
       "nixfmt"
       "opencode"
+      "go"
+      "gopls"
+      "delve"
+      "golangci-lint"
+      "gotools"
+      "rustup"
+      "clang-wrapper"
+      "lldb"
+      "cargo-binstall"
     ];
   workstation-services =
     workstation.virtualisation.docker.enable
@@ -245,6 +264,9 @@ t.check "modules/workstation" {
   workstation-develop-overlay =
     workstationDevelop.programs.nix-ld.enable
     && workstationDevelop.programs.direnv.enable
+    && workstationDevelop.environment.sessionVariables.GO111MODULE == "on"
+    && workstationDevelop.environment.sessionVariables.RUSTC_VERSION == "stable"
+    && workstationDevelop.environment.sessionVariables ? LIBCLANG_PATH
     && t.hasPackages workstationDevelop.users.users.eve.packages [
       "vscode"
       "konsole"
@@ -256,6 +278,15 @@ t.check "modules/workstation" {
       "mise"
       "nixfmt"
       "opencode"
+      "go"
+      "gopls"
+      "delve"
+      "golangci-lint"
+      "gotools"
+      "rustup"
+      "clang-wrapper"
+      "lldb"
+      "cargo-binstall"
     ];
   cursor-remains-disabled =
     !(t.hasPackages desktop.users.users.alice.packages [ "cursor" ])
@@ -272,6 +303,8 @@ t.check "modules/workstation" {
         "konsole"
         "fastfetch"
         "cmake"
+        "go"
+        "rustup"
       ];
   maintenance-tools = t.hasPackages workstation.environment.systemPackages [
     "ethtool"

@@ -41,11 +41,15 @@ t.check "hosts/vm-image" {
     && config.system.defaultChannel == sources.channels.nixos
     && config.nix.envVars.GOPROXY == sources.development.goProxy
     && config.environment.sessionVariables.GOPROXY == sources.development.goProxy
+    && config.environment.sessionVariables.GOSUMDB == sources.development.goSumdb
     && config.environment.sessionVariables.NPM_CONFIG_GLOBALCONFIG == "/etc/npmrc"
     && lib.hasInfix "registry=${sources.development.npmRegistry}" config.environment.etc.npmrc.text
     && lib.hasInfix sources.development.pypiIndex config.environment.etc."pip.conf".text
     && lib.hasInfix sources.development.pypiIndex config.environment.etc."uv/uv.toml".text
     && lib.hasInfix sources.development.cargoRegistry config.environment.etc."cargo/mainland.toml".text
+    &&
+      config.environment.sessionVariables.CARGO_SOURCE_MAINLAND_REGISTRY
+      == sources.development.cargoRegistry
     && config.environment.sessionVariables.RUSTUP_DIST_SERVER == sources.development.rustupDistServer
     && config.environment.sessionVariables.RUSTUP_UPDATE_ROOT == sources.development.rustupUpdateRoot;
   shared-profile =

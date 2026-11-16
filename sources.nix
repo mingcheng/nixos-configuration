@@ -32,6 +32,7 @@
 
   development = {
     goProxy = "https://goproxy.cn,direct";
+    goSumdb = "sum.golang.google.cn";
     npmRegistry = "https://registry.npmmirror.com";
     pypiIndex = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple";
     rustupDistServer = "https://rsproxy.cn";

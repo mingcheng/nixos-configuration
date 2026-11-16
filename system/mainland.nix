@@ -8,10 +8,14 @@ in
   nix.envVars.GOPROXY = mirrors.goProxy;
 
   environment.sessionVariables = {
+    GOSUMDB = lib.mkDefault mirrors.goSumdb;
     # programs.npm.enable would also install Node.js in the system profile.
     NPM_CONFIG_GLOBALCONFIG = lib.mkDefault "/etc/npmrc";
     RUSTUP_DIST_SERVER = lib.mkDefault mirrors.rustupDistServer;
     RUSTUP_UPDATE_ROOT = lib.mkDefault mirrors.rustupUpdateRoot;
+    CARGO_REGISTRIES_CRATES_IO_PROTOCOL = lib.mkDefault "sparse";
+    CARGO_SOURCE_CRATES_IO_REPLACE_WITH = lib.mkDefault "mainland";
+    CARGO_SOURCE_MAINLAND_REGISTRY = lib.mkDefault mirrors.cargoRegistry;
   };
 
   environment.etc = {

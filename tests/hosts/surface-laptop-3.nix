@@ -112,6 +112,13 @@ t.check "hosts/surface-laptop-3" {
       "shfmt"
       "nushell"
       "powershell"
+      "go"
+      "gopls"
+      "delve"
+      "golangci-lint"
+      "gotools"
+      "rustup"
+      "cargo-binstall"
     ];
   all-shared-applications-assigned = lib.all (
     package:

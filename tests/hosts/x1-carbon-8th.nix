@@ -94,7 +94,15 @@ t.check "hosts/x1-carbon-8th" {
     "aria2"
     "powershell"
     "opencode"
-
+    "go"
+    "gopls"
+    "delve"
+    "golangci-lint"
+    "gotools"
+    "rustup"
+    "clang-wrapper"
+    "lldb"
+    "cargo-binstall"
   ];
   all-shared-applications-assigned = lib.all (
     package:
