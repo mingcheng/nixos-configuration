@@ -9,7 +9,7 @@
 # File Created: 2026-11-16 11:48:33
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-16 11:55:00
+# Last Modified: 2026-11-16 12:34:08
 ##
 
 { lib, pkgs, ... }:
@@ -33,7 +33,7 @@ in
       rustup
       clang
       lldb
-      cargo-binstall
+      cargo
     ];
 
   # https://rust-lang.github.io/rust-bindgen/requirements.html#nixos
