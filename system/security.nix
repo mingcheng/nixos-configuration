@@ -1,15 +1,18 @@
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  ssh = config.services.openssh;
+in
 {
   networking = {
     nftables.enable = lib.mkDefault true;
     firewall = {
       enable = true;
-      allowedTCPPorts = lib.mkForce [ 22 ];
+      allowedTCPPorts = lib.mkForce (lib.optionals (ssh.enable && ssh.openFirewall) ssh.ports);
       allowedUDPPorts = lib.mkForce [ ];
       allowedTCPPortRanges = lib.mkForce [ ];
       allowedUDPPortRanges = lib.mkForce [ ];
       trustedInterfaces = lib.mkForce [ "lo" ];
-      allowPing = true;
+      allowPing = lib.mkDefault true;
       checkReversePath = "loose";
     };
   };

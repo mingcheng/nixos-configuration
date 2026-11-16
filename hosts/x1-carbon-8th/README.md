@@ -113,7 +113,10 @@ NIX_BUILD_HOST=x1-carbon-8th make check-local LOCAL_CONFIG=/etc/nixos/configurat
 
 - **`power-profiles-daemon`（PPD）**：统一接管 `intel_pstate` HWP 与 ThinkPad ACPI `platform_profile`，可直接在 KDE Plasma 电源管理面板或通过 `powerprofilesctl set <power-saver|balanced|performance>` 切换档位。
 - **禁用 `thermald`**：本机内核 `thinkpad_acpi` 已暴露 `dytc_lapmode`（联想动态温控接口），`thermald` 检测到后会主动退出。配置中显式设置 `services.thermald.enable = lib.mkForce false`，同时**不要额外启用 `tlp` 或 `tuned`**，以免与 PPD 及固件策略冲突。
-- **合盖与自动休眠**：合盖默认进入挂起（外接扩展坞/显示器时忽略合盖），启用 `suspend-then-hibernate`，挂起满 `2h`（`HibernateDelaySec = "2h"`）后自动唤醒并写入 NVMe swap 转入 S4 深度休眠。
+- **合盖与自动休眠**：logind 合盖入口与 Plasma 的 AC/Battery/LowBattery 睡眠模式默认使用 `suspend-then-hibernate`（外接显示器/扩展坞时仍保留忽略合盖策略）。电池供电时挂起满 `2h`（`HibernateDelaySec = "2h"`）或 systemd 检测到低电量，以先到者为准，自动唤醒并写入 NVMe swap 转入 S4 深度休眠；接通电源时不因计时到期进入休眠。仅启用该功能不会改变普通 `systemctl suspend` 的行为，命令行需明确使用 `systemctl suspend-then-hibernate`。
+- **低电量保护**：UPower 按百分比策略在 20% 提醒、10% 进入危急状态、7% 直接休眠，替代默认的 2% 混合睡眠；Plasma 同步采用 20%/10% 提醒并在危急电量选择休眠。UPower 在挂起期间不轮询电池，因此不能替代 `suspend-then-hibernate` 的定时/低电量唤醒。
+- **Plasma 用户覆盖**：系统默认写入 `/etc/xdg/powerdevilrc`；已有 `~/.config/powerdevilrc` 或 `~/.config/kdedefaults/powerdevilrc` 可覆盖它。在“系统设置 → 电源管理”确认各供电档位的睡眠模式为“先挂起后休眠”、危急电量动作为“休眠”，不要选普通挂起。应用系统配置后重新登录，或调用 `busctl --user call org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement reparseConfiguration` 重新加载。
+- **验证方式**：接通电源并保存工作后，先检查 `busctl call org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager CanHibernate` 返回 `yes`，再手动执行 `systemctl hibernate` 并开机确认会话恢复。随后在有充足电量时验证 `systemctl suspend-then-hibernate`。检查 `journalctl -b -u systemd-hibernate -u systemd-suspend-then-hibernate`；不要通过耗尽电池测试。`CanHibernate=yes` 只说明前置条件满足，不等于实际休眠/恢复已经成功。
 
 ### 交换分区与存储写回（[tuning.nix](tuning.nix)、[system/swap.nix](../../system/swap.nix)）
 

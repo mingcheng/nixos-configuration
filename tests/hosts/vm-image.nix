@@ -104,7 +104,8 @@ t.check "hosts/vm-image" {
   root-and-ssh =
     config.users.users.root.initialHashedPassword == ""
     && config.services.openssh.enable
-    && builtins.isBool config.services.openssh.openFirewall
+    && config.services.openssh.openFirewall
+    && config.networking.firewall.allowedTCPPorts == config.services.openssh.ports
     && config.services.openssh.settings.PermitRootLogin == "no"
     && !config.services.openssh.settings.PermitEmptyPasswords
     && !config.services.openssh.settings.PasswordAuthentication
@@ -172,9 +173,27 @@ t.check "hosts/vm-image" {
   headless =
     !config.services.xserver.enable
     && !config.services.displayManager.enable
+    && !config.services.graphical-desktop.enable
+    && !config.services.libinput.enable
+    && !config.services.kmscon.enable
     && !config.services.flatpak.enable
     && !config.programs.xwayland.enable
+    && !config.programs.dconf.enable
+    && !config.programs.ssh.setXAuthLocation
+    && !config.services.openssh.settings.X11Forwarding
+    && !config.hardware.graphics.enable
+    && !config.boot.plymouth.enable
+    && !config.fonts.enableDefaultPackages
+    && !config.fonts.fontconfig.enable
+    && !config.fonts.fontDir.enable
+    && !config.qt.enable
+    && !config.xdg.autostart.enable
+    && !config.xdg.icons.enable
+    && !config.xdg.menus.enable
+    && !config.xdg.mime.enable
     && !config.xdg.portal.enable
+    && !config.xdg.sounds.enable
+    && !config.xdg.terminal-exec.enable
     && !config.systemd.oomd.enable
     && !config.documentation.doc.enable
     && !config.documentation.info.enable
@@ -182,6 +201,9 @@ t.check "hosts/vm-image" {
     && config.documentation.man.enable
     && !(config ? workstation)
     && config.users.users.mingcheng.packages == [ ];
+  headless-interactive-vm =
+    !config.virtualisation.vmVariant.virtualisation.graphics
+    && !config.virtualisation.vmVariant.virtualisation.qemu.virtioKeyboard;
   no-desktop-policy = !config.zramSwap.enable && !config.services.fprintd.enable;
   no-proxy = !(config.systemd.services.nix-daemon.environment ? http_proxy);
 }

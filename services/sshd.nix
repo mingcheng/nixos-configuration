@@ -14,7 +14,7 @@
 
 { lib, ... }: {
   services.openssh = {
-    enable = true;
+    enable = lib.mkDefault true;
     openFirewall = lib.mkDefault true;
 
     settings = {

@@ -2,6 +2,8 @@
 
 面向 **QEMU / KVM / Libvirt** 虚拟化环境的无头（Headless）客户机配置（`NIX_BUILD_HOST=vm-image`）。基于 [profiles/network.nix](../../profiles/network.nix) 与 NixOS 官方 `qemu-guest.nix`、`disk-image.nix` 模块，可直接通过 [scripts/build-qcow2.sh](../../scripts/build-qcow2.sh) 编译为可引导的 `.qcow2` 磁盘镜像。
 
+[packages/qemu-headless.nix](../../packages/qemu-headless.nix) 统一关闭显示管理器、图形栈、字体及桌面集成；交互式 `build-vm` 也使用串口而非图形窗口和虚拟键盘。`console=tty0` 保留内核文本控制台，不表示启用 GUI。
+
 通用仓库结构、通道说明与自定义选项请参阅根目录 [README.md](../../README.md)。
 
 ## 默认配置概览
@@ -34,8 +36,8 @@
     ];
   };
 
-  # 如需从宿主机或局域网通过 SSH 连接，放行防火墙 22 端口
-  services.openssh.openFirewall = true;
+  # 默认按 services.openssh.ports 放行 SSH；如仅需串口访问，可关闭
+  # services.openssh.openFirewall = false;
 }
 ```
 
@@ -106,7 +108,7 @@ qemu-system-x86_64 \
   -device virtio-net-pci,netdev=net0
 ```
 
-启动后如果已在 `local.nix` 中开启 `services.openssh.openFirewall = true;` 并写入公钥，可在宿主机通过以下命令连接：
+启动后如果已在 `local.nix` 中写入公钥且未关闭默认的 SSH 防火墙放行，可在宿主机通过以下命令连接：
 
 ```bash
 ssh -p 2222 mingcheng@127.0.0.1

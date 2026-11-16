@@ -302,7 +302,7 @@ t.check "modules/services" {
     && changed.services.samba.settings.global.workgroup == "HOMELAB"
     && changed.services.samba.settings.global."client min protocol" == "SMB3";
   ssh-public-key-only =
-    !config.services.openssh.openFirewall
+    config.services.openssh.openFirewall
     && ssh.PubkeyAuthentication
     && ssh.AuthenticationMethods == "publickey"
     && !ssh.PasswordAuthentication

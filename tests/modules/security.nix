@@ -6,6 +6,25 @@ let
     ../../system/security.nix
     ../../services/sshd.nix
   ];
+  changed = t.eval [
+    ../../system/security.nix
+    ../../services/sshd.nix
+    {
+      services.openssh.ports = [ 2222 ];
+      networking.firewall.allowedTCPPorts = [ 8080 ];
+      networking.firewall.allowPing = false;
+    }
+  ];
+  private = t.eval [
+    ../../system/security.nix
+    ../../services/sshd.nix
+    { services.openssh.openFirewall = false; }
+  ];
+  disabled = t.eval [
+    ../../system/security.nix
+    ../../services/sshd.nix
+    { services.openssh.enable = false; }
+  ];
   sysctls = {
     "kernel.dmesg_restrict" = 1;
     "kernel.kexec_load_disabled" = 1;
@@ -40,6 +59,7 @@ in
 t.check "modules/security" {
   evaluates = t.validSystem config;
   ssh-evaluates = t.validSystem ssh;
+  overrides-evaluate = t.validSystem changed && t.validSystem private && t.validSystem disabled;
   firewall-lockdown =
     config.networking.nftables.enable
     && config.networking.firewall.enable
@@ -48,7 +68,7 @@ t.check "modules/security" {
     && config.networking.firewall.allowedTCPPortRanges == [ ]
     && config.networking.firewall.allowedUDPPortRanges == [ ]
     && config.networking.firewall.trustedInterfaces == [ "lo" ]
-    && !config.networking.firewall.allowPing
+    && config.networking.firewall.allowPing
     && config.networking.firewall.checkReversePath == "loose";
   sudo-hardening =
     lib.hasInfix "Defaults timestamp_timeout=5" config.security.sudo.extraConfig
@@ -72,8 +92,16 @@ t.check "modules/security" {
     && !config.virtualisation.docker.enable
     && !(config.systemd.services ? docker)
     && !(config.systemd.services ? sshd);
-  no-implicit-open-ports =
-    !ssh.services.openssh.openFirewall
-    && ssh.networking.firewall.allowedTCPPorts == [ ]
+  ssh-service-ports =
+    ssh.services.openssh.openFirewall
+    && ssh.networking.firewall.allowedTCPPorts == [ 22 ]
     && ssh.networking.firewall.allowedUDPPorts == [ ];
+  ssh-port-override =
+    changed.networking.firewall.allowedTCPPorts == [ 2222 ] && !changed.networking.firewall.allowPing;
+  private-ssh-no-open-ports =
+    private.services.openssh.enable && private.networking.firewall.allowedTCPPorts == [ ];
+  disabled-ssh-no-open-ports =
+    !disabled.services.openssh.enable
+    && !(disabled.systemd.services ? sshd)
+    && disabled.networking.firewall.allowedTCPPorts == [ ];
 }

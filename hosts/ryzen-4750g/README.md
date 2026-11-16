@@ -4,6 +4,8 @@
 
 通用仓库结构、通道说明与自定义选项请参阅根目录 [README.md](../../README.md)。
 
+[kernel.nix](kernel.nix) 使用稳定通道的 `linuxPackages_6_18`；AMDGPU 参数保留当前稳定性测试基线（包括时钟门控特性掩码、PCI CONFIG 重置及长任务超时），仅作用于此主机，不改变笔记本内核。仍只启用 S3 挂起而不启用磁盘休眠；重启后需在本机验证显卡负载与唤醒，配置求值不能证明硬件稳定性。
+
 - [硬件概览](#硬件概览)
 - [BIOS / UEFI 设置清单](#bios--uefi-设置清单)
 - [安装与日常维护](#安装与日常维护)
@@ -132,4 +134,3 @@ sudo dmesg -T | grep -Ei 'amdgpu.*(fault|timeout|reset|error)|\[drm\].*error'
   boot.kernel.sysctl."net.ipv6.conf.all.disable_ipv6" = lib.mkForce 0;
   ```
 - **主板传感器已知误报**：运行 `sensors` 时，`asus_wmi_sensors` 显示的 `+12V: ~9.81 V`（WMI 换算比例偏差，实际电压可在 BIOS Monitor 中查看）与 `Tsensor 1: +216.0°C`（主板外置温控探头针脚悬空默认值）属于该主板固件已知现象，并非硬件故障。
-

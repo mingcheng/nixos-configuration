@@ -121,7 +121,8 @@ Surface Laptop 3 使用 Microsoft 定制 UEFI 界面，通过 USB 安装盘或�
 
 模块通过 `imports` 按需启用，文件存在不代表服务已开启；可选服务带有个人环境的默认值，启用前请核对账户、监听地址、端口与数据目录。修改通道地址后需重新执行 `nix-channel --add`。
 
-- **SSH**：导入 [services/sshd.nix](services/sshd.nix)（`ryzen-4750g` 已默认启用），仅允许公钥认证并禁止 root 登录，请先为账户配置公钥。
+- **SSH / 防火墙**：导入 [services/sshd.nix](services/sshd.nix)（`ryzen-4750g` 和 `network` 配置已默认启用），仅允许公钥认证并禁止 root 登录，请先为账户配置公钥。默认按 `services.openssh.ports` 放行 SSH；[system/security.nix](system/security.nix) 不再无条件开放 22，关闭 SSH 或设置 `services.openssh.openFirewall = false;` 会关闭相应端口，其他服务端口仍被该模块阻断。默认允许 ping，可用 `networking.firewall.allowPing = false;` 关闭。
+- **SMB 客户端**：桌面默认导入 [services/samba-client.nix](services/samba-client.nix)，提供 Samba/CIFS 工具及 Plasma 的 KIO SMB 插件，不启动 Samba 服务端；协议范围默认 SMB2–SMB3。挂载凭据应放入权限为 `0600` 的机器本地文件，不要写入 Nix 表达式。
 - **Flatpak**：图形环境默认启用 [services/flatpak.nix](services/flatpak.nix)，自动为系统级（`--system`）与用户级（`--user`）配置 [sources.nix](sources.nix) 中的 Flathub 镜像，并在系统级预装 `Firefox`、`VLC`、`LibreOffice` 及按周自动更新；可通过 `services.flatpak.packages` 或 `services.flatpak.update` 调整。
 
 
@@ -167,6 +168,7 @@ NIX_BUILD_HOST=<host> make check-local LOCAL_CONFIG=/etc/nixos/configuration.nix
 ## 使用提醒
 
 - **休眠与硬件调优**：笔记本配置（`x1-carbon-8th`、`surface-laptop-3`，导入 `profiles/laptop.nix`）的硬件配置须声明且仅声明一个 `/dev/` 下、未启用随机加密的 swap 分区；zram 不能替代。ThinkPad X1 固件与睡眠配置详见 [hosts/x1-carbon-8th/README.md](hosts/x1-carbon-8th/README.md)，Surface Laptop 3 使用 S0ix 现代待机配合 `suspend-then-hibernate`；Ryzen 4750G + WX 4100 台式工作站的 ROG STRIX B450-I GAMING 主板 BIOS 设置与 AMDGPU 稳定性调优详见 [hosts/ryzen-4750g/README.md](hosts/ryzen-4750g/README.md)。
+- **笔记本电池保护**：logind 合盖和 Plasma 默认使用先挂起后休眠；电池供电时最长挂起 2 小时，接电时不因计时到期休眠。UPower 在 20%/10% 提醒，7% 直接休眠，Plasma 危急电量也选择休眠。用户级 `powerdevilrc` 可覆盖系统默认，应用后需重新加载 Plasma 电源配置并确认设置。普通 `systemctl suspend` 不会自动转为休眠；命令行请使用 `systemctl suspend-then-hibernate`。
 - **权限**：`wheel` 组可免密码 sudo；共享配置的 Nix `trusted-users` 为 `root` 与 `@wheel`，各物理主机（`x1-carbon-8th`、`surface-laptop-3`、`ryzen-4750g`）及 `vm-image` 收紧为 `root` 与 `mingcheng`，仅应授予可信账户。
 - **秘密信息**：不要把密码、令牌写入 Nix 表达式，它们可能进入其他用户可读的 Nix store。
 

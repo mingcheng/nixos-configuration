@@ -283,7 +283,7 @@ t.check "modules/workstation" {
     workstation.networking.nftables.enable
     && workstation.networking.firewall.enable
     && workstation.networking.firewall.allowedTCPPorts == [ ]
-    && !workstation.networking.firewall.allowPing
+    && workstation.networking.firewall.allowPing
     && workstation.nix.settings.sandbox
     && workstation.boot.kernel.sysctl."kernel.kexec_load_disabled" == 1
     && workstation.boot.kernel.sysctl."kernel.kptr_restrict" == 2

@@ -31,11 +31,42 @@ let
       hardware.enableRedistributableFirmware = false;
     }
   ];
+  plasmaPower = t.eval [
+    ../../system/power.nix
+    { services.desktopManager.plasma6.enable = true; }
+  ];
+  changedPower = t.eval [
+    ../../system/power.nix
+    {
+      services.desktopManager.plasma6.enable = true;
+      services.logind.settings.Login.HandleLidSwitch = "hibernate";
+      services.upower = {
+        percentageLow = 25;
+        percentageCritical = 15;
+        percentageAction = 10;
+      };
+      systemd.sleep.settings.Sleep.HibernateDelaySec = "1h";
+    }
+  ];
+  disabledPower = t.eval [
+    ../../system/power.nix
+    {
+      services.desktopManager.plasma6.enable = true;
+      services.upower.enable = lib.mkForce false;
+      systemd.sleep.settings.Sleep = {
+        AllowHibernation = false;
+        AllowSuspendThenHibernate = false;
+      };
+    }
+  ];
 in
 t.check "modules/system" {
   evaluates = t.validSystem config;
   grub-evaluates = t.validSystem grub;
   disabled-upgrade-evaluates = t.validSystem disabledUpgrade;
+  plasma-power-evaluates = t.validSystem plasmaPower;
+  changed-power-evaluates = t.validSystem changedPower;
+  disabled-power-evaluates = t.validSystem disabledPower;
   upgrade-channel = config.system.autoUpgrade.channel == (import ../../sources.nix).channels.nixos;
   upgrade-host = config.systemd.services.nixos-upgrade.environment.NIX_BUILD_HOST == "vm-image";
   no-unattended-reboot = !config.system.autoUpgrade.allowReboot;
@@ -71,11 +102,48 @@ t.check "modules/system" {
   ) (import ../../sources.nix).hosts;
   power-management = config.powerManagement.enable && config.services.power-profiles-daemon.enable;
   lid-policy =
-    config.services.logind.settings.Login.HandleLidSwitch == "suspend"
+    config.services.logind.settings.Login.HandleLidSwitch == "suspend-then-hibernate"
+    && config.services.logind.settings.Login.HandleLidSwitchExternalPower == "suspend-then-hibernate"
     && config.services.logind.settings.Login.HandleLidSwitchDocked == "ignore";
   hibernation =
     config.systemd.sleep.settings.Sleep.AllowHibernation
-    && config.systemd.sleep.settings.Sleep.HibernateDelaySec == "2h";
+    && config.systemd.sleep.settings.Sleep.AllowSuspendThenHibernate
+    && config.systemd.sleep.settings.Sleep.HibernateDelaySec == "2h"
+    && !config.systemd.sleep.settings.Sleep.HibernateOnACPower;
+  critical-battery =
+    config.services.upower.enable
+    && config.services.upower.usePercentageForPolicy
+    && config.services.upower.percentageLow == 20
+    && config.services.upower.percentageCritical == 10
+    && config.services.upower.percentageAction == 7
+    && config.services.upower.criticalPowerAction == "Hibernate"
+    && !config.services.upower.allowRiskyCriticalPowerAction;
+  plasma-sleep-policy =
+    lib.all
+      (
+        profile:
+        lib.hasInfix "[${profile}][SuspendAndShutdown]\nSleepMode=3"
+          plasmaPower.environment.etc."xdg/powerdevilrc".text
+      )
+      [
+        "AC"
+        "Battery"
+        "LowBattery"
+      ]
+    && lib.hasInfix "BatteryCriticalAction=2" plasmaPower.environment.etc."xdg/powerdevilrc".text
+    && lib.hasInfix "BatteryCriticalLevel=10" plasmaPower.environment.etc."xdg/powerdevilrc".text;
+  power-defaults-overridable =
+    changedPower.services.logind.settings.Login.HandleLidSwitch == "hibernate"
+    && changedPower.systemd.sleep.settings.Sleep.HibernateDelaySec == "1h"
+    && changedPower.services.upower.percentageAction == 10
+    && lib.hasInfix "BatteryLowLevel=25" changedPower.environment.etc."xdg/powerdevilrc".text
+    && lib.hasInfix "BatteryCriticalLevel=15" changedPower.environment.etc."xdg/powerdevilrc".text;
+  headless-no-plasma-policy = !(config.environment.etc ? "xdg/powerdevilrc");
+  disabled-power-cleanup =
+    !disabledPower.services.upower.enable
+    && !(disabledPower.environment.etc ? "UPower/UPower.conf")
+    && !(disabledPower.environment.etc ? "xdg/powerdevilrc")
+    && disabledPower.services.logind.settings.Login.HandleLidSwitch == "suspend";
   nix-ld =
     config.programs.nix-ld.enable
     && config.environment.variables.MISE_ALL_COMPILE == "false"

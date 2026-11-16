@@ -142,15 +142,7 @@ in
       PermitRootLogin = lib.mkForce "no";
       PermitEmptyPasswords = false;
     };
-
-    # Headless VM image: never install or enable any GUI stack.
-    xserver.enable = lib.mkForce false;
-    displayManager.enable = lib.mkForce false;
-    flatpak.enable = lib.mkForce false;
   };
-
-  programs.xwayland.enable = lib.mkForce false;
-  xdg.portal.enable = lib.mkForce false;
 
   # Keep this host's narrower trust policy out of the reusable profiles.
   nix.settings.trusted-users = lib.mkForce [

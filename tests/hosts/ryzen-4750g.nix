@@ -181,7 +181,7 @@ t.check "hosts/ryzen-4750g" {
   desktop-services =
     config.hardware.bluetooth.enable
     && config.services.openssh.enable
-    && !config.services.openssh.openFirewall
+    && config.services.openssh.openFirewall
     && config.virtualisation.libvirtd.enable;
   build-limits = config.nix.settings.max-jobs == 4 && config.nix.settings.cores == 8;
   build-limits-overridable = changed.nix.settings.max-jobs == 2 && changed.nix.settings.cores == 4;
@@ -206,7 +206,7 @@ t.check "hosts/ryzen-4750g" {
   firewall =
     config.networking.nftables.enable
     && config.networking.firewall.enable
-    && config.networking.firewall.allowedTCPPorts == [ ]
+    && config.networking.firewall.allowedTCPPorts == config.services.openssh.ports
     && config.networking.firewall.allowedUDPPorts == [ ]
     && config.networking.firewall.trustedInterfaces == [ "lo" ];
   kernel-security =

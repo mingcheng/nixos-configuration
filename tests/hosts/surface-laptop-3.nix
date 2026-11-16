@@ -169,6 +169,13 @@ t.check "hosts/surface-laptop-3" {
     && !config.services.tlp.enable
     && !config.services.fprintd.enable
     && !config.services.hardware.bolt.enable;
+  battery-hibernation =
+    config.services.upower.criticalPowerAction == "Hibernate"
+    && config.services.upower.percentageAction == 7
+    && config.services.logind.settings.Login.HandleLidSwitch == "suspend-then-hibernate"
+    &&
+      lib.hasInfix "[Battery][SuspendAndShutdown]\nSleepMode=3"
+        config.environment.etc."xdg/powerdevilrc".text;
   build-limits = config.nix.settings.max-jobs == 1 && config.nix.settings.cores == 4;
   build-limits-overridable = changed.nix.settings.max-jobs == 2 && changed.nix.settings.cores == 2;
   proxy-default = config.networking.proxy.default == "http://127.0.0.1:7890";
