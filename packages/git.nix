@@ -68,8 +68,8 @@
         autoUpdate = false;
       };
 
-      # Credential helper configuration set to store credentials in plaintext (uncomment to enable)
-      # credential.helper = "store";
+      # Never set credential.helper = "store": it keeps tokens in plaintext in
+      # ~/.git-credentials. Run `gh auth setup-git` per user instead.
       # url = {
       #   "git@github.com:".insteadOf = "gh:";
       #   "https://github.com/".insteadOf = "git://github.com/";

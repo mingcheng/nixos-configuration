@@ -59,7 +59,7 @@ in
         SDL_VIDEODRIVER = lib.mkDefault "wayland";
       };
 
-      # programs.firefox.enable = lib.mkDefault true;
+      # Firefox, VLC and LibreOffice come from Flathub via services/flatpak.nix.
       programs.git.enable = lib.mkDefault true;
       services.flatpak.enable = lib.mkDefault true;
 

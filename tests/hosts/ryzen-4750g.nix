@@ -217,6 +217,15 @@ t.check "hosts/ryzen-4750g" {
       param: !(lib.hasPrefix "amdgpu.bapm=" param) && !(lib.hasPrefix "selinux=" param)
     ) config.boot.kernelParams
     && !(builtins.elem "selinux" config.security.lsm);
+  # NetworkManager re-enables IPv6 on managed links, so no half-disabled sysctls.
+  ipv6-left-to-networkmanager =
+    config.networking.enableIPv6
+    && !config.boot.kernel.sysctl."net.ipv6.conf.all.disable_ipv6"
+    && !config.boot.kernel.sysctl."net.ipv6.conf.default.disable_ipv6";
+  cargo-mirror-link =
+    config.systemd.user.tmpfiles.users.mingcheng.rules == [
+      "L %h/.cargo/config.toml - - - - /etc/cargo/mainland.toml"
+    ];
   systemd-boot =
     config.boot.loader.systemd-boot.enable
     && !config.boot.loader.grub.enable

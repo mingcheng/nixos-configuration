@@ -16,7 +16,6 @@
     ethtool
     inetutils
     iperf
-    iproute2
     netcat-gnu
     nmap
     socat

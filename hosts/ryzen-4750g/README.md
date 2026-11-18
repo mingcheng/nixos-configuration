@@ -168,8 +168,8 @@ sudo dmesg -T | grep -Ei 'amdgpu.*(fault|timeout|reset|error)|\[drm\].*error'
 ### 使用注意事项
 
 - **电源与睡眠**：本机启用 S3 内存睡眠，禁用磁盘休眠（Hibernation）。日常可通过 KDE 电源管理面板或 `powerprofilesctl set <power-saver|balanced|performance>` 切换能效档位，请勿同时启用 `tlp` 或 `tuned`。
-- **按需开启 IPv6**：默认关闭 IPv6；若当前网络环境需要 IPv6，可在本机 `/etc/nixos/configuration.nix` 中添加：
-  ```nix
-  boot.kernel.sysctl."net.ipv6.conf.all.disable_ipv6" = lib.mkForce 0;
+- **IPv6**：NetworkManager 会为 `ipv6.method` 不是 `disabled` 的连接重新启用 IPv6，`disable_ipv6` sysctl 对其无效。如需关闭，请对相应连接执行：
+  ```bash
+  nmcli connection modify "Wired connection 1" ipv6.method disabled
   ```
 - **主板传感器已知误报**：运行 `sensors` 时，`asus_wmi_sensors` 显示的 `+12V: ~9.81 V`（WMI 换算比例偏差，实际电压可在 BIOS Monitor 中查看）与 `Tsensor 1: +216.0°C`（主板外置温控探头针脚悬空默认值）属于该主板固件已知现象，并非硬件故障。

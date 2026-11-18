@@ -12,6 +12,7 @@
 # Last Modified: 2026-11-05 14:16:55
 ##
 
+{ config, lib, ... }:
 {
   imports = [
     ../system/nixconfig.nix
@@ -19,4 +20,10 @@
     ../system/i18n.nix
     ../system/sudo.nix
   ];
+
+  # resolvconf restarts nscd whenever resolv.conf is regenerated to flush its
+  # cache. nsncd keeps no cache, so the restart would only interrupt NSS lookups.
+  networking.resolvconf.extraConfig = lib.optionalString (
+    config.services.nscd.enable && config.services.nscd.enableNsncd
+  ) "libc_restart=':'";
 }

@@ -1,3 +1,6 @@
+# Desktop workstation: the Plasma desktop plus hardening, Docker, local AdGuard
+# DNS, the mihomo proxy and Syncthing. Hosts select accounts via
+# workstation.users; laptop.nix adds power management on top.
 {
   imports = [
     ../system/kernel.nix

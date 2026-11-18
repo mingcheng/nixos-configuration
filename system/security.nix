@@ -1,3 +1,6 @@
+# Workstation hardening. The firewall settings use lib.mkForce as a hard
+# boundary: other modules cannot open ports, and TCP is only opened for SSH
+# when it is enabled with openFirewall.
 { config, lib, ... }:
 let
   ssh = config.services.openssh;
@@ -13,17 +16,16 @@ in
       allowedUDPPortRanges = lib.mkForce [ ];
       trustedInterfaces = lib.mkForce [ "lo" ];
       allowPing = lib.mkDefault true;
+      # Strict reverse-path filtering drops replies arriving on the mihomo TUN
+      # device, whose routes live in a separate policy-routing table.
       checkReversePath = "loose";
     };
   };
 
-  security.sudo = {
-    # wheelNeedsPassword = lib.mkForce true;
-    extraConfig = ''
-      Defaults timestamp_timeout=5
-      Defaults use_pty
-    '';
-  };
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=5
+    Defaults use_pty
+  '';
 
   boot.kernel.sysctl = {
     "kernel.dmesg_restrict" = 1;
@@ -62,6 +64,8 @@ in
     ProcessSizeMax = 0;
   };
 
+  # Published container ports bind to loopback unless a mapping names an
+  # address, so `docker run -p` cannot bypass the host firewall.
   virtualisation.docker.daemon.settings = {
     ip = "127.0.0.1";
     default-network-opts.bridge = {

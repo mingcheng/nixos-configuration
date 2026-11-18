@@ -34,6 +34,9 @@ in
   ]
   ++ lib.optional (builtins.pathExists ./local.nix) ./local.nix;
 
+  # Replaces every other nixpkgs.config definition (including base's) so the
+  # image always evaluates with exactly this policy; add further nixpkgs.config
+  # keys here instead of in local.nix.
   nixpkgs.config = lib.mkForce {
     allowUnfree = true;
   };
@@ -84,9 +87,6 @@ in
         "br-*"
       ];
     };
-    resolvconf.extraConfig = lib.optionalString (
-      config.services.nscd.enable && config.services.nscd.enableNsncd
-    ) "libc_restart=':'";
   };
 
   systemd = {
@@ -138,6 +138,8 @@ in
 
   services = {
     qemuGuest.enable = lib.mkDefault true;
+    # root keeps an empty password for serial/console recovery only, so never
+    # let it, or any empty password, through SSH.
     openssh.settings = {
       PermitRootLogin = lib.mkForce "no";
       PermitEmptyPasswords = false;

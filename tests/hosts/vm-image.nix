@@ -47,9 +47,7 @@ t.check "hosts/vm-image" {
     && lib.hasInfix sources.development.pypiIndex config.environment.etc."pip.conf".text
     && lib.hasInfix sources.development.pypiIndex config.environment.etc."uv/uv.toml".text
     && lib.hasInfix sources.development.cargoRegistry config.environment.etc."cargo/mainland.toml".text
-    &&
-      config.environment.sessionVariables.CARGO_SOURCE_MAINLAND_REGISTRY
-      == sources.development.cargoRegistry
+    && !(lib.any (lib.hasPrefix "CARGO_") (builtins.attrNames config.environment.sessionVariables))
     && config.environment.sessionVariables.RUSTUP_DIST_SERVER == sources.development.rustupDistServer
     && config.environment.sessionVariables.RUSTUP_UPDATE_ROOT == sources.development.rustupUpdateRoot;
   shared-profile =

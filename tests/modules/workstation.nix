@@ -10,6 +10,11 @@ let
       swapDevices = lib.mkForce [ ];
     }
   ];
+  desktopXorg = t.eval [
+    ../../profiles/desktop.nix
+    { services.xserver.enable = true; }
+  ];
+  cargoLink = "L %h/.cargo/config.toml - - - - /etc/cargo/mainland.toml";
   network = t.eval [
     ../../profiles/network.nix
     {
@@ -133,6 +138,7 @@ t.check "modules/workstation" {
   desktop-composition =
     desktop.nix.gc.automatic
     && !desktop.services.xserver.enable
+    && desktopXorg.services.xserver.enable
     && desktop.programs.xwayland.enable
     && desktop.services.dbus.implementation == "broker"
     && desktop.services.desktopManager.plasma6.enable
@@ -156,11 +162,13 @@ t.check "modules/workstation" {
       "kio-extras"
       "kio-fuse"
     ];
-  desktop-user-applications = t.hasPackages desktop.users.users.alice.packages [
-    "vscode"
-    "konsole"
-    "dolphin"
-  ];
+  desktop-user-applications =
+    t.hasPackages desktop.users.users.alice.packages [
+      "vscode"
+      "konsole"
+      "dolphin"
+    ]
+    && desktop.systemd.user.tmpfiles.users.alice.rules == [ cargoLink ];
   development-is-opt-in =
     !desktop.virtualisation.docker.enable
     && !desktop.services.adguardhome.enable
@@ -216,7 +224,7 @@ t.check "modules/workstation" {
   laptop-develop-overlay =
     laptopDevelop.programs.nix-ld.enable
     && laptopDevelop.programs.direnv.enable
-    && laptopDevelop.environment.sessionVariables.GO111MODULE == "on"
+    && lib.hasInfix "$HOME/go}/bin" laptopDevelop.environment.extraInit
     && laptopDevelop.environment.sessionVariables.RUSTC_VERSION == "stable"
     && laptopDevelop.environment.sessionVariables ? LIBCLANG_PATH
     && t.hasPackages laptopDevelop.users.users.dave.packages [
@@ -264,7 +272,7 @@ t.check "modules/workstation" {
   workstation-develop-overlay =
     workstationDevelop.programs.nix-ld.enable
     && workstationDevelop.programs.direnv.enable
-    && workstationDevelop.environment.sessionVariables.GO111MODULE == "on"
+    && lib.hasInfix "$HOME/go}/bin" workstationDevelop.environment.extraInit
     && workstationDevelop.environment.sessionVariables.RUSTC_VERSION == "stable"
     && workstationDevelop.environment.sessionVariables ? LIBCLANG_PATH
     && t.hasPackages workstationDevelop.users.users.eve.packages [
@@ -292,9 +300,18 @@ t.check "modules/workstation" {
     !(t.hasPackages desktop.users.users.alice.packages [ "cursor" ])
     && !(t.hasPackages workstation.users.users.bob.packages [ "cursor" ])
     && !(t.hasPackages workstationDevelop.users.users.eve.packages [ "cursor" ]);
+  # NixOS adds a helper package for per-user tmpfiles rules (the Cargo mirror
+  # link); it ships no binaries, so skip it when checking application order.
   cli-package-precedence =
-    lib.getName (builtins.head workstationDevelop.users.users.eve.packages) == "gnumake"
-    && lib.getName (builtins.head laptopDevelop.users.users.dave.packages) == "gnumake";
+    let
+      firstApplication =
+        packages:
+        lib.findFirst (name: !(lib.hasPrefix "nixos-user-tmpfiles.d-" name)) null (
+          map lib.getName packages
+        );
+    in
+    firstApplication workstationDevelop.users.users.eve.packages == "gnumake"
+    && firstApplication laptopDevelop.users.users.dave.packages == "gnumake";
   applications-not-global =
     lib.all (name: !(t.hasPackages workstationDevelop.environment.systemPackages [ name ]))
       [

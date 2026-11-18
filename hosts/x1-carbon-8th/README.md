@@ -107,7 +107,7 @@ NIX_BUILD_HOST=x1-carbon-8th make check-local LOCAL_CONFIG=/etc/nixos/configurat
   ```
 - **面板自刷新（`i915.enable_psr=0`）**：禁用 Intel eDP 面板自刷新（PSR），避免 UHD GT2 在 Wayland 桌面下出现偶发屏幕闪烁或局部刷新卡顿。
 - **调度抢占（`preempt=full`）**：启用完全内核抢占，降低 KDE KWin Wayland 合成器与 PipeWire 音频链路在负载下的响应延迟。
-- **IPv6 默认策略**：`net.ipv6.conf.all.disable_ipv6 = 1` 默认关闭 IPv6；若当前网络环境需要 IPv6，可在本机 `configuration.nix` 中用 `lib.mkForce 0` 覆盖。
+- **IPv6**：NetworkManager 会为 `ipv6.method` 不是 `disabled` 的连接重新启用 IPv6，因此本机不再设置无效的 `disable_ipv6` sysctl。如需关闭，请对相应连接执行 `nmcli connection modify <连接名> ipv6.method disabled`。
 
 ### 电源管理与温控（[tuning.nix](tuning.nix)、[system/power.nix](../../system/power.nix)）
 

@@ -12,7 +12,7 @@
 # Last Modified: 2026-11-13 00:30:17
 ##
 
-{ config, lib, ... }:
+{ lib, ... }:
 {
   # Keep desktop-only features together; locale/timezone live in system/i18n.nix.
   imports = [
@@ -28,13 +28,13 @@
     ../services/samba-client.nix
   ];
 
+  # NetworkManager re-enables IPv6 on every managed connection whose
+  # ipv6.method is not "disabled", so disable_ipv6 sysctls have no effect here;
+  # use `nmcli connection modify <name> ipv6.method disabled` per connection.
   networking = {
     networkmanager.enable = true;
     nftables.enable = lib.mkDefault true;
     useDHCP = false;
-    resolvconf.extraConfig = lib.optionalString (
-      config.services.nscd.enable && config.services.nscd.enableNsncd
-    ) "libc_restart=':'";
   };
 
   programs.xwayland.enable = lib.mkDefault true;
@@ -55,10 +55,9 @@
 
     libinput.enable = true;
 
-    # Disable printing by default
+    # Printing and Xorg are off by default; Plasma runs as a Wayland session
+    # with XWayland, and a host can still opt back in.
     printing.enable = lib.mkDefault false;
-
-    # Disable X server by default
-    xserver.enable = lib.mkForce false;
+    xserver.enable = lib.mkDefault false;
   };
 }

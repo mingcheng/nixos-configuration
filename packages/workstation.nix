@@ -32,7 +32,6 @@
   environment.systemPackages = with pkgs; [
     # Network, storage and hardware maintenance, including use from root.
     ethtool
-    iproute2
     nfs-utils
     lm_sensors
     hddtemp
@@ -55,7 +54,6 @@
     killall
     lsof
     sysstat
-    readline
     binutils
   ];
 

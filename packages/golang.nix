@@ -13,9 +13,6 @@
 ##
 
 { lib, pkgs, ... }:
-let
-  mirrors = (import ../sources.nix).development;
-in
 {
   imports = [
     ./user-packages.nix
@@ -33,12 +30,8 @@ in
       gotools
     ];
 
-  environment.sessionVariables = {
-    GO111MODULE = lib.mkDefault "on";
-    GOPROXY = lib.mkDefault mirrors.goProxy;
-    GOSUMDB = lib.mkDefault mirrors.goSumdb;
-  };
-
+  # GOPROXY and GOSUMDB come from system/mainland.nix; module mode has been
+  # Go's default since 1.16, so GO111MODULE is not needed.
   environment.extraInit = ''
     export PATH="''${GOBIN:-''${GOPATH:-$HOME/go}/bin}:$PATH"
   '';

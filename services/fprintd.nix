@@ -14,6 +14,8 @@
 
 { config, lib, ... }:
 {
+  # Upstream enables fingerprint authentication for every PAM service once
+  # fprintd is on; default it to off so only the services below opt in.
   options.security.pam.services = lib.mkOption {
     type = lib.types.attrsOf (
       lib.types.submodule {

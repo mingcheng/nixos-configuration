@@ -30,6 +30,7 @@ t.check "hosts/usb-boot-stick" {
     "inetutils"
   ];
   dhcp = config.networking.useDHCP && !config.networking.enableIPv6;
+  nsncd-no-dns-restarts = config.networking.resolvconf.extraConfig == "libc_restart=':'";
   headless =
     !config.services.displayManager.enable
     && !config.services.flatpak.enable

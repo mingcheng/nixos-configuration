@@ -10,23 +10,23 @@
   services.apcupsd = {
     enable = true;
     configText = ''
-        UPSCABLE usb
-        UPSTYPE usb
-        DEVICE 
+      UPSCABLE usb
+      UPSTYPE usb
+      DEVICE
 
-      	ONBATTERYDELAY 6
-      	BATTERYLEVEL 5
-      	MINUTES 3
-      	NOLOGON always
+      ONBATTERYDELAY 6
+      BATTERYLEVEL 5
+      MINUTES 3
+      NOLOGON always
 
-        NETSERVER on
-        NISIP 0.0.0.0
-        NISPORT 3551
+      NETSERVER on
+      NISIP 0.0.0.0
+      NISPORT 3551
 
-        UPSCLASS standalone
-        UPSMODE share
+      UPSCLASS standalone
+      UPSMODE share
 
-        SELFTEST 168
+      SELFTEST 168
     '';
   };
 }

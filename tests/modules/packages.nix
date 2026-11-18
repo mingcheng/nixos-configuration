@@ -1,6 +1,5 @@
 let
   t = import ../lib.nix;
-  sources = import ../../sources.nix;
   config = t.eval [
     ../../packages/atuin.nix
     ../../packages/bat.nix
@@ -21,17 +20,6 @@ let
       users.users.alice.isNormalUser = true;
     }
   ];
-  golangChanged = t.eval [
-    ../../packages/golang.nix
-    {
-      workstation.users = [ "alice" ];
-      users.users.alice.isNormalUser = true;
-      environment.sessionVariables = {
-        GOPROXY = "https://proxy.golang.org,direct";
-        GOSUMDB = "sum.golang.org";
-      };
-    }
-  ];
   rustup = t.eval [
     ../../packages/rustup.nix
     {
@@ -48,11 +36,22 @@ let
     }
   ];
   git = t.lib.foldl' t.lib.recursiveUpdate { } config.programs.git.config;
+  # Mirror variables belong to system/mainland.nix (see tests/modules/nix-network.nix).
+  noMirrorVariables =
+    cfg:
+    t.lib.all (name: !(builtins.hasAttr name cfg.environment.sessionVariables)) [
+      "GO111MODULE"
+      "GOPROXY"
+      "GOSUMDB"
+      "RUSTUP_DIST_SERVER"
+      "RUSTUP_UPDATE_ROOT"
+    ]
+    && !(t.lib.any (t.lib.hasPrefix "CARGO_") (builtins.attrNames cfg.environment.sessionVariables));
 in
 t.check "modules/packages" {
   evaluates = t.validSystem config;
   vim-evaluates = t.validSystem vim;
-  golang-evaluates = t.validSystem golang && t.validSystem golangChanged;
+  golang-evaluates = t.validSystem golang;
   rustup-evaluates = t.validSystem rustup && t.validSystem rustupChanged;
   command-line-tools =
     config.programs.mtr.enable
@@ -107,12 +106,8 @@ t.check "modules/packages" {
       "gotools"
     ]
     && !(t.hasPackages golang.environment.systemPackages [ "go" ])
-    && golang.environment.sessionVariables.GO111MODULE == "on"
-    && golang.environment.sessionVariables.GOPROXY == sources.development.goProxy
-    && golang.environment.sessionVariables.GOSUMDB == sources.development.goSumdb
-    && t.lib.hasInfix "$HOME/go}/bin" golang.environment.extraInit
-    && golangChanged.environment.sessionVariables.GOPROXY == "https://proxy.golang.org,direct"
-    && golangChanged.environment.sessionVariables.GOSUMDB == "sum.golang.org";
+    && noMirrorVariables golang
+    && t.lib.hasInfix "$HOME/go}/bin" golang.environment.extraInit;
   rustup-toolchain =
     t.hasPackages rustup.users.users.alice.packages [
       "rustup"
@@ -121,14 +116,16 @@ t.check "modules/packages" {
       "cargo"
     ]
     && !(t.hasPackages rustup.environment.systemPackages [ "rustup" ])
-    && rustup.environment.sessionVariables.RUSTC_VERSION == "stable"
-    && rustup.environment.sessionVariables.RUSTUP_DIST_SERVER == sources.development.rustupDistServer
-    && rustup.environment.sessionVariables.RUSTUP_UPDATE_ROOT == sources.development.rustupUpdateRoot
-    && rustup.environment.sessionVariables.CARGO_REGISTRIES_CRATES_IO_PROTOCOL == "sparse"
-    && rustup.environment.sessionVariables.CARGO_SOURCE_CRATES_IO_REPLACE_WITH == "mainland"
     &&
-      rustup.environment.sessionVariables.CARGO_SOURCE_MAINLAND_REGISTRY
-      == sources.development.cargoRegistry
+      t.lib.findFirst (
+        name:
+        builtins.elem name [
+          "rustup"
+          "cargo"
+        ]
+      ) null (map t.lib.getName rustup.workstation.userPackages) == "rustup"
+    && rustup.environment.sessionVariables.RUSTC_VERSION == "stable"
+    && noMirrorVariables rustup
     && rustup.environment.sessionVariables.LIBCLANG_PATH == "${t.pkgs.llvmPackages.libclang.lib}/lib"
     &&
       rustup.environment.sessionVariables.BINDGEN_EXTRA_CLANG_ARGS

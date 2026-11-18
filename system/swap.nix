@@ -1,3 +1,5 @@
+# Hibernation resumes from the single disk swap partition declared in the
+# machine-local hardware-configuration.nix; fail evaluation early otherwise.
 { config, lib, ... }:
 let
   swaps = config.swapDevices;

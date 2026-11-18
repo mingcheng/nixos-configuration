@@ -124,6 +124,8 @@ Surface Laptop 3 使用 Microsoft 定制 UEFI 界面，通过 USB 安装盘或�
 - **SSH / 防火墙**：导入 [services/sshd.nix](services/sshd.nix)（`ryzen-4750g` 和 `network` 配置已默认启用），仅允许公钥认证并禁止 root 登录，请先为账户配置公钥。默认按 `services.openssh.ports` 放行 SSH；[system/security.nix](system/security.nix) 不再无条件开放 22，关闭 SSH 或设置 `services.openssh.openFirewall = false;` 会关闭相应端口，其他服务端口仍被该模块阻断。默认允许 ping，可用 `networking.firewall.allowPing = false;` 关闭。
 - **SMB 客户端**：桌面默认导入 [services/samba-client.nix](services/samba-client.nix)，提供 Samba/CIFS 工具及 Plasma 的 KIO SMB 插件，不启动 Samba 服务端；协议范围默认 SMB2–SMB3。挂载凭据应放入权限为 `0600` 的机器本地文件，不要写入 Nix 表达式。
 - **Flatpak**：图形环境默认启用 [services/flatpak.nix](services/flatpak.nix)，自动为系统级（`--system`）与用户级（`--user`）配置 [sources.nix](sources.nix) 中的 Flathub 镜像，并在系统级预装 `Firefox`、`VLC`、`LibreOffice` 及按周自动更新；可通过 `services.flatpak.packages` 或 `services.flatpak.update` 调整。
+- **语言包镜像**：[system/mainland.nix](system/mainland.nix) 统一按 [sources.nix](sources.nix) 配置 Go、npm、PyPI/uv 与 Rustup 镜像。Cargo 没有系统级配置文件，也不支持用环境变量替换源，因此会在 `workstation.users` 账户登录时创建 `~/.cargo/config.toml` → `/etc/cargo/mainland.toml` 软链接（已有文件不会被覆盖）；其他账户或自定义 `CARGO_HOME` 可使用 `cargo --config /etc/cargo/mainland.toml`。
+- **IPv6**：桌面主机由 NetworkManager 管理网络，它会为每个 `ipv6.method` 不是 `disabled` 的连接重新启用 IPv6，`disable_ipv6` sysctl 对其无效。如需关闭，请在本机执行 `nmcli connection modify <连接名> ipv6.method disabled`；nftables 防火墙同样过滤 IPv6。
 
 
 ### 自定义 hosts
@@ -140,7 +142,7 @@ networking.extraHosts = ''
 # networking.hostFiles = [ ./my_hosts ];
 ```
 
-关闭任一来源时，从 [sources.nix](sources.nix) 的 `hosts` 列表中删除对应 URL 即可；设为 `[]` 会关闭全部远端注入，包括 StevenBlack，但不会删除本机条目。
+关闭任一来源时，从 [sources.nix](sources.nix) 的 `hosts` 列表中删除对应 URL 即可；设为 `[]` 会关闭全部远端注入，但不会删除本机条目。
 
 ## 测试与维护
 

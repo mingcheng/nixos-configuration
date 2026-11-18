@@ -58,10 +58,6 @@
       # Allow long compute dispatches on Polaris' non-preemptible GFX ring.
       "amdgpu.lockup_timeout=60000,60000,10000,10000"
     ];
-
-    kernel.sysctl = {
-      "net.ipv6.conf.all.disable_ipv6" = 1;
-    };
   };
 
   hardware = {

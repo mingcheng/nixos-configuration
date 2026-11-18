@@ -156,6 +156,19 @@ t.check "hosts/surface-laptop-3" {
     && lib.hasInfix "ID_INPUT_TABLET" config.services.udev.extraRules
     && lib.hasInfix "LIBINPUT_IGNORE_DEVICE" config.services.udev.extraRules;
   early-graphics = builtins.elem "i915" config.boot.initrd.kernelModules;
+  filesystem-loading =
+    builtins.elem "f2fs" config.boot.initrd.kernelModules
+    && !(builtins.elem "f2fs" config.boot.kernelModules);
+  no-unused-kernel-parameters = !(lib.any (lib.hasPrefix "selinux=") config.boot.kernelParams);
+  # NetworkManager re-enables IPv6 on managed links, so no half-disabled sysctls.
+  ipv6-left-to-networkmanager =
+    config.networking.enableIPv6
+    && !config.boot.kernel.sysctl."net.ipv6.conf.all.disable_ipv6"
+    && !config.boot.kernel.sysctl."net.ipv6.conf.default.disable_ipv6";
+  cargo-mirror-link =
+    config.systemd.user.tmpfiles.users.mingcheng.rules == [
+      "L %h/.cargo/config.toml - - - - /etc/cargo/mainland.toml"
+    ];
   systemd-boot =
     config.boot.loader.systemd-boot.enable
     && !config.boot.loader.grub.enable

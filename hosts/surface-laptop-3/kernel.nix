@@ -48,8 +48,8 @@
       ];
     };
 
+    # The F2FS root module is already loaded by the initrd.
     kernelModules = [
-      "f2fs"
       "hid_multitouch"
       "surface_acpi_notify"
       "surface_aggregator_cdev"
@@ -77,12 +77,7 @@
       "preempt=full"
       "intel_iommu=on"
       "i915.enable_psr=0"
-      "selinux=0"
     ];
-
-    kernel.sysctl = {
-      "net.ipv6.conf.all.disable_ipv6" = 1;
-    };
   };
 
   hardware = {

@@ -19,7 +19,8 @@
   ...
 }:
 let
-  users = if config.workstation.users != [ ] then config.workstation.users else [ "mingcheng" ];
+  users = config.workstation.users;
+  # systemd ORs conditions prefixed with "|".
   conditionUser =
     if builtins.length users == 1 then builtins.head users else map (user: "|${user}") users;
 in
@@ -28,44 +29,47 @@ in
     ../packages/user-packages.nix
   ];
 
-  users.users = lib.genAttrs users (_: {
-    linger = lib.mkDefault false;
-    packages = lib.optionals (config.workstation.users == [ ]) [ pkgs.syncthing ];
-  });
+  # Syncthing runs as a user service for the selected workstation users only;
+  # nothing is configured (and no account is assumed) when none are selected.
+  config = lib.mkIf (users != [ ]) {
+    users.users = lib.genAttrs users (_: {
+      linger = lib.mkDefault false;
+    });
 
-  workstation.userPackages = lib.mkIf (config.workstation.users != [ ]) [
-    pkgs.syncthing
-  ];
+    workstation.userPackages = [ pkgs.syncthing ];
 
-  systemd.user.services.syncthing = {
-    description = "Syncthing continuous file synchronization";
-    documentation = [ "https://docs.syncthing.net/" ];
-    after = [ "network.target" ];
-    wantedBy = [ "default.target" ];
+    systemd.user.services.syncthing = {
+      description = "Syncthing continuous file synchronization";
+      documentation = [ "https://docs.syncthing.net/" ];
+      after = [ "network.target" ];
+      wantedBy = [ "default.target" ];
 
-    environment = {
-      STNORESTART = "yes";
-      STNOUPGRADE = "yes";
-    };
+      environment = {
+        STNORESTART = "yes";
+        STNOUPGRADE = "yes";
+      };
 
-    unitConfig = {
-      ConditionUser = lib.mkDefault conditionUser;
-    };
+      unitConfig = {
+        ConditionUser = lib.mkDefault conditionUser;
+      };
 
-    serviceConfig = {
-      ExecStart = lib.mkDefault (
-        lib.concatStringsSep " " [
-          (lib.getExe pkgs.syncthing)
-          "--no-browser"
-          "--gui-address=127.0.0.1:8384"
-          "--config=%h/Syncthing/config"
-          "--data=%h/Syncthing/config"
-        ]
-      );
-      Restart = lib.mkDefault "on-failure";
-      RestartSec = lib.mkDefault "5s";
-      SuccessExitStatus = "3 4";
-      RestartForceExitStatus = "3 4";
+      serviceConfig = {
+        # The GUI and REST API listen on loopback only.
+        ExecStart = lib.mkDefault (
+          lib.concatStringsSep " " [
+            (lib.getExe pkgs.syncthing)
+            "--no-browser"
+            "--gui-address=127.0.0.1:8384"
+            "--config=%h/Syncthing/config"
+            "--data=%h/Syncthing/config"
+          ]
+        );
+        Restart = lib.mkDefault "on-failure";
+        RestartSec = lib.mkDefault "5s";
+        # Syncthing exits with 3 (restart requested) or 4 (upgraded) to be restarted.
+        SuccessExitStatus = "3 4";
+        RestartForceExitStatus = "3 4";
+      };
     };
   };
 }

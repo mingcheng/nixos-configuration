@@ -27,10 +27,8 @@
       ];
     };
 
-    kernelModules = [
-      "thinkpad_acpi"
-      "f2fs"
-    ];
+    # The F2FS root module is already loaded by the initrd.
+    kernelModules = [ "thinkpad_acpi" ];
 
     # X1 Carbon Gen 8 / Comet Lake-U: the Linux/S3 firmware setting exposes
     # "deep" and avoids s2idle battery drain; full preemption suits the Plasma
@@ -42,15 +40,7 @@
       "preempt=full"
       "intel_iommu=on"
       "i915.enable_psr=0"
-      #"fsck.mode=force"
-      #"fsck.fix=yes"
-      #"fsck.repair=yes"
-      "selinux=0"
     ];
-
-    kernel.sysctl = {
-      "net.ipv6.conf.all.disable_ipv6" = 1;
-    };
   };
 
   hardware = {

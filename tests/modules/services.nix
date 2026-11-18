@@ -19,7 +19,10 @@ let
     ../../services/sshd.nix
     ../../services/syncthing.nix
     ../../services/timesyncd.nix
-    { users.users.mingcheng.isNormalUser = true; }
+    {
+      workstation.users = [ "mingcheng" ];
+      users.users.mingcheng.isNormalUser = true;
+    }
   ];
   changed = t.eval [
     ../../services/adguard.nix
@@ -32,6 +35,7 @@ let
     ../../services/sshd.nix
     ../../services/syncthing.nix
     {
+      workstation.users = [ "mingcheng" ];
       users.users.mingcheng = {
         isNormalUser = true;
         linger = true;
@@ -105,6 +109,7 @@ let
     ../../services/mihomo.nix
     ../../services/resolved.nix
     ../../services/samba-client.nix
+    ../../services/syncthing.nix
     {
       services.adguardhome.enable = false;
       services.mihomo.enable = false;
@@ -223,6 +228,11 @@ t.check "modules/services" {
     &&
       changed.systemd.user.services.syncthing.serviceConfig.ExecStart
       == "/srv/syncthing/bin/syncthing --no-browser";
+  syncthing-requires-selected-users =
+    disabled.workstation.users == [ ]
+    && !(disabled.systemd.user.services ? syncthing)
+    && !(disabled.users.users ? mingcheng)
+    && disabled.workstation.userPackages == [ ];
   ups =
     config.services.apcupsd.enable && t.lib.hasInfix "UPSTYPE usb" config.services.apcupsd.configText;
   bluetooth =

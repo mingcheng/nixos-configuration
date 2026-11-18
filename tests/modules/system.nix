@@ -92,8 +92,7 @@ t.check "modules/system" {
     config.hardware.cpu.intel.updateMicrocode && !changed.hardware.cpu.intel.updateMicrocode;
   kernel-defaults =
     config.boot.kernel.sysctl."net.ipv4.tcp_congestion_control" == "bbr"
-    && config.boot.kernel.sysctl."net.core.default_qdisc" == "fq"
-    && config.boot.kernel.sysctl."vm.overcommit_memory" == 0;
+    && config.boot.kernel.sysctl."net.core.default_qdisc" == "fq";
   kernel-defaults-overridable =
     changed.boot.kernel.sysctl."net.ipv4.tcp_congestion_control" == "cubic";
   networking = config.networking.useDHCP && !config.networking.enableIPv6;

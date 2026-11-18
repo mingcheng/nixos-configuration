@@ -54,7 +54,7 @@
       pkg-config
       python3
 
-      # ai agent
+      # AI coding agents.
       opencode
       # claude-code
       # codex
