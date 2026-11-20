@@ -9,7 +9,7 @@
 # File Created: 2026-11-10 11:40:39
 #
 # Modified By: mingcheng <mingcheng@apache.org>
-# Last Modified: 2026-11-10 17:27:22
+# Last Modified: 2026-11-20 22:09:18
 ##
 
 { lib, pkgs, ... }:
@@ -34,7 +34,7 @@
   users = {
     mutableUsers = true;
     users."mingcheng" = {
-      description = "mingcheng <mingcheng@outlook.com>";
+      description = "mingcheng@apache.org";
       isNormalUser = true;
       group = "users";
       extraGroups = [
