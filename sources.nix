@@ -12,9 +12,14 @@
 # Last Modified: 2026-11-07 10:13:45
 ##
 
+let
+  nixosRelease = "26.05";
+in
 {
+  inherit nixosRelease;
+
   channels = {
-    nixos = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-26.05";
+    nixos = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-${nixosRelease}";
     unstable = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable";
   };
 

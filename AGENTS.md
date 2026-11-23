@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Personal NixOS 26.05 (x86_64-linux) config, channel-based — there is **no** `flake.nix`; `<nixpkgs>` / `<unstable>` resolve from `NIX_PATH`/channels. Usage is in `README.md`, script parameters in `scripts/README.md`; `.github/skills/` holds repo-specific audit and remote-sync workflows. No CI or pre-commit config; `make check` is the full verification.
+Personal NixOS (x86_64-linux) config, channel-based — the stable release is `nixosRelease` in `sources.nix`. There is **no** `flake.nix`; `<nixpkgs>` / `<unstable>` resolve from `NIX_PATH`/channels. Usage is in `README.md`, script parameters in `scripts/README.md`; `.github/skills/` holds repo-specific audit and remote-sync workflows. No CI or pre-commit config; `make check` is the full verification.
 
 ## Commands
 
@@ -25,7 +25,7 @@ Personal NixOS 26.05 (x86_64-linux) config, channel-based — there is **no** `f
 
 ## Tests
 
-- Pure NixOS module evaluation via `tests/lib.nix` (`eval-config.nix`) — never builds or switches. It injects fake `/`, `/boot`, `/efi` mounts, one fake swap device, `system.stateVersion = "26.05"`, and disables GRUB, so the real hardware config is unused.
+- Pure NixOS module evaluation via `tests/lib.nix` (`eval-config.nix`) — never builds or switches. It injects fake `/`, `/boot`, `/efi` mounts, one fake swap device, a fixed `system.stateVersion` independent of the channel release, and disables GRUB, so the real hardware config is unused.
 - Module/host tests import `../lib.nix` and must evaluate to a JSON attrset from `t.check "<suite>" { name = bool; }`; `t.check` throws on any false. Helpers: `t.eval`, `t.validSystem`, `t.hasPackages`.
 - `tests/hosts/*.nix` filenames must equal host directory names, since `make check-host-<name>` sets `NIX_BUILD_HOST=$*` from the target name.
 - `tests/scripts/*.sh` are standalone Bash scripts run directly without Nix; they stub `nix`, `nix-channel`, `lsblk`, etc. and never touch real channels or disks.

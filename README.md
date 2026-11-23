@@ -2,7 +2,7 @@
 
 ![Screenshot of X1 Carbon 8th Gen](screenshot.png)
 
-适用于 ThinkPad X1 Carbon Gen 8、Surface Laptop 3、Ryzen 7 PRO 4750G 台式主机、QEMU 客户机与 USB 启动盘的个人配置。基于 **NixOS 26.05 / x86_64-linux**，使用传统 channel 管理，不依赖 flakes。
+适用于 ThinkPad X1 Carbon Gen 8、Surface Laptop 3、Ryzen 7 PRO 4750G 台式主机、QEMU 客户机与 USB 启动盘的个人配置。基于 **NixOS 稳定版 / x86_64-linux**，使用传统 channel 管理，不依赖 flakes。
 
 ## 选择主机
 
@@ -35,11 +35,10 @@ imports = [
 
 ### 2. 配置软件通道
 
-通道地址定义于 [sources.nix](sources.nix)。系统与大部分软件使用 `nixos`，桌面环境的 VS Code 另需 `unstable`；仅使用 VM 或 USB 配置时无需 `unstable`：
+稳定通道的版本只在 [sources.nix](sources.nix) 的 `nixosRelease` 中指定。升级时修改该值，再运行以下命令重新登记并更新通道。系统与大部分软件使用 `nixos`，桌面环境的 VS Code 另需 `unstable`；仅使用 VM 或 USB 配置时，可给脚本传入 `nixos` 以仅登记稳定通道：
 
 ```bash
-sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-26.05 nixos
-sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable unstable
+sudo bash /etc/nixos/scripts/channel.sh
 sudo nix-channel --update
 ```
 
